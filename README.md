@@ -39,8 +39,9 @@ alembic upgrade head
 
 ## Frontend Visual Shell
 
-The frontend is a Next.js visual inspection shell that currently uses static
-mock data only. It is not connected to live scraper output or backend APIs yet.
+The frontend is a Next.js visual inspection shell that loads normalized BILLA
+products from the local backend by default. Explicit sample mode is still
+available for UI-only checks.
 
 ```bash
 cd frontend

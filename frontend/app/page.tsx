@@ -1,5 +1,4 @@
-import { ComparisonTable } from "../components/comparison-table";
-import { sampleOffers } from "../data/sample-offers";
+import { GrocerloDataLoader } from "../components/grocerlo-data-loader";
 
 export default function Home() {
   return (
@@ -8,24 +7,25 @@ export default function Home() {
         <p className="eyebrow">Grocery Saver</p>
         <div className="hero-grid">
           <div>
-            <h1 id="page-title">Visual inspection shell</h1>
+            <h1 id="page-title">Grocerlo price comparison</h1>
             <p className="hero-copy">
-              Explore the intended comparison workflow with static grocery offer
-              examples while backend search and matching APIs are still being
-              built.
+              Explore normalized BILLA products from the local backend, with
+              explicit source labels when the app is using live API data or
+              opt-in mock samples.
             </p>
           </div>
-          <div className="mock-banner" role="status">
-            <strong>Mock data only</strong>
+          <div className="mock-banner live-banner" role="status">
+            <strong>Real data first</strong>
             <span>
-              This view is not connected to live scrapes, product search, or
-              comparison APIs yet.
+              Start the FastAPI backend locally to load scrape_run_id=2 BILLA
+              rows. Mock offers appear only when sample mode is explicitly
+              enabled.
             </span>
           </div>
         </div>
       </section>
 
-      <ComparisonTable offers={sampleOffers} />
+      <GrocerloDataLoader />
     </main>
   );
 }

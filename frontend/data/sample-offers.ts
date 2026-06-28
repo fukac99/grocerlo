@@ -2,7 +2,7 @@ export type RetailerOffer = {
   id: string;
   product: string;
   brand: string;
-  retailer: "BILLA" | "MPREIS" | "REWE" | "SPAR";
+  retailer: string;
   category: string;
   packageSize: string;
   price: number;

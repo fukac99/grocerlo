@@ -1,8 +1,8 @@
 # Grocery Saver Frontend
 
-Next.js visual inspection shell for comparing grocery offers. The current app uses
-static sample data only and is not connected to backend search, scraping, or
-comparison APIs yet.
+Next.js visual inspection shell for comparing grocery offers. By default, the app
+loads normalized BILLA products from the local backend through a same-origin
+frontend API route.
 
 ## Local Run
 
@@ -18,7 +18,18 @@ Start the development server:
 npm run dev
 ```
 
-Open http://localhost:3000 to inspect the mock comparison table.
+Open http://localhost:3000 to inspect the comparison table.
+
+The frontend expects the FastAPI backend at `http://127.0.0.1:8000` unless
+`GROCERY_API_BASE_URL` is set. It loads BILLA products with the search query
+`billa` by default; set `NEXT_PUBLIC_GROCERY_BILLA_QUERY` to use another product,
+brand, or category term for the local data set.
+
+To view clearly labelled mock offers instead of backend data, run with:
+
+```bash
+NEXT_PUBLIC_GROCERY_DATA_SOURCE=sample npm run dev
+```
 
 ## Checks
 
