@@ -180,12 +180,14 @@ export function ComparisonTable({ offers }: ComparisonTableProps) {
                   .filter((retailerName) => retailerName !== allRetailers)
                   .map((retailerName) => {
                     const offer = row.offersByRetailer.get(retailerName as RetailerOffer["retailer"]);
+                    const isCheapestOffer = offer?.price === row.lowestPrice;
 
                     return (
-                      <td key={retailerName}>
+                      <td className={isCheapestOffer ? "cheapest-offer-cell" : undefined} key={retailerName}>
                         {offer ? (
                           <div className="offer-cell">
                             <strong>{currencyFormatter.format(offer.price)}</strong>
+                            {isCheapestOffer ? <span className="cheapest-offer-label">Cheapest</span> : null}
                             <span>
                               {currencyFormatter.format(offer.unitPrice)} / {offer.unit}
                             </span>
