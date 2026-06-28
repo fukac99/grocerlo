@@ -38,8 +38,20 @@ Last full-codebase security review boundary: 0 completed tasks.
 | REWE | DE | Discovery-only; storage blocked | Public no-location pages expose metadata/article numbers but not numeric prices. Price scraping needs an approved location/market/service context first. |
 | Kaufland | SK | Discovery-only; storage blocked | Needs discovery to distinguish grocery, marketplace, leaflet, store, loyalty, and app-specific price surfaces. |
 | Tesco | SK | Discovery-only; storage blocked | Needs discovery for public price visibility, dynamic loading, address/slot/session requirements, and Clubcard labels. |
+| Tegut on Amazon | DE | Discovery-only; storage blocked | Amazon-hosted grocery surface is postcode/account/platform scoped. T073 found no safe no-location price capture path; any next step needs explicit Amazon/Tegut policy approval. |
 
 ## Last Run
+
+2026-06-29 coordinator pass / T073 Tegut Amazon discovery:
+
+- Fetched latest remote state from `origin/main`. PR #59 (`task/T072-linear-credentials-instructions`) is already merged on GitHub with the Agent Review Gate passing; no pull requests are currently open, and no merge action was taken.
+- Loaded Linear credentials with `source credentials.txt` before Linear API calls, queried team `GRO`, and counted 26 completed issues, below the 100-task full-codebase security review boundary.
+- PM/scoping result: no new Linear issues were required before executor work because `GRO-43` / T073 was already an actionable dependency-free `Todo`. Other active Todo issues either overlap frontend comparison-table scope or remain blocked by retailer discovery/storage gates.
+- Claimed `GRO-43` by moving it to `In Progress` and adding a start comment. Work used a clean `origin/main` worktree on `task/T073-tegut-amazon-price-surface-discovery`.
+- Added `docs/scraper-notes/tegut.md` documenting the Amazon-hosted Tegut grocery surface, category/storefront URL candidates, issue-provided Brot/Backwaren snapshot fields, robots/help context, postcode/account/deployment constraints, source-platform modeling, stop conditions, and go/no-go decision.
+- Decision: no-go for price-capturing dry-run scraper or storage. Numeric prices were not confirmed in safe public no-location context, the source category returned `404` through the fetcher, and Amazon grocery availability/delivery is postcode-dependent with account/platform semantics.
+- Checks: `python3 -m compileall -q backend/app scripts` and documentation diff review for the Markdown-only change.
+- Next action: open the T073 PR, update Linear with PR/check metadata, and keep the issue `In Review` until user-directed merge.
 
 2026-06-29 coordinator pass / T028 MPREIS capped raw validation:
 
