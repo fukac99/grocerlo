@@ -6,7 +6,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "scripts"))
 
-from stored_data_sanity_report import build_sanity_report  # noqa: E402
+from stored_data_sanity_report import build_sanity_report, validate_positive_limit  # noqa: E402
 
 
 @dataclass(frozen=True)
@@ -153,3 +153,12 @@ def test_build_sanity_report_truncates_bad_rows() -> None:
 
     assert len(report["bad_rows"]) == 2
     assert report["bad_rows_truncated"] == 1
+
+
+def test_validate_positive_limit_rejects_negative_values() -> None:
+    try:
+        validate_positive_limit("--max-issues", -1)
+    except SystemExit as exc:
+        assert str(exc) == "--max-issues must be at least 1."
+    else:
+        raise AssertionError("Expected negative --max-issues to exit")

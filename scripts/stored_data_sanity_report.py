@@ -23,6 +23,8 @@ from app.quality import check_raw_products  # noqa: E402
 
 async def main() -> None:
     args = parse_args()
+    validate_positive_limit("--max-issues", args.max_issues)
+
     try:
         async with async_session_factory() as session:
             report = await load_sanity_report(
@@ -69,6 +71,11 @@ def parse_args() -> argparse.Namespace:
         help="Maximum bad-row details to include.",
     )
     return parser.parse_args()
+
+
+def validate_positive_limit(name: str, value: int) -> None:
+    if value < 1:
+        raise SystemExit(f"{name} must be at least 1.")
 
 
 async def load_sanity_report(
