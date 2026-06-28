@@ -10,8 +10,14 @@ type ComparisonRow = {
   product: string;
   packageSize: string;
   category: string;
+  offers: RetailerOffer[];
   offersByRetailer: Map<RetailerOffer["retailer"], RetailerOffer>;
   lowestPrice: number;
+};
+
+type CountrySavingsSummary = {
+  label: string;
+  detail: string;
 };
 
 type StatusMessage = {
@@ -28,6 +34,7 @@ type ComparisonTableProps = {
 };
 
 const allRetailers = "All retailers";
+const allCountries = "All countries";
 const allCategories = "All categories";
 
 const currencyFormatter = new Intl.NumberFormat("en-AT", {
@@ -37,6 +44,11 @@ const currencyFormatter = new Intl.NumberFormat("en-AT", {
 
 const dateFormatter = new Intl.DateTimeFormat("en-AT", {
   dateStyle: "medium",
+});
+
+const percentFormatter = new Intl.NumberFormat("en-AT", {
+  maximumFractionDigits: 1,
+  style: "percent",
 });
 
 export function ComparisonTable({
@@ -49,6 +61,7 @@ export function ComparisonTable({
   const [retailer, setRetailer] = useState(allRetailers);
   const [retailerFilterMode, setRetailerFilterMode] =
     useState<RetailerFilterMode>("available");
+  const [country, setCountry] = useState(allCountries);
   const [category, setCategory] = useState(allCategories);
   const [sortKey, setSortKey] = useState<SortKey>("lowestPrice");
 
@@ -58,6 +71,10 @@ export function ComparisonTable({
   );
   const categories = useMemo(
     () => [allCategories, ...Array.from(new Set(offers.map((offer) => offer.category))).sort()],
+    [offers],
+  );
+  const countries = useMemo(
+    () => [allCountries, ...Array.from(new Set(offers.map((offer) => offer.country))).sort()],
     [offers],
   );
 
@@ -71,6 +88,7 @@ export function ComparisonTable({
       const existingRow = rows.get(rowKey);
 
       if (existingRow) {
+        existingRow.offers.push(offer);
         existingRow.offersByRetailer.set(offer.retailer, offer);
         existingRow.lowestPrice = Math.min(existingRow.lowestPrice, offer.price);
       } else {
@@ -79,6 +97,7 @@ export function ComparisonTable({
           product: offer.product,
           packageSize: offer.packageSize,
           category: offer.category,
+          offers: [offer],
           offersByRetailer: new Map([[offer.retailer, offer]]),
           lowestPrice: offer.price,
         });
@@ -87,14 +106,17 @@ export function ComparisonTable({
 
     return Array.from(rows.values())
       .filter((row) => {
-        const rowOffers = Array.from(row.offersByRetailer.values());
+        const rowOffers = row.offers;
         const selectedRetailer = retailer as RetailerOffer["retailer"];
         const selectedRetailerOffer = row.offersByRetailer.get(selectedRetailer);
         const matchesRetailer =
           retailer === allRetailers ||
           (retailerFilterMode === "cheapest"
-            ? selectedRetailerOffer?.price === row.lowestPrice
+            ? selectedRetailerOffer !== undefined &&
+              pricesAreEqual(selectedRetailerOffer.price, row.lowestPrice)
             : Boolean(selectedRetailerOffer));
+        const countrySavingsSummary = getCountrySavingsSummary(row, country);
+        const matchesCountry = country === allCountries || countrySavingsSummary !== null;
         const matchesCategory = category === allCategories || row.category === category;
         const searchableText = [
           row.product,
@@ -102,6 +124,7 @@ export function ComparisonTable({
           row.category,
           ...rowOffers.flatMap((offer) => [
             offer.retailer,
+            offer.country,
             offer.brand,
             offer.promotion ?? "",
           ]),
@@ -111,6 +134,7 @@ export function ComparisonTable({
 
         return (
           matchesRetailer &&
+          matchesCountry &&
           matchesCategory &&
           (normalizedQuery.length === 0 || searchableText.includes(normalizedQuery))
         );
@@ -122,7 +146,7 @@ export function ComparisonTable({
 
         return String(firstRow[sortKey]).localeCompare(String(secondRow[sortKey]));
       });
-  }, [category, offers, query, retailer, retailerFilterMode, sortKey]);
+  }, [category, country, offers, query, retailer, retailerFilterMode, sortKey]);
 
   return (
     <section className="comparison-card" aria-labelledby="comparison-title">
@@ -134,6 +158,7 @@ export function ComparisonTable({
         </div>
         <p className="result-count">
           Showing {comparisonRows.length} comparison rows from {offers.length} offers
+          {country !== allCountries ? ` cheapest in ${country}` : ""}
         </p>
       </div>
 
@@ -196,6 +221,15 @@ export function ComparisonTable({
         </label>
 
         <label>
+          Country cheapest in
+          <select value={country} onChange={(event) => setCountry(event.target.value)}>
+            {countries.map((countryName) => (
+              <option key={countryName}>{countryName}</option>
+            ))}
+          </select>
+        </label>
+
+        <label>
           Sort by
           <select value={sortKey} onChange={(event) => setSortKey(event.target.value as SortKey)}>
             <option value="lowestPrice">Lowest price</option>
@@ -221,49 +255,128 @@ export function ComparisonTable({
             </tr>
           </thead>
           <tbody>
-            {comparisonRows.map((row) => (
-              <tr key={row.key}>
-                <td>
-                  <strong>{row.product}</strong>
-                  <span>{row.category}</span>
-                </td>
-                <td>{row.packageSize}</td>
-                {retailers
-                  .filter((retailerName) => retailerName !== allRetailers)
-                  .map((retailerName) => {
-                    const offer = row.offersByRetailer.get(retailerName as RetailerOffer["retailer"]);
-                    const isCheapestOffer = offer?.price === row.lowestPrice;
+            {comparisonRows.map((row) => {
+              const countrySavingsSummary = getCountrySavingsSummary(row, country);
 
-                    return (
-                      <td className={isCheapestOffer ? "cheapest-offer-cell" : undefined} key={retailerName}>
-                        {offer ? (
-                          <div className="offer-cell">
-                            <strong>{currencyFormatter.format(offer.price)}</strong>
-                            {isCheapestOffer ? <span className="cheapest-offer-label">Cheapest</span> : null}
-                            <span>
-                              {currencyFormatter.format(offer.unitPrice)} / {offer.unit}
-                            </span>
-                            <a href={offer.sourceUrl} target="_blank" rel="noreferrer">
-                              Source
-                            </a>
-                            <span>{offer.promotion ?? "No promotion"}</span>
-                            <span>Seen {dateFormatter.format(new Date(offer.lastSeen))}</span>
-                          </div>
-                        ) : (
-                          <span className="missing-offer">No offer</span>
-                        )}
-                      </td>
-                    );
-                  })}
-              </tr>
-            ))}
+              return (
+                <tr key={row.key}>
+                  <td>
+                    <strong>{row.product}</strong>
+                    <span>{row.category}</span>
+                    {countrySavingsSummary ? (
+                      <span className="country-savings">
+                        <strong>{countrySavingsSummary.label}</strong>
+                        <span>{countrySavingsSummary.detail}</span>
+                      </span>
+                    ) : null}
+                  </td>
+                  <td>{row.packageSize}</td>
+                  {retailers
+                    .filter((retailerName) => retailerName !== allRetailers)
+                    .map((retailerName) => {
+                      const offer = row.offersByRetailer.get(retailerName as RetailerOffer["retailer"]);
+                      const isCheapestOffer =
+                        offer !== undefined && pricesAreEqual(offer.price, row.lowestPrice);
+
+                      return (
+                        <td
+                          className={isCheapestOffer ? "cheapest-offer-cell" : undefined}
+                          key={retailerName}
+                        >
+                          {offer ? (
+                            <div className="offer-cell">
+                              <strong>{currencyFormatter.format(offer.price)}</strong>
+                              {isCheapestOffer ? (
+                                <span className="cheapest-offer-label">Cheapest</span>
+                              ) : null}
+                              <span>
+                                {currencyFormatter.format(offer.unitPrice)} / {offer.unit}
+                              </span>
+                              <span>Country {offer.country}</span>
+                              <a href={offer.sourceUrl} target="_blank" rel="noreferrer">
+                                Source
+                              </a>
+                              <span>{offer.promotion ?? "No promotion"}</span>
+                              <span>Seen {dateFormatter.format(new Date(offer.lastSeen))}</span>
+                            </div>
+                          ) : (
+                            <span className="missing-offer">No offer</span>
+                          )}
+                        </td>
+                      );
+                    })}
+                </tr>
+              );
+            })}
           </tbody>
         </table>
 
         {comparisonRows.length === 0 ? (
-          <p className="empty-state">No products match the current data set and filters.</p>
+          <p className="empty-state">
+            {country !== allCountries
+              ? `No products are cheapest in ${country} for the current data set and filters.`
+              : "No products match the current data set and filters."}
+          </p>
         ) : null}
       </div>
     </section>
   );
+}
+
+function getCountrySavingsSummary(
+  row: ComparisonRow,
+  selectedCountry: string,
+): CountrySavingsSummary | null {
+  if (selectedCountry === allCountries) {
+    return null;
+  }
+
+  const cheapestOffers = row.offers.filter((offer) =>
+    pricesAreEqual(offer.price, row.lowestPrice),
+  );
+  const selectedCountryCheapestOffers = cheapestOffers.filter(
+    (offer) => offer.country === selectedCountry,
+  );
+
+  if (selectedCountryCheapestOffers.length === 0) {
+    return null;
+  }
+
+  const nextBestOffer = row.offers
+    .filter(
+      (offer) =>
+        offer.price > row.lowestPrice && !pricesAreEqual(offer.price, row.lowestPrice),
+    )
+    .sort((firstOffer, secondOffer) => firstOffer.price - secondOffer.price)[0];
+  const tiedCountryNames = Array.from(new Set(cheapestOffers.map((offer) => offer.country))).sort();
+  const hasTie = cheapestOffers.length > 1;
+
+  if (!nextBestOffer) {
+    return {
+      label: hasTie ? "Tied cheapest" : "No comparison offer",
+      detail: hasTie
+        ? `${currencyFormatter.format(0)} (0%) versus tied cheapest offers in ${tiedCountryNames.join(", ")}; no higher-priced offer is available.`
+        : "Only one available offer, so there is no next-best price to compare.",
+    };
+  }
+
+  const savingsAmount = nextBestOffer.price - row.lowestPrice;
+  const savingsPercent = savingsAmount / nextBestOffer.price;
+  const savingsDetail = `${currencyFormatter.format(savingsAmount)} (${percentFormatter.format(savingsPercent)}) below next-best offer at ${nextBestOffer.retailer} (${nextBestOffer.country}).`;
+
+  if (hasTie) {
+    return {
+      label: "Tied cheapest",
+      detail: `Matches tied cheapest offers in ${tiedCountryNames.join(", ")} and is ${savingsDetail}`,
+    };
+  }
+
+  return {
+    label: `${currencyFormatter.format(savingsAmount)} cheaper`,
+    detail: savingsDetail,
+  };
+}
+
+function pricesAreEqual(firstPrice: number, secondPrice: number): boolean {
+  return Math.abs(firstPrice - secondPrice) < 0.001;
 }
