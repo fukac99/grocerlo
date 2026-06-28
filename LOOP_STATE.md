@@ -41,6 +41,7 @@ Every loop run should also compare `LOOP_TASKS.md` against `PRICE_COMPARISON_APP
 - Clarified that multiple independent ready tasks can be launched as parallel subagents.
 - Created T007 pull request: https://github.com/fukac99/grocerlo/pull/2.
 - PR #2 merged before the same-task review correction landed; created follow-up PR #3 for that correction: https://github.com/fukac99/grocerlo/pull/3.
+- PR #3 merged before the archive correction landed; created follow-up PR #4 for that correction: https://github.com/fukac99/grocerlo/pull/4.
 
 2026-06-28 automatic builder loop, immediate coordinator run:
 
