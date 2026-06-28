@@ -38,6 +38,13 @@ Last full-codebase security review boundary: 0 completed tasks.
 
 ## Last Run
 
+2026-06-28 user-requested UI retailer filter scoping:
+
+- Added T034 for retailer filtering that shows only products where the selected retailer is the cheapest available option.
+- T034 depends on T032 so the filter can reuse the same cheapest-offer calculation as the row highlight.
+- Acceptance: tied cheapest offers count for every tied retailer; missing offers and rows cheaper elsewhere are hidden for the selected retailer.
+- Added T035 as the Markdown-only coordinator PR for this task-scoping update.
+
 2026-06-28 user-requested UI scoping:
 
 - Added T032 to highlight the cheapest supermarket offer in each frontend comparison row with a light-green cell.
