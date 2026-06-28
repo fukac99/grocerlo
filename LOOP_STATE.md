@@ -32,6 +32,11 @@ Every loop run should also compare `LOOP_TASKS.md` against `PRICE_COMPARISON_APP
 
 ## Last Run
 
+2026-06-28 PR review update:
+
+- Review subagent completed PR #5 review with no blocking findings.
+- Updated T007 `review_status` to `passed`.
+
 2026-06-28 loop protocol update:
 
 - Added T007 to update the loop protocol for plan expansion and PR review tasks.
@@ -39,9 +44,11 @@ Every loop run should also compare `LOOP_TASKS.md` against `PRICE_COMPARISON_APP
 - Removed separate review tasks from the protocol so pull requests cannot be treated as independent of their reviews.
 - Added `LOOP_LOG.md` and archived fully completed historical tasks to keep `LOOP_TASKS.md` smaller.
 - Clarified that multiple independent ready tasks can be launched as parallel subagents.
+- Added a GitHub Actions review gate that fails PRs unless their `LOOP_TASKS.md` row has `review_status: passed`.
 - Created T007 pull request: https://github.com/fukac99/grocerlo/pull/2.
 - PR #2 merged before the same-task review correction landed; created follow-up PR #3 for that correction: https://github.com/fukac99/grocerlo/pull/3.
 - PR #3 merged before the archive correction landed; created follow-up PR #4 for that correction: https://github.com/fukac99/grocerlo/pull/4.
+- PR #4 merged before the CI gate landed; created follow-up PR #5 for that correction: https://github.com/fukac99/grocerlo/pull/5.
 
 2026-06-28 automatic builder loop, immediate coordinator run:
 
@@ -157,3 +164,4 @@ Previous run:
 - Created T006 pull request: https://github.com/fukac99/grocerlo/pull/1.
 - Added loop protocol updates for plan expansion, same-task review tracking, and parallel subagent launch rules.
 - Added `LOOP_LOG.md` for archived tasks and version notes, and pruned completed rows from `LOOP_TASKS.md`.
+- Added CI enforcement for same-task agent review status.
