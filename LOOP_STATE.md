@@ -36,6 +36,13 @@ Every loop run should start with a PM/scoping pass that plans a batch of executo
 
 2026-06-28 automatic loop tick:
 
+- Confirmed PR #11 merged after successful Postgres store validation.
+- PM/scoping pass marked T008, T009, and T013 as ready; T010/T011/T015/T016 remain blocked behind normalization, discovery, matching, or API work.
+- Started T019 to archive completed merged tasks, refresh stale PR statuses, and prepare the next executor batch.
+- Recommended next executor batch is T008 and T013 in parallel; T009 can run separately or in parallel only if it avoids overlapping DB helper edits with T008.
+
+2026-06-28 automatic loop tick:
+
 - Docker daemon is still unavailable, so T003 remains blocked and PR #11 is intentionally not merge-ready.
 - Confirmed PR #10 merged and PR #9 merged.
 - Started T018 to correct stale active-ledger statuses on `main`: T003 blocked/changes requested, T012 merged, and T017 merged.
@@ -192,8 +199,8 @@ Previous run:
 6. Archive fully complete tasks to `LOOP_LOG.md` once no longer needed in the active ledger.
 7. Continue using SSH remote `git@github.com:fukac99/grocerlo.git`.
 8. Merge reviewed PRs once checks pass, then update dependency statuses in `LOOP_TASKS.md`.
-9. After T002 merges, start Postgres, run migrations, and test the `--store` path.
-10. After T005 merges, run raw product quality checks against low-volume raw scrape output.
+9. Claim T008 to normalize stored BILLA raw products into retailer products.
+10. Claim T013 for MPREIS low-volume discovery, or T009 for a stored-data sanity report if its scope avoids T008 DB helper edits.
 
 ## Loop Log
 

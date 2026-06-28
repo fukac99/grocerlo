@@ -13,6 +13,12 @@ Use `LOOP_TASKS.md` for active, blocked, ready, in-progress, open-PR, or review-
 | T006 | 2026-06-28 | `task/T006-connect-github-repository` | https://github.com/fukac99/grocerlo/pull/1 | Connected the project to GitHub, initialized `main`, pushed over SSH, installed/authenticated `gh`, and established the PR workflow. |
 | T007 | 2026-06-28 | `task/T007-loop-planning-review-protocol` | https://github.com/fukac99/grocerlo/pull/5 | Added plan reconciliation, same-task review tracking, archived task history, parallel subagent guidance, and CI enforcement for `review_status: passed`. |
 | T014 | 2026-06-28 | `task/T014-loop-ledger-updates` | https://github.com/fukac99/grocerlo/pull/8 | Recorded passed reviews for T002/T005, added PM-scoped tasks T008-T013, fixed review-gate branch status handling, and resolved ledger conflicts after executor PRs merged. |
+| T002 | 2026-06-28 | `task/T002-billa-dry-scrape-validation` | https://github.com/fukac99/grocerlo/pull/6 | Validated a constrained BILLA dry scrape with plausible names, prices, package sizes, source URLs, and source IDs. |
+| T003 | 2026-06-28 | `task/T003-postgres-store-path` | https://github.com/fukac99/grocerlo/pull/11 | Started Postgres, ran Alembic migrations, and validated capped BILLA `--store` ingestion with 3 raw products. |
+| T005 | 2026-06-28 | `task/T005-raw-product-quality-checks` | https://github.com/fukac99/grocerlo/pull/7 | Added raw product quality checks for missing fields, duplicates, suspicious prices/unit prices, and missing source URLs. |
+| T012 | 2026-06-28 | `task/T012-retailer-discovery-checklist` | https://github.com/fukac99/grocerlo/pull/10 | Added the retailer expansion discovery checklist for MPREIS, REWE, Kaufland Slovakia, and Tesco Slovakia. |
+| T017 | 2026-06-28 | `task/T017-refresh-merged-pr-statuses` | https://github.com/fukac99/grocerlo/pull/9 | Refreshed merged PR bookkeeping, added matching/comparison future tasks, and claimed the next executor batch. |
+| T018 | 2026-06-28 | `task/T018-correct-loop-ledger-after-merges` | https://github.com/fukac99/grocerlo/pull/12 | Corrected stale ledger state after merged PRs; superseded by T003 validation success once Docker became available. |
 
 ## Version Notes
 
