@@ -40,6 +40,16 @@ Last full-codebase security review boundary: 0 completed tasks.
 
 ## Last Run
 
+2026-06-28 T044 country-cheapest product filter:
+
+- Claimed T044 on `task/T044-country-cheapest-products-ux` from a clean `origin/main` worktree.
+- Opened PR https://github.com/fukac99/grocerlo/pull/45.
+- Added country metadata to normalized frontend offers and sample data.
+- Added a `Country cheapest in` filter that keeps rows where the selected country has the cheapest offer, including tied cheapest offers.
+- Added row savings copy for absolute EUR and percent savings versus the next-best available offer, with explicit tied-cheapest and no-comparison states.
+- Self-review passed for filter correctness, tie handling, no-comparison copy, accessibility labels, and live API data-shape compatibility.
+- Frontend checks passed: `npm run lint`, `npm run typecheck`, and `npm run build`.
+
 2026-06-28 T049 all-retailer raw-ingest planning:
 
 - Claimed T049 as a Markdown-only coordinator task on `task/T049-prioritize-all-retailer-raw-ingest`.
