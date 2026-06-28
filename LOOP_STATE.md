@@ -16,7 +16,7 @@ Each implementation task should use its own branch and open a GitHub pull reques
 
 Every loop run should check existing task pull requests and update `pr_status` plus `pr_last_checked` in `LOOP_TASKS.md`. Downstream tasks should treat prior PR-backed dependencies as complete only after their pull requests are merged.
 
-Every loop run should also compare `LOOP_TASKS.md` against `PRICE_COMPARISON_APP_PLAN.md` and add missing actionable tasks. Every implementation pull request should get a separate review task for architecture, security, bugs, tests, maintainability, and fit with the overall plan.
+Every loop run should also compare `LOOP_TASKS.md` against `PRICE_COMPARISON_APP_PLAN.md` and add missing actionable tasks. Every implementation pull request should track review status on the same task row for architecture, security, bugs, tests, maintainability, and fit with the overall plan. A pull request is not merge-ready until its task row has `review_status: passed`.
 
 ## Retailer Status
 
@@ -33,10 +33,11 @@ Every loop run should also compare `LOOP_TASKS.md` against `PRICE_COMPARISON_APP
 2026-06-28 loop protocol update:
 
 - Added T007 to update the loop protocol for plan expansion and PR review tasks.
-- Added T008 as the separate review task for T007.
-- Updated coordinator rules so every tick re-reads the overall plan, adds missing actionable tasks, and creates review tasks for implementation pull requests.
+- Updated coordinator rules so every tick re-reads the overall plan, adds missing actionable tasks, and tracks review status on implementation task rows.
+- Removed separate review tasks from the protocol so pull requests cannot be treated as independent of their reviews.
 - Clarified that multiple independent ready tasks can be launched as parallel subagents.
 - Created T007 pull request: https://github.com/fukac99/grocerlo/pull/2.
+- PR #2 merged before the same-task review correction landed; created follow-up PR #3 for that correction: https://github.com/fukac99/grocerlo/pull/3.
 
 2026-06-28 automatic builder loop, immediate coordinator run:
 
@@ -106,7 +107,7 @@ Previous run:
 
 1. Use `LOOP_TASKS.md` to claim eligible `Ready` tasks.
 2. Re-read `PRICE_COMPARISON_APP_PLAN.md` and add missing actionable tasks.
-3. Add review tasks for implementation pull requests that do not already have one.
+3. Track review status on implementation task rows and require `review_status: passed` before merge readiness.
 4. Continue using SSH remote `git@github.com:fukac99/grocerlo.git`.
 5. Inspect the BILLA dry-scrape sample output for product plausibility after T006 is merged.
 6. If the dry run returns plausible products, start Postgres, run migrations, and test `--store`.
@@ -148,4 +149,4 @@ Previous run:
 - T006 remains blocked only on `gh auth login` for pull request creation.
 - `gh` authentication completed for account `fukac99`; T006 branch and PR creation can proceed.
 - Created T006 pull request: https://github.com/fukac99/grocerlo/pull/1.
-- Added loop protocol updates for plan expansion, review tasks, and parallel subagent launch rules.
+- Added loop protocol updates for plan expansion, same-task review tracking, and parallel subagent launch rules.

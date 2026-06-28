@@ -20,22 +20,22 @@ Before a loop run starts work, it must move any claimed task from `Ready` to `In
 - On every loop run, check existing pull requests and update `pr_status` and `pr_last_checked`.
 - Use PR statuses: `none`, `open`, `merged`, `closed`, `blocked`, or `unknown`.
 - On every loop run, compare `LOOP_TASKS.md` against `PRICE_COMPARISON_APP_PLAN.md` and add missing actionable tasks.
-- Every implementation task with a pull request must get a separate review task for architecture, security, bugs, tests, and maintainability.
-- Review tasks do not spawn additional review tasks unless they make code or workflow changes.
+- Every implementation task with a pull request must track review under the same task row.
+- Use review statuses: `none`, `pending`, `in_progress`, `passed`, `changes_requested`, or `blocked`.
+- Do not consider a pull request merge-ready until its task has `review_status: passed`.
 - The repository connection task may need to bootstrap the base branch first if the remote repository is empty.
 
 ## Tasks
 
-| id | status | owner | started | branch | pull_request | pr_status | pr_last_checked | task | files/scope | depends_on | notes |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| T001 | Done | env-setup-subagent | 2026-06-28 18:06 UTC+2 |  |  | none |  | Set up local backend environment and install dependencies | `.venv`, backend deps, Playwright Chromium |  | Completed before branch/PR rule; imports verified and low-volume BILLA dry scrape ran successfully. |
-| T002 | Ready |  |  | task/T002-billa-dry-scrape-validation |  | none |  | Run BILLA dry scrape and inspect sample output | `scripts/scrape_once.py`, `backend/app/scrapers/billa.py` | T001,T006 | Keep volume low: 1 category, max 3 products. |
-| T003 | Ready |  |  | task/T003-postgres-store-path |  | none |  | Start Postgres, run migrations, and test `--store` path | `docker-compose.yml`, `backend/alembic`, database | T001,T002,T006 | Only after dry scrape output looks plausible. |
-| T004 | Done | normalization-subagent | 2026-06-28 18:06 UTC+2 |  |  | none |  | Add EUR price and unit normalization utilities | `backend/app/normalization` |  | Completed before branch/PR rule with Decimal-based utilities and focused pytest coverage. |
-| T005 | Ready |  |  | task/T005-raw-product-quality-checks |  | none |  | Add raw product data quality checks | `backend/app`, `scripts` | T004,T006 | Check missing names, missing prices, duplicate source IDs, suspicious unit prices. |
-| T006 | Done | coordinator | 2026-06-28 18:31 UTC+2 | task/T006-connect-github-repository | https://github.com/fukac99/grocerlo/pull/1 | open | 2026-06-28 18:39 UTC+2 | Connect this project to `https://github.com/fukac99/grocerlo` | git remote, branch strategy, GitHub PR setup |  | Local git repo initialized, `origin` switched to SSH, `main` pushed to GitHub, `gh` installed and authenticated. |
-| T007 | Done | coordinator | 2026-06-28 18:44 UTC+2 | task/T007-loop-planning-review-protocol | https://github.com/fukac99/grocerlo/pull/2 | open | 2026-06-28 18:44 UTC+2 | Update loop protocol for plan expansion and PR review tasks | `LOOP_TASKS.md`, `LOOP_STATE.md`, `docs/LOOP_ENGINEERING.md` | T006 | Add plan-vs-task reconciliation and separate review task requirements. |
-| T008 | Ready |  |  | task/T008-review-loop-planning-review-protocol |  | none |  | Review T007 pull request for architecture, security, bugs, tests, and maintainability | T007 PR review | T007 | Review-only task; do not spawn another review task unless it changes files. |
+| id | status | owner | started | branch | pull_request | pr_status | pr_last_checked | review_status | reviewer | task | files/scope | depends_on | notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| T001 | Done | env-setup-subagent | 2026-06-28 18:06 UTC+2 |  |  | none |  | none |  | Set up local backend environment and install dependencies | `.venv`, backend deps, Playwright Chromium |  | Completed before branch/PR rule; imports verified and low-volume BILLA dry scrape ran successfully. |
+| T002 | Ready |  |  | task/T002-billa-dry-scrape-validation |  | none |  | none |  | Run BILLA dry scrape and inspect sample output | `scripts/scrape_once.py`, `backend/app/scrapers/billa.py` | T001,T006 | Keep volume low: 1 category, max 3 products. |
+| T003 | Ready |  |  | task/T003-postgres-store-path |  | none |  | none |  | Start Postgres, run migrations, and test `--store` path | `docker-compose.yml`, `backend/alembic`, database | T001,T002,T006 | Only after dry scrape output looks plausible. |
+| T004 | Done | normalization-subagent | 2026-06-28 18:06 UTC+2 |  |  | none |  | none |  | Add EUR price and unit normalization utilities | `backend/app/normalization` |  | Completed before branch/PR rule with Decimal-based utilities and focused pytest coverage. |
+| T005 | Ready |  |  | task/T005-raw-product-quality-checks |  | none |  | none |  | Add raw product data quality checks | `backend/app`, `scripts` | T004,T006 | Check missing names, missing prices, duplicate source IDs, suspicious unit prices. |
+| T006 | Done | coordinator | 2026-06-28 18:31 UTC+2 | task/T006-connect-github-repository | https://github.com/fukac99/grocerlo/pull/1 | open | 2026-06-28 18:39 UTC+2 | none |  | Connect this project to `https://github.com/fukac99/grocerlo` | git remote, branch strategy, GitHub PR setup |  | Completed before same-row review rule; local git repo initialized, `origin` switched to SSH, `main` pushed to GitHub, `gh` installed and authenticated. |
+| T007 | Done | coordinator | 2026-06-28 18:44 UTC+2 | task/T007-loop-planning-review-protocol | https://github.com/fukac99/grocerlo/pull/3 | open | 2026-06-28 18:53 UTC+2 | pending |  | Update loop protocol for plan expansion and same-task PR review tracking | `LOOP_TASKS.md`, `LOOP_STATE.md`, `docs/LOOP_ENGINEERING.md` | T006 | PR #2 merged before the same-task review correction; active follow-up PR #3 must pass review before merge. |
 
 ## In Progress
 
