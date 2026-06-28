@@ -40,7 +40,7 @@ The raw-data priority is to make each retailer safe and repeatable before storin
 
 Stop before implementation, storage, or volume increase when any non-BILLA retailer requires account login, account-specific API calls, postal code, store, delivery area, pickup branch, delivery slot, app-only access, CAPTCHA, bot challenge, legal/terms review, or unclear separation between regular and loyalty/app/member prices.
 
-If a stop condition appears during discovery, keep the retailer in discovery-only status and update the scraper note with the exact blocker. Do not create a stored-ingest task until the blocker has an explicit policy row in `LOOP_TASKS.md`.
+If a stop condition appears during discovery, keep the retailer in discovery-only status and update the scraper note with the exact blocker. Do not create a stored-ingest task until the blocker has an explicit Linear policy issue.
 
 ## Required Approval
 
