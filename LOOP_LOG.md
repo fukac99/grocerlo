@@ -27,6 +27,12 @@ Use `LOOP_TASKS.md` for active, blocked, ready, in-progress, open-PR, or review-
 | T023 | 2026-06-28 | `task/T023-frontend-visual-inspection-shell` | https://github.com/fukac99/grocerlo/pull/19 | Added the mock-data Next.js visual inspection shell with searchable/filterable comparison table. |
 | T024 | 2026-06-28 | `task/T024-security-review-cadence` | https://github.com/fukac99/grocerlo/pull/17 | Added the 100-completed-task full-codebase security review cadence to the loop protocol. |
 | T026 | 2026-06-28 | `task/T026-supermarket-column-layout` | https://github.com/fukac99/grocerlo/pull/20 | Updated the frontend table to group by product/package with one supermarket column containing price, source, and promotion. |
+| T010 | 2026-06-28 | `task/T010-billa-product-search-api` | https://github.com/fukac99/grocerlo/pull/22 | Added the BILLA-only product search API over normalized retailer products. |
+| T021 | 2026-06-28 | `task/T021-billa-controlled-full-ingest` | https://github.com/fukac99/grocerlo/pull/23 | Added a guarded BILLA full-ingest workflow with explicit broad-run confirmation, rate limiting, summaries, and sanity-report output. |
+| T027 | 2026-06-28 | `task/T027-post-pr20-ledger-sync` | https://github.com/fukac99/grocerlo/pull/21 | Synced the loop ledger after frontend and data workflow merges. |
+| T031 | 2026-06-28 | `task/T031-md-only-coordinator-review-skip` | https://github.com/fukac99/grocerlo/pull/24 | Updated CI/CD and loop protocol so Markdown-only coordinator PRs skip code review while code PRs still require `review_status: passed`. |
+| T033 | 2026-06-28 | `task/T033-scope-cheapest-highlight-task` | https://github.com/fukac99/grocerlo/pull/25 | Scoped the UI task for light-green cheapest-offer highlighting per comparison row. |
+| T035 | 2026-06-28 | `task/T035-scope-retailer-cheapest-filter` | https://github.com/fukac99/grocerlo/pull/26 | Scoped the UI task for filtering products where a selected retailer is cheapest. |
 
 ## Version Notes
 
