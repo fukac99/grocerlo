@@ -34,12 +34,19 @@ Last full-codebase security review boundary: 0 completed tasks.
 | Retailer | Country | Status | Notes |
 | --- | --- | --- | --- |
 | BILLA | AT | Cleanup first | Broad stored ingest succeeded, but duplicate-heavy category overlap needs the merged dedupe cleanup before BILLA becomes the baseline for non-BILLA ingest. |
-| MPREIS | AT | Discovery-only; storage blocked | Low-volume public dry run exists. Storage is blocked until a Linear policy issue decides no-market/store policy and app-only promotion handling. |
+| MPREIS | AT | Policy-approved for capped raw validation | GRO-29 / T054 allows one `no_market_selected` raw stored validation run only: one page, three products, app-only labels as promotion metadata, no normalization or matching until later approval. |
 | REWE | DE | Discovery-only; storage blocked | Public no-location pages expose metadata/article numbers but not numeric prices. Price scraping needs an approved location/market/service context first. |
 | Kaufland | SK | Discovery-only; storage blocked | Needs discovery to distinguish grocery, marketplace, leaflet, store, loyalty, and app-specific price surfaces. |
 | Tesco | SK | Discovery-only; storage blocked | Needs discovery for public price visibility, dynamic loading, address/slot/session requirements, and Clubcard labels. |
 
 ## Last Run
+
+2026-06-28 T054 MPREIS location and app-only storage policy:
+
+- Decided that MPREIS `no_market_selected` public rows may be stored only for one capped raw validation run.
+- Kept market selection, account/app flows, broad scraping, normalization, matching, and comparison use blocked.
+- Required app-only labels and coupons to remain promotion metadata, not comparable regular price fields.
+- Unblocked T028 / GRO-8 only for implementing the one-page, three-product raw validation and sanity-report path.
 
 2026-06-28 T069 temporary agent merge policy:
 

@@ -41,20 +41,36 @@ Robots and terms notes: checked `https://www.mpreis.at/robots.txt`; it allows `U
 
 Stop conditions: stop before selecting a market, logging in, registering, using the app/API account flow, bypassing a challenge, scraping disallowed paths, or increasing beyond the documented low-volume discovery limits without explicit approval.
 
+## 2026-06-28 Storage Policy Decision (GRO-29 / T054)
+
+Policy decision: `no_market_selected` MPREIS rows may be stored for one capped raw validation run only. No specific market, postal code, pickup branch, delivery area, delivery slot, app session, or account context is approved for MPREIS yet. Stored rows must keep `raw_payload_json.location_context` as `no_market_selected` and operator notes must state that availability remains market-dependent.
+
+Downstream use: the approved validation run is raw-storage only. Do not normalize MPREIS rows, match them, show them in comparison UI, or use them as a reusable baseline until a later task reviews the stored sanity report and explicitly approves downstream use.
+
+App-only promotion handling: public regular card prices may be stored in `raw_price` when visible without app/account access. `NUR MIT APP`, app coupons, Rabattsticker, customer-card copy, and similar labels are promotion metadata only and must be stored in `raw_promotion_text` or `raw_payload_json`, not as `raw_price`, `raw_old_price`, or a separate comparable price type. If a future card exposes only an app-only numeric price without a public regular price, exclude that price from regular price fields and stop for policy review before storing broader data.
+
+Legal and robots boundary: the approved validation may use only the public category page `https://www.mpreis.at/schneller-erster-einkauf` and public `https://www.mpreis.at/shop/p/...` product URLs observed from that page. Do not scrape `/search/`, URLs containing filter parameters, `/newsletter/`, URLs containing `index=`, account/login/register flows, app/API-only flows, carts, checkout, market-selection flows, or any CAPTCHA, challenge, or blocked response. Re-check robots/legal notes before any later scope expansion.
+
+Low-volume stored cap: at most one stored MPREIS validation run, one category-equivalent page, three raw products total, and the existing two-second page-load delay. Do not run concurrent MPREIS scrapers and do not increase volume in the same task.
+
+Cleanup plan: record the `scrape_run_id`, run the stored-data sanity report, and keep the run quarantined from normalization and matching. If the run has zero rows, missing source IDs/URLs/names/prices, unexpected duplicate source IDs, suspicious prices, unclear app-only price separation, changed location prompts, or any legal/robots uncertainty, delete the entire MPREIS `scrape_runs` record and its `raw_products` rows before any downstream processing. Prefer whole-run deletion over row edits.
+
+Unblock decision: T028 / GRO-8 can be unblocked only for implementing and running the capped `no_market_selected` raw stored validation described here. Broad MPREIS scraping, approved-market scraping, app/account flows, normalization, matching, and comparison use remain blocked.
+
 ## Storage Gate
 
-MPREIS storage is blocked. The existing dry run proves public product cards can be sampled, but it does not approve stored ingest because availability is explicitly market-dependent and promotions can be app-only.
+MPREIS storage policy is resolved for a single capped raw validation run under `no_market_selected`. The existing implementation may still block `scripts/scrape_once.py --retailer mpreis --store`; remove or narrow that guard only in the follow-up implementation issue, and only under the caps and cleanup plan above.
 
-Before any stored MPREIS task, a policy task must document:
+Before any broader stored MPREIS task, another policy task must document:
 
-- Whether no-market rows are acceptable for raw storage, or which market/location context is approved.
-- Whether app-only prices and app coupon text are excluded, stored as promotion text only, or represented as a separate price type.
-- Which source URLs and paths are allowed under the checked robots and terms notes.
-- The exact low-volume stored cap, cleanup plan, and sanity-report expectations.
+- Whether an approved market/location context is needed beyond `no_market_selected`.
+- Whether app-only prices can ever become a separate non-comparable price type.
+- Which additional source URLs and paths are allowed under updated robots and terms notes.
+- The exact expanded cap, cleanup plan, and sanity-report expectations.
 
 ## Planned Task Sequence
 
-1. Resolve MPREIS location/store and app-only promotion policy.
-2. Keep `scripts/scrape_once.py --retailer mpreis --store` blocked until the policy and implementation task explicitly allow storage.
-3. If policy approves storage, run a one-page, three-product stored validation only.
-4. Normalize and report only the approved stored run, including market context, app-only promotion caveats, missing fields, duplicate source IDs, suspicious prices, and package-size parse results.
+1. Update the follow-up implementation issue to allow only the capped MPREIS `no_market_selected` raw stored validation.
+2. Run a one-page, three-product stored validation only after that implementation lands.
+3. Produce and review the stored-data sanity report, including location context, app-only promotion caveats, missing fields, duplicate source IDs, suspicious prices, and package-size parse results.
+4. Keep normalization, matching, comparison UI use, market-selected scraping, and broader volume blocked until another explicit approval task lands.
