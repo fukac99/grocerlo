@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import type { RetailerOffer } from "../data/sample-offers";
 
 type SortKey = "product" | "packageSize" | "lowestPrice";
+type RetailerFilterMode = "available" | "cheapest";
 type ComparisonRow = {
   key: string;
   product: string;
@@ -32,6 +33,8 @@ const dateFormatter = new Intl.DateTimeFormat("en-AT", {
 export function ComparisonTable({ offers }: ComparisonTableProps) {
   const [query, setQuery] = useState("");
   const [retailer, setRetailer] = useState(allRetailers);
+  const [retailerFilterMode, setRetailerFilterMode] =
+    useState<RetailerFilterMode>("available");
   const [category, setCategory] = useState(allCategories);
   const [sortKey, setSortKey] = useState<SortKey>("lowestPrice");
 
@@ -71,8 +74,13 @@ export function ComparisonTable({ offers }: ComparisonTableProps) {
     return Array.from(rows.values())
       .filter((row) => {
         const rowOffers = Array.from(row.offersByRetailer.values());
+        const selectedRetailer = retailer as RetailerOffer["retailer"];
+        const selectedRetailerOffer = row.offersByRetailer.get(selectedRetailer);
         const matchesRetailer =
-          retailer === allRetailers || row.offersByRetailer.has(retailer as RetailerOffer["retailer"]);
+          retailer === allRetailers ||
+          (retailerFilterMode === "cheapest"
+            ? selectedRetailerOffer?.price === row.lowestPrice
+            : Boolean(selectedRetailerOffer));
         const matchesCategory = category === allCategories || row.category === category;
         const searchableText = [
           row.product,
@@ -100,7 +108,7 @@ export function ComparisonTable({ offers }: ComparisonTableProps) {
 
         return String(firstRow[sortKey]).localeCompare(String(secondRow[sortKey]));
       });
-  }, [category, offers, query, retailer, sortKey]);
+  }, [category, offers, query, retailer, retailerFilterMode, sortKey]);
 
   return (
     <section className="comparison-card" aria-labelledby="comparison-title">
@@ -127,10 +135,32 @@ export function ComparisonTable({ offers }: ComparisonTableProps) {
 
         <label>
           Retailer
-          <select value={retailer} onChange={(event) => setRetailer(event.target.value)}>
+          <select
+            value={retailer}
+            onChange={(event) => {
+              const nextRetailer = event.target.value;
+
+              setRetailer(nextRetailer);
+              if (nextRetailer === allRetailers) {
+                setRetailerFilterMode("available");
+              }
+            }}
+          >
             {retailers.map((retailerName) => (
               <option key={retailerName}>{retailerName}</option>
             ))}
+          </select>
+        </label>
+
+        <label>
+          Retailer filter
+          <select
+            value={retailerFilterMode}
+            onChange={(event) => setRetailerFilterMode(event.target.value as RetailerFilterMode)}
+            disabled={retailer === allRetailers}
+          >
+            <option value="available">Available at retailer</option>
+            <option value="cheapest">Cheapest at selected retailer</option>
           </select>
         </label>
 
