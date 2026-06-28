@@ -25,9 +25,10 @@ Before a loop run starts work, it must move any claimed task from `Ready` to `In
 - On every loop run, start with a PM/scoping pass that plans a batch of next executor-ready tasks.
 - The PM pass should define task IDs, dependencies, file/scope boundaries, branch names, and acceptance criteria.
 - Executor agents should only receive tasks that are already scoped in this ledger.
-- Every implementation task with a pull request must track review under the same task row.
-- Use review statuses: `none`, `pending`, `in_progress`, `passed`, `changes_requested`, or `blocked`.
-- Do not consider a pull request merge-ready until its task has `review_status: passed`.
+- Every implementation task, and every task that touches non-Markdown files, with a pull request must track review under the same task row.
+- Use review statuses: `none`, `pending`, `in_progress`, `passed`, `changes_requested`, `blocked`, or `not_required`.
+- Markdown-only coordinator PRs do not require code review and may use `review_status: none` or `not_required`.
+- Do not consider an implementation or non-Markdown pull request merge-ready until its task has `review_status: passed`.
 - The repository connection task may need to bootstrap the base branch first if the remote repository is empty.
 
 ## Tasks
@@ -45,6 +46,7 @@ Before a loop run starts work, it must move any claimed task from `Ready` to `In
 | T028 | Blocked | pm-scoping-subagent | 2026-06-28 21:08 UTC+2 | task/T028-mpreis-store-normalization |  | none |  | none |  | Add MPREIS low-volume store and normalization path | `backend/app/scrapers/mpreis.py`, `scripts/scrape_once.py`, `scripts/normalize_once.py`, tests | T013,T008 | Blocked until MPREIS store policy is explicitly approved; acceptance: low-volume stored MPREIS rows and normalized retailer products without broad scrape. |
 | T029 | Blocked | pm-scoping-subagent | 2026-06-28 21:08 UTC+2 | task/T029-wire-frontend-billa-search-api |  | none |  | none |  | Wire frontend visual shell to BILLA search API | `frontend` | T010,T026 | Blocked until BILLA search API exists; acceptance: frontend can query API with fallback/mock state clearly indicated. |
 | T030 | Blocked | pm-scoping-subagent | 2026-06-28 21:08 UTC+2 | task/T030-reconcile-once-cli |  | none |  | none |  | Add one-off reconciliation CLI | `scripts/reconcile_once.py`, `backend/app/matching` | T015 | Blocked until matching logic lands; acceptance: run matching over normalized retailer products and report candidate match counts/confidence buckets. |
+| T031 | Done | coordinator | 2026-06-28 21:13 UTC+2 | task/T031-md-only-coordinator-review-skip | https://github.com/fukac99/grocerlo/pull/24 | open | 2026-06-28 21:20 UTC+2 | passed | review-subagent | Exempt Markdown-only coordinator PRs from review gate | `.github/workflows/agent-review.yml`, `scripts/check_pr_review_status.py`, `docs/LOOP_ENGINEERING.md`, `LOOP_TASKS.md`, tests |  | Review passed. CI/CD now exempts Markdown-only coordinator PRs while non-Markdown PRs still require `review_status: passed`. |
 
 ## In Progress
 

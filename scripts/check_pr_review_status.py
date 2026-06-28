@@ -6,6 +6,7 @@ from pathlib import Path
 
 def main() -> int:
     args = parse_args()
+    changed_files = read_changed_files(args.changed_files_file)
     rows = parse_task_rows(args.tasks_file)
     matching_rows = [
         row
@@ -22,8 +23,13 @@ def main() -> int:
         return 1
 
     row = matching_rows[0]
-    review_status = row.get("review_status", "").strip().casefold()
     task_id = row.get("id", "<unknown>")
+
+    if is_markdown_only_coordinator_pr(row, changed_files):
+        print(f"Task {task_id} is a Markdown-only coordinator pull request; review is not required.")
+        return 0
+
+    review_status = row.get("review_status", "").strip().casefold()
 
     if review_status != "passed":
         print(
@@ -44,7 +50,36 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--tasks-file", type=Path, default=Path("LOOP_TASKS.md"))
     parser.add_argument("--head-ref", required=True)
     parser.add_argument("--pr-url", required=True)
+    parser.add_argument(
+        "--changed-files-file",
+        type=Path,
+        help="Optional newline-delimited changed-file list. Markdown-only coordinator PRs skip review.",
+    )
     return parser.parse_args()
+
+
+def read_changed_files(path: Path | None) -> list[str]:
+    if path is None:
+        return []
+    return [
+        line.strip()
+        for line in path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+
+
+def is_markdown_file(path: str) -> bool:
+    return Path(path).suffix.casefold() == ".md"
+
+
+def is_coordinator_task(row: dict[str, str]) -> bool:
+    return row.get("owner", "").strip().casefold() == "coordinator"
+
+
+def is_markdown_only_coordinator_pr(row: dict[str, str], changed_files: list[str]) -> bool:
+    return bool(changed_files) and is_coordinator_task(row) and all(
+        is_markdown_file(path) for path in changed_files
+    )
 
 
 def parse_task_rows(path: Path) -> list[dict[str, str]]:

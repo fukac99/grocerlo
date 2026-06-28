@@ -18,7 +18,7 @@ Each implementation task should use its own branch and open a GitHub pull reques
 
 Every loop run should check existing task pull requests and update `pr_status` plus `pr_last_checked` in `LOOP_TASKS.md`. Downstream tasks should treat prior PR-backed dependencies as complete only after their pull requests are merged.
 
-Every loop run should also compare `LOOP_TASKS.md` against `PRICE_COMPARISON_APP_PLAN.md` and add missing actionable tasks. Every implementation pull request should track review status on the same task row for architecture, security, bugs, tests, maintainability, and fit with the overall plan. A pull request is not merge-ready until its task row has `review_status: passed`.
+Every loop run should also compare `LOOP_TASKS.md` against `PRICE_COMPARISON_APP_PLAN.md` and add missing actionable tasks. Every implementation pull request, and every PR that touches non-Markdown files, should track review status on the same task row for architecture, security, bugs, tests, maintainability, and fit with the overall plan. Markdown-only coordinator PRs do not require code review. Implementation and non-Markdown PRs are not merge-ready until their task row has `review_status: passed`.
 
 Every loop run should start with a PM/scoping pass that plans a batch of executor-ready tasks with IDs, branches, dependencies, file/scope boundaries, acceptance criteria, and parallelization notes.
 
@@ -37,6 +37,12 @@ Last full-codebase security review boundary: 0 completed tasks.
 | Tesco | SK | Not started | Likely dynamic. May require Playwright and location/session setup. |
 
 ## Last Run
+
+2026-06-28 user-requested review-gate change:
+
+- Started T031 to exempt Markdown-only coordinator PRs from required code review.
+- Planned CI/CD change: the agent review gate should pass automatically when a coordinator PR only changes `.md` files.
+- Updated loop protocol so implementation and non-Markdown PRs still require `review_status: passed`, while Markdown-only coordinator PRs may use `review_status: none` or `not_required`.
 
 2026-06-28 automatic loop tick:
 
