@@ -46,8 +46,8 @@ class BillaScraper:
             if not label or not _looks_like_category_label(label):
                 continue
 
-            url = urljoin(self.base_url, href)
-            if url in seen_urls or not _is_billa_url(url):
+            url = _canonical_category_url(urljoin(self.base_url, href))
+            if url is None or url in seen_urls:
                 continue
 
             seen_urls.add(url)
@@ -204,6 +204,22 @@ def _clean_text(value: str) -> str:
 
 def _is_billa_url(url: str) -> bool:
     return urlparse(url).netloc.endswith("billa.at")
+
+
+def _canonical_category_url(url: str) -> str | None:
+    if not _is_billa_url(url):
+        return None
+
+    parsed = urlparse(url)
+    path = parsed.path.rstrip("/")
+    if path == "/kategorie" or not path.startswith("/kategorie/"):
+        return None
+
+    slug = path.removeprefix("/kategorie/").strip("/")
+    if not slug:
+        return None
+
+    return parsed._replace(path=path, params="", query="", fragment="").geturl()
 
 
 def _source_id_from_url(url: str | None) -> str | None:
