@@ -45,10 +45,18 @@ Last full-codebase security review boundary: 0 completed tasks.
 - User asked to prioritize a full data scrape so development can use real data ASAP.
 - Existing status: BILLA is ready for controlled stored ingest; MPREIS is still dry-run/discovery-only and must not be stored yet.
 - Added T040 as the top-priority operational task to run approved BILLA stored ingest, sanity report, normalization, and count reporting.
-- T040 is blocked only on explicit human scope choice:
-  - capped validation: `--store --limit-categories 2 --max-products 50 --max-products-per-category 30 --delay-seconds 2 --confirm-broad-run BILLA_FULL_INGEST`
-  - broad run: `--store --all-categories --max-products 0 --max-products-per-category 30 --delay-seconds 2 --confirm-broad-run BILLA_FULL_INGEST`
-- After T040 produces real normalized rows, prioritize T029 so the frontend can use the BILLA search API with real data.
+- User explicitly approved all categories and all products in each category to test scale.
+- Ran the broadest supported BILLA stored ingest:
+  - Command: `python scripts/billa_full_ingest.py --store --all-categories --max-products 0 --max-products-per-category 10000 --delay-seconds 2 --confirm-broad-run BILLA_FULL_INGEST`
+  - Result: succeeded with `scrape_run_id=2`.
+  - Categories discovered/attempted/succeeded: 21/21/21.
+  - Raw rows stored: 700.
+  - Retailer products normalized: 700.
+  - Distinct source product IDs in run 2: 473.
+  - Total local DB after run: 2 scrape runs, 703 raw products, 703 retailer products, 0 canonical products, 0 product matches.
+  - Sanity report issues: 399 duplicate-source-ID issues, 196 missing unit prices, and 61 missing package sizes.
+- Scale finding: the scraper works end-to-end at this scope, but category discovery included overlapping/root pagination entries (`/kategorie?page=*`) and many duplicate products. Added T042 to improve BILLA category discovery/deduplication before relying on counts as a clean catalog.
+- Next real-data priority: use the new BILLA rows for T029 frontend API wiring, but also prioritize T042 so the scraper produces cleaner category/product counts.
 
 2026-06-28 user-requested PR description detail:
 
