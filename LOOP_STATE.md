@@ -51,7 +51,11 @@ Last full-codebase security review boundary: 0 completed tasks.
 - Added T045 for retailer-cheapest savings deltas, building on the existing retailer-cheapest filter.
 - Added T046 for category/search UX polish and empty/result-count states.
 - Added T047 for Grocerlo branding and minimalist progressive detail disclosure.
+- Added T048 to wire the UI to real backend data from the local BILLA ingest/API, potentially superseding or absorbing T029.
+- Added T049 to prioritize raw-data ingest planning across all remaining retailers: REWE, Kaufland Slovakia, Tesco Slovakia, and MPREIS.
+- PR #38 merged before T048/T049 landed, so T050 carries those two follow-up rows in a separate Markdown-only coordinator PR.
 - Frontend sequencing note: T044, T045, T046, and T047 all touch `frontend/components/comparison-table.tsx`; run them one at a time unless a coordinator explicitly combines them.
+- Real-data sequencing note: prioritize T042 for BILLA deduplication cleanup and T048 for UI real-data wiring; run T049 to break all-retailer ingest into safe discovery/stored-ingest tasks before attempting non-BILLA storage.
 
 2026-06-28 user-prioritized real data ingest:
 
