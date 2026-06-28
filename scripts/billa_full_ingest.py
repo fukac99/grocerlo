@@ -439,6 +439,7 @@ def build_run_summary(
             "categories_failed": sum(1 for result in category_results if result.status == "failed"),
             "raw_products": len(products),
         },
+        "product_identity": build_product_identity_summary(products),
         "categories": [asdict(result) for result in category_results],
         "storage": {
             "enabled": args.store,
@@ -453,6 +454,67 @@ def build_run_summary(
         summary["sample_products"] = [asdict(product) for product in products[: args.sample_products]]
 
     return summary
+
+
+def build_product_identity_summary(products: list[RawProductPayload]) -> dict[str, int]:
+    source_product_ids = [
+        source_product_id
+        for product in products
+        if (source_product_id := clean_optional_text(product.source_product_id)) is not None
+    ]
+    source_id_counts = Counter(source_product_ids)
+    canonical_counts = Counter(canonical_product_key(product) for product in products)
+
+    return {
+        "products_with_source_product_id": len(source_product_ids),
+        "distinct_source_product_ids": len(source_id_counts),
+        "source_product_id_duplicate_groups": count_duplicate_groups(source_id_counts),
+        "source_product_id_duplicate_rows": count_duplicate_rows(source_id_counts),
+        "source_product_id_duplicate_extra_rows": count_duplicate_extra_rows(source_id_counts),
+        "distinct_canonical_products": len(canonical_counts),
+        "canonical_duplicate_groups": count_duplicate_groups(canonical_counts),
+        "canonical_duplicate_rows": count_duplicate_rows(canonical_counts),
+        "canonical_duplicate_extra_rows": count_duplicate_extra_rows(canonical_counts),
+    }
+
+
+def canonical_product_key(product: RawProductPayload) -> str:
+    retailer = clean_optional_text(product.retailer) or ""
+    country = clean_optional_text(product.country) or ""
+    prefix = f"{retailer}:{country}"
+
+    source_product_id = clean_optional_text(product.source_product_id)
+    if source_product_id is not None:
+        return f"{prefix}:source_product_id:{source_product_id}"
+
+    source_url = clean_optional_text(product.source_url)
+    if source_url is not None:
+        return f"{prefix}:source_url:{source_url}"
+
+    name = (clean_optional_text(product.name) or "").casefold()
+    brand = (clean_optional_text(product.brand) or "").casefold()
+    price = clean_optional_text(product.price) or ""
+    package_size = clean_optional_text(product.package_size) or ""
+    return f"{prefix}:fallback:{name}:{brand}:{price}:{package_size}"
+
+
+def count_duplicate_groups(counts: Counter[str]) -> int:
+    return sum(1 for count in counts.values() if count > 1)
+
+
+def count_duplicate_rows(counts: Counter[str]) -> int:
+    return sum(count for count in counts.values() if count > 1)
+
+
+def count_duplicate_extra_rows(counts: Counter[str]) -> int:
+    return sum(count - 1 for count in counts.values() if count > 1)
+
+
+def clean_optional_text(value: str | None) -> str | None:
+    if value is None:
+        return None
+    text = str(value).strip()
+    return text or None
 
 
 def build_quality_summary(
