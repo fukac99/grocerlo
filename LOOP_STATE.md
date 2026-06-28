@@ -38,6 +38,12 @@ Last full-codebase security review boundary: 0 completed tasks.
 
 ## Last Run
 
+2026-06-28 user-requested UI scoping:
+
+- Added T032 to highlight the cheapest supermarket offer in each frontend comparison row with a light-green cell.
+- Acceptance: calculate the lowest available price per product/package row, highlight the cheapest retailer cell, highlight tied cheapest offers, and leave missing offers unhighlighted.
+- Added T033 as the Markdown-only coordinator PR for this task-scoping update.
+
 2026-06-28 user-requested review-gate change:
 
 - Started T031 to exempt Markdown-only coordinator PRs from required code review.
