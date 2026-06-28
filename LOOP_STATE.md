@@ -37,6 +37,7 @@ Every loop run should also compare `LOOP_TASKS.md` against `PRICE_COMPARISON_APP
 - Removed separate review tasks from the protocol so pull requests cannot be treated as independent of their reviews.
 - Clarified that multiple independent ready tasks can be launched as parallel subagents.
 - Created T007 pull request: https://github.com/fukac99/grocerlo/pull/2.
+- PR #2 merged before the same-task review correction landed; created follow-up PR #3 for that correction: https://github.com/fukac99/grocerlo/pull/3.
 
 2026-06-28 automatic builder loop, immediate coordinator run:
 
