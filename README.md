@@ -1,0 +1,48 @@
+# Grocery Saver
+
+Lightweight supermarket price comparison app for Germany, Austria, and Slovakia.
+
+See `PRICE_COMPARISON_APP_PLAN.md` for the product plan and `LOOP_STATE.md` for current loop progress.
+
+## Local Setup
+
+Create and activate a virtual environment:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+Install backend dependencies:
+
+```bash
+python -m pip install -e "backend[dev]"
+python -m playwright install chromium
+```
+
+Start Postgres:
+
+```bash
+docker compose up -d postgres
+```
+
+Run migrations:
+
+```bash
+cd backend
+alembic upgrade head
+```
+
+## Scraper Dry Run
+
+Dry runs print JSON and do not write to the database:
+
+```bash
+python scripts/scrape_once.py --retailer billa --limit-categories 1 --max-products 3
+```
+
+Store raw products in Postgres:
+
+```bash
+python scripts/scrape_once.py --retailer billa --limit-categories 1 --max-products 10 --store
+```

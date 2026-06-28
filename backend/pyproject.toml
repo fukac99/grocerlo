@@ -1,0 +1,33 @@
+[project]
+name = "grocery-saver-backend"
+version = "0.1.0"
+description = "Backend, scraping, and data pipeline for supermarket price comparison."
+requires-python = ">=3.12"
+dependencies = [
+  "alembic",
+  "asyncpg",
+  "beautifulsoup4",
+  "fastapi",
+  "lxml",
+  "playwright",
+  "pydantic-settings",
+  "sqlalchemy",
+  "uvicorn[standard]",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest",
+  "ruff",
+]
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+exclude = ["alembic*"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

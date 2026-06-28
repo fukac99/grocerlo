@@ -1,0 +1,13 @@
+alembic
+asyncpg
+beautifulsoup4
+fastapi
+lxml
+playwright
+pydantic-settings
+sqlalchemy
+uvicorn[standard]
+
+[dev]
+pytest
+ruff
