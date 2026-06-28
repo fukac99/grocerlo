@@ -45,7 +45,7 @@ async def main() -> None:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Summarize stored raw products for the latest or selected BILLA scrape run."
+        description="Summarize stored raw products for the latest or selected scrape run."
     )
     parser.add_argument(
         "--scrape-run-id",
@@ -55,7 +55,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--retailer",
-        choices=["billa"],
+        choices=["billa", "mpreis"],
         default="billa",
         help="Retailer stored scrape runs to inspect.",
     )

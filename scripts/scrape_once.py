@@ -18,9 +18,7 @@ async def main() -> None:
     args = parse_args()
     validate_positive_limit("--limit-categories", args.limit_categories)
     validate_positive_limit("--max-products", args.max_products)
-
-    if args.retailer == "mpreis" and args.store:
-        raise SystemExit("MPREIS discovery is dry-run only; omit --store.")
+    validate_storage_policy(args)
 
     scraper = build_scraper(args)
 
@@ -90,6 +88,16 @@ def parse_args() -> argparse.Namespace:
 def validate_positive_limit(name: str, value: int) -> None:
     if value < 1:
         raise SystemExit(f"{name} must be at least 1.")
+
+
+def validate_storage_policy(args: argparse.Namespace) -> None:
+    if not args.store or args.retailer != "mpreis":
+        return
+
+    if args.limit_categories != 1:
+        raise SystemExit("MPREIS stored validation is capped at exactly 1 category-equivalent page.")
+    if args.max_products > 3:
+        raise SystemExit("MPREIS stored validation is capped at 3 raw products.")
 
 
 def build_scraper(args: argparse.Namespace) -> RetailerScraper:

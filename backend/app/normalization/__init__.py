@@ -39,6 +39,11 @@ _UNIT_PRICE_RE = re.compile(
     rf"(?P<price>{_DECIMAL_NUMBER_PATTERN})\s*(?P<currency>€|EUR)",
     re.IGNORECASE,
 )
+_UNIT_PRICE_PRICE_FIRST_RE = re.compile(
+    rf"\b(?P<price>{_DECIMAL_NUMBER_PATTERN})\s*(?P<currency>€|EUR)\s*/\s*"
+    rf"(?:(?P<quantity>{_DECIMAL_NUMBER_PATTERN})\s*)?(?P<unit>{_UNIT_PATTERN})\b",
+    re.IGNORECASE,
+)
 _EUR_PRICE_RE = re.compile(
     rf"\b(?P<amount>{_DECIMAL_NUMBER_PATTERN})\s*(?P<currency>€|EUR)",
     re.IGNORECASE,
@@ -115,18 +120,32 @@ def parse_unit_price(value: str | None) -> UnitPrice | None:
     if not value:
         return None
 
-    match = _UNIT_PRICE_RE.search(_normalize_spaces(value))
+    normalized = _normalize_spaces(value)
+    match = _UNIT_PRICE_RE.search(normalized)
+    if match:
+        quantity = _parse_decimal(match.group("quantity"))
+        unit = match.group("unit")
+        price_amount = _parse_decimal(match.group("price"))
+        return _build_unit_price(quantity, unit, price_amount)
+
+    match = _UNIT_PRICE_PRICE_FIRST_RE.search(normalized)
     if not match:
         return None
 
+    quantity = _parse_decimal(match.group("quantity") or "1")
+    unit = match.group("unit")
+    price_amount = _parse_decimal(match.group("price"))
+    return _build_unit_price(quantity, unit, price_amount)
+
+
+def _build_unit_price(quantity: Decimal, unit: str, price_amount: Decimal) -> UnitPrice | None:
     package_size = normalize_package_size(
-        _parse_decimal(match.group("quantity")),
-        match.group("unit"),
+        quantity,
+        unit,
     )
     if package_size is None or package_size.normalized_quantity == 0:
         return None
 
-    price_amount = _parse_decimal(match.group("price"))
     return UnitPrice(
         reference_quantity=package_size.quantity,
         reference_unit=package_size.unit,
