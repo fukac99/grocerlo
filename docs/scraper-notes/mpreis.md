@@ -40,3 +40,21 @@ Raw payload notes: the public HTML contains product cards as `a.c3-product[href]
 Robots and terms notes: checked `https://www.mpreis.at/robots.txt`; it allows `User-agent: *` while disallowing `/search/`, `*?filter*`, `/newsletter/`, and `*?index=*`. Checked MPREIS legal/help pages surfaced during discovery: `https://www.mpreis.at/nutzungsbedingungen`, `https://www.mpreis.at/agb`, `https://www.mpreis.at/sp/impressum`, `https://www.mpreis.at/sp/datenschutz`, `https://www.mpreis.at/haeufige-fragen`, and `https://www.mpreis.at/app/faq-support`. Keep future scraping away from disallowed search/filter/index paths and do not use app/account flows without explicit legal review.
 
 Stop conditions: stop before selecting a market, logging in, registering, using the app/API account flow, bypassing a challenge, scraping disallowed paths, or increasing beyond the documented low-volume discovery limits without explicit approval.
+
+## Storage Gate
+
+MPREIS storage is blocked. The existing dry run proves public product cards can be sampled, but it does not approve stored ingest because availability is explicitly market-dependent and promotions can be app-only.
+
+Before any stored MPREIS task, a policy task must document:
+
+- Whether no-market rows are acceptable for raw storage, or which market/location context is approved.
+- Whether app-only prices and app coupon text are excluded, stored as promotion text only, or represented as a separate price type.
+- Which source URLs and paths are allowed under the checked robots and terms notes.
+- The exact low-volume stored cap, cleanup plan, and sanity-report expectations.
+
+## Planned Task Sequence
+
+1. Resolve MPREIS location/store and app-only promotion policy.
+2. Keep `scripts/scrape_once.py --retailer mpreis --store` blocked until the policy and implementation task explicitly allow storage.
+3. If policy approves storage, run a one-page, three-product stored validation only.
+4. Normalize and report only the approved stored run, including market context, app-only promotion caveats, missing fields, duplicate source IDs, suspicious prices, and package-size parse results.

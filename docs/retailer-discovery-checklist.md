@@ -25,7 +25,7 @@ Recommended first-pass limits:
 
 ## Required Discovery Notes
 
-Create or update `docs/scraper-notes/<retailer>.md` before implementation with these findings:
+Create or update the retailer's scraper note before implementation with these findings. Current note files are `docs/scraper-notes/mpreis.md`, `docs/scraper-notes/rewe.md`, `docs/scraper-notes/kaufland-sk.md`, and `docs/scraper-notes/tesco-sk.md`.
 
 - Price availability: whether list pages and product pages show numeric prices before login and before location selection.
 - Location dependence: whether prices or availability require country, postal code, store, pickup branch, delivery area, or delivery slot.
