@@ -43,6 +43,7 @@ Every loop run should check existing task pull requests and update `pr_status` p
 - Installed GitHub CLI `gh` 2.95.0.
 - `gh auth status` reports no logged-in GitHub hosts, so PR creation remains blocked until `gh auth login` is completed.
 - `gh auth login` completed for GitHub account `fukac99`.
+- Created T006 pull request: https://github.com/fukac99/grocerlo/pull/1.
 
 2026-06-28 automatic builder loop, coordinator pass:
 
@@ -94,11 +95,10 @@ Previous run:
 ## Next Actions
 
 1. Use `LOOP_TASKS.md` to claim eligible `Ready` tasks.
-2. Record the T006 pull request URL after creation.
-3. Continue using SSH remote `git@github.com:fukac99/grocerlo.git`.
-4. Inspect the BILLA dry-scrape sample output for product plausibility.
-5. If the dry run returns plausible products, start Postgres, run migrations, and test `--store`.
-6. Add a simple data quality check for missing names, missing prices, duplicate source IDs, and suspicious unit prices.
+2. Continue using SSH remote `git@github.com:fukac99/grocerlo.git`.
+3. Inspect the BILLA dry-scrape sample output for product plausibility after T006 is merged.
+4. If the dry run returns plausible products, start Postgres, run migrations, and test `--store`.
+5. Add a simple data quality check for missing names, missing prices, duplicate source IDs, and suspicious unit prices.
 
 ## Loop Log
 
@@ -135,3 +135,4 @@ Previous run:
 - Installed GitHub CLI `gh` 2.95.0.
 - T006 remains blocked only on `gh auth login` for pull request creation.
 - `gh` authentication completed for account `fukac99`; T006 branch and PR creation can proceed.
+- Created T006 pull request: https://github.com/fukac99/grocerlo/pull/1.
