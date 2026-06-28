@@ -34,6 +34,13 @@ Every loop run should start with a PM/scoping pass that plans a batch of executo
 
 ## Last Run
 
+2026-06-28 automatic loop tick:
+
+- GitHub review gates for PR #6, PR #7, and PR #8 were failing.
+- Fixed PR #6 and PR #7 by pushing their passed review statuses into their own PR branches, because the CI gate checks the PR branch copy of `LOOP_TASKS.md`.
+- Added T014 for PR #8 so the coordinator ledger update PR has its own review-gated task row.
+- Corrected T003 and T012 from `Ready` to `Blocked` because their PR-backed dependencies are not complete until T002 and T005 merge.
+
 2026-06-28 PR #6 review update:
 
 - Review subagent completed T002 / PR #6 review with no blocking findings.
