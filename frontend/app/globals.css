@@ -162,7 +162,7 @@ h2 {
 .filters {
   display: grid;
   gap: 14px;
-  grid-template-columns: minmax(260px, 1.6fr) repeat(5, minmax(150px, 1fr));
+  grid-template-columns: repeat(6, minmax(140px, 1fr));
   margin-bottom: 24px;
 }
 
@@ -173,6 +173,29 @@ h2 {
   font-size: 0.86rem;
   font-weight: 800;
   gap: 8px;
+}
+
+.category-filter,
+.product-search-filter {
+  background: #eef4ea;
+  border: 1px solid #c8d9c2;
+  border-radius: 18px;
+  padding: 14px;
+}
+
+.category-filter {
+  grid-column: span 2;
+}
+
+.product-search-filter {
+  grid-column: span 2;
+}
+
+.filter-hint {
+  color: #66725f;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.35;
 }
 
 .filters input,
@@ -302,8 +325,14 @@ tbody tr:last-child td {
 .empty-state {
   background: #fff;
   color: #66725f;
+  display: grid;
+  gap: 6px;
   margin: 0;
   padding: 24px;
+}
+
+.empty-state strong {
+  color: #2b3827;
 }
 
 @media (max-width: 840px) {
