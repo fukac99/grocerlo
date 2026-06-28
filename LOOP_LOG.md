@@ -12,6 +12,7 @@ Use `LOOP_TASKS.md` for active, blocked, ready, in-progress, open-PR, or review-
 | T004 | 2026-06-28 |  |  | Added Decimal-based EUR price, package size, and unit price normalization utilities with focused pytest coverage. |
 | T006 | 2026-06-28 | `task/T006-connect-github-repository` | https://github.com/fukac99/grocerlo/pull/1 | Connected the project to GitHub, initialized `main`, pushed over SSH, installed/authenticated `gh`, and established the PR workflow. |
 | T007 | 2026-06-28 | `task/T007-loop-planning-review-protocol` | https://github.com/fukac99/grocerlo/pull/5 | Added plan reconciliation, same-task review tracking, archived task history, parallel subagent guidance, and CI enforcement for `review_status: passed`. |
+| T014 | 2026-06-28 | `task/T014-loop-ledger-updates` | https://github.com/fukac99/grocerlo/pull/8 | Recorded passed reviews for T002/T005, added PM-scoped tasks T008-T013, fixed review-gate branch status handling, and resolved ledger conflicts after executor PRs merged. |
 
 ## Version Notes
 
