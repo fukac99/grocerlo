@@ -83,9 +83,21 @@ export function ComparisonTable({
     [offers],
   );
 
-  const comparisonRows = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase();
+  const normalizedQuery = query.trim().toLowerCase();
+  const activeFilterDescriptions = [
+    normalizedQuery.length > 0 ? `product name contains "${query.trim()}"` : null,
+    category !== allCategories ? `category is ${category}` : null,
+    country !== allCountries ? `cheapest in ${country}` : null,
+    retailer !== allRetailers
+      ? retailerFilterMode === "cheapest"
+        ? `cheapest at ${retailer}`
+        : `available at ${retailer}`
+      : null,
+  ].filter((filter): filter is string => Boolean(filter));
+  const activeFilterSummary =
+    activeFilterDescriptions.length > 0 ? activeFilterDescriptions.join(", ") : "no active filters";
 
+  const comparisonRows = useMemo(() => {
     const rows = new Map<string, ComparisonRow>();
 
     for (const offer of offers) {
@@ -109,9 +121,13 @@ export function ComparisonTable({
       }
     }
 
-    return Array.from(rows.values())
+    return Array.from(rows.values());
+  }, [offers]);
+
+  const filteredComparisonRows = useMemo(
+    () =>
+      comparisonRows
       .filter((row) => {
-        const rowOffers = row.offers;
         const selectedRetailer = retailer as RetailerOffer["retailer"];
         const selectedRetailerOffer = row.offersByRetailer.get(selectedRetailer);
         const matchesRetailer =
@@ -123,25 +139,14 @@ export function ComparisonTable({
         const countrySavingsSummary = getCountrySavingsSummary(row, country);
         const matchesCountry = country === allCountries || countrySavingsSummary !== null;
         const matchesCategory = category === allCategories || row.category === category;
-        const searchableText = [
-          row.product,
-          row.packageSize,
-          row.category,
-          ...rowOffers.flatMap((offer) => [
-            offer.retailer,
-            offer.country,
-            offer.brand,
-            offer.promotion ?? "",
-          ]),
-        ]
-          .join(" ")
-          .toLowerCase();
+        const matchesProductName =
+          normalizedQuery.length === 0 || row.product.toLowerCase().includes(normalizedQuery);
 
         return (
           matchesRetailer &&
           matchesCountry &&
           matchesCategory &&
-          (normalizedQuery.length === 0 || searchableText.includes(normalizedQuery))
+          matchesProductName
         );
       })
       .sort((firstRow, secondRow) => {
@@ -150,8 +155,9 @@ export function ComparisonTable({
         }
 
         return String(firstRow[sortKey]).localeCompare(String(secondRow[sortKey]));
-      });
-  }, [category, country, offers, query, retailer, retailerFilterMode, sortKey]);
+      }),
+    [category, comparisonRows, country, normalizedQuery, retailer, retailerFilterMode, sortKey],
+  );
 
   return (
     <section className="comparison-card" aria-labelledby="comparison-title">
@@ -162,11 +168,9 @@ export function ComparisonTable({
           <p className="source-note">{dataSourceDescription}</p>
         </div>
         <p className="result-count">
-          Showing {comparisonRows.length} comparison rows from {offers.length} offers
-          {country !== allCountries ? ` cheapest in ${country}` : ""}
-          {retailer !== allRetailers && retailerFilterMode === "cheapest"
-            ? ` cheapest at ${retailer}`
-            : ""}
+          Showing {filteredComparisonRows.length} of {comparisonRows.length} product groups from{" "}
+          {offers.length} offers
+          {activeFilterDescriptions.length > 0 ? ` with ${activeFilterSummary}` : ""}
         </p>
       </div>
 
@@ -178,13 +182,24 @@ export function ComparisonTable({
       ) : null}
 
       <div className="filters" aria-label="Filter comparison offers">
-        <label>
-          Search products
+        <label className="category-filter">
+          Category
+          <span className="filter-hint">Start with a grocery category, then narrow by market.</span>
+          <select value={category} onChange={(event) => setCategory(event.target.value)}>
+            {categories.map((categoryName) => (
+              <option key={categoryName}>{categoryName}</option>
+            ))}
+          </select>
+        </label>
+
+        <label className="product-search-filter">
+          Search product name
+          <span className="filter-hint">Matches product names only, not retailer or brand text.</span>
           <input
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="Try milk, BILLA, coffee..."
+            placeholder="Try milk, spaghetti, coffee..."
           />
         </label>
 
@@ -216,15 +231,6 @@ export function ComparisonTable({
           >
             <option value="available">Available at retailer</option>
             <option value="cheapest">Cheapest at selected retailer</option>
-          </select>
-        </label>
-
-        <label>
-          Category
-          <select value={category} onChange={(event) => setCategory(event.target.value)}>
-            {categories.map((categoryName) => (
-              <option key={categoryName}>{categoryName}</option>
-            ))}
           </select>
         </label>
 
@@ -263,7 +269,7 @@ export function ComparisonTable({
             </tr>
           </thead>
           <tbody>
-            {comparisonRows.map((row) => {
+            {filteredComparisonRows.map((row) => {
               const countrySavingsSummary = getCountrySavingsSummary(row, country);
               const retailerSavingsSummary = getRetailerSavingsSummary(
                 row,
@@ -330,11 +336,13 @@ export function ComparisonTable({
           </tbody>
         </table>
 
-        {comparisonRows.length === 0 ? (
+        {filteredComparisonRows.length === 0 ? (
           <p className="empty-state">
-            {country !== allCountries
-              ? `No products are cheapest in ${country} for the current data set and filters.`
-              : "No products match the current data set and filters."}
+            <strong>No products match your filters.</strong>
+            <span>
+              Showing 0 of {comparisonRows.length} product groups for {activeFilterSummary}. Search
+              checks product names only.
+            </span>
           </p>
         ) : null}
       </div>
