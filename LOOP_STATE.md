@@ -54,7 +54,9 @@ Last full-codebase security review boundary: 0 completed tasks.
 - Sanity report command: `python3 scripts/stored_data_sanity_report.py --retailer mpreis --scrape-run-id 4`. Result: 3 raw rows, 0 quality issues, 0 missing key fields, 0 bad rows.
 - Checks passed: `python3 -m pytest backend/tests/test_scrape_once.py backend/tests/test_mpreis_scraper.py backend/tests/test_normalization.py backend/tests/test_stored_data_sanity_report.py`.
 - Updated MPREIS/runbook notes and the loop builder prompt to align with the narrowed guard, validation result, and the no-autonomous-merge policy.
-- Next action: push the branch, open a PR, and leave it in review for user-directed merge. A follow-up PM issue should review whether the quarantined MPREIS raw run can be normalized or whether a market/location policy is needed first.
+- Opened PR #57: `https://github.com/fukac99/grocerlo/pull/57`.
+- PR #57 status: open and mergeable, but not merge-ready. The Agent Review Gate failed because `review_status: pending`; this is expected until a review is run and the PR body records `review_status: passed`.
+- Next action: run the required agent review for PR #57, update review metadata if it passes, then re-check the gate. A follow-up PM issue should review whether the quarantined MPREIS raw run can be normalized or whether a market/location policy is needed first.
 
 2026-06-28 T055 BILLA post-dedupe baseline ingest:
 
