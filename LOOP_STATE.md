@@ -36,6 +36,14 @@ Every loop run should start with a PM/scoping pass that plans a batch of executo
 
 2026-06-28 automatic loop tick:
 
+- Confirmed PR #8 merged and synced local `main`.
+- PM/scoping pass confirmed T003 and T012 are the only executor-ready tasks and can run in parallel with non-overlapping scopes.
+- Refreshed stale merged PR bookkeeping for T007 and T014; archived T014 to `LOOP_LOG.md`.
+- Added future blocked tasks T015 and T016 for rule-based matching and canonical comparison API work.
+- Claimed T003 for Postgres `--store` validation and T012 for retailer discovery documentation.
+
+2026-06-28 automatic loop tick:
+
 - GitHub review gates for PR #6, PR #7, and PR #8 were failing.
 - Fixed PR #6 and PR #7 by pushing their passed review statuses into their own PR branches, because the CI gate checks the PR branch copy of `LOOP_TASKS.md`.
 - Added T014 for PR #8 so the coordinator ledger update PR has its own review-gated task row.
