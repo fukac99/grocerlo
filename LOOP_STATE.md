@@ -4,7 +4,7 @@ This file is the persistent memory for loop-style work on the grocery price comp
 
 ## Current Focus
 
-BILLA Austria scraper MVP.
+Prioritize real BILLA Austria data ingest.
 
 ## Project Mode
 
@@ -39,6 +39,16 @@ Last full-codebase security review boundary: 0 completed tasks.
 | Tesco | SK | Not started | Likely dynamic. May require Playwright and location/session setup. |
 
 ## Last Run
+
+2026-06-28 user-prioritized real data ingest:
+
+- User asked to prioritize a full data scrape so development can use real data ASAP.
+- Existing status: BILLA is ready for controlled stored ingest; MPREIS is still dry-run/discovery-only and must not be stored yet.
+- Added T040 as the top-priority operational task to run approved BILLA stored ingest, sanity report, normalization, and count reporting.
+- T040 is blocked only on explicit human scope choice:
+  - capped validation: `--store --limit-categories 2 --max-products 50 --max-products-per-category 30 --delay-seconds 2 --confirm-broad-run BILLA_FULL_INGEST`
+  - broad run: `--store --all-categories --max-products 0 --max-products-per-category 30 --delay-seconds 2 --confirm-broad-run BILLA_FULL_INGEST`
+- After T040 produces real normalized rows, prioritize T029 so the frontend can use the BILLA search API with real data.
 
 2026-06-28 user-requested PR description detail:
 
