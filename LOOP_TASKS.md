@@ -30,6 +30,7 @@ Before a loop run starts work, it must move any claimed task from `Ready` to `In
 - Markdown-only coordinator PRs do not require code review and may use `review_status: none` or `not_required`.
 - Do not consider an implementation or non-Markdown pull request merge-ready until its task has `review_status: passed`.
 - Do not merge pull requests unless the user explicitly asks. Agents should open PRs, verify checks, update this ledger, and report readiness for human review or merge.
+- Implementation PR descriptions must clearly explain what changed: behavior, code/module areas, API/CLI/UI/data-shape changes, tests, risks, assumptions, and follow-ups.
 - The repository connection task may need to bootstrap the base branch first if the remote repository is empty.
 
 ## Tasks
@@ -45,6 +46,7 @@ Before a loop run starts work, it must move any claimed task from `Ready` to `In
 | T034 | Done | implementation-subagent | 2026-06-28 21:36 UTC+2 | task/T034-filter-by-cheapest-retailer | https://github.com/fukac99/grocerlo/pull/32 | open | 2026-06-28 21:39 UTC+2 | passed | implementation-subagent self-review | Add retailer filter for products cheapest at selected retailer | `frontend/components/comparison-table.tsx`, focused frontend checks | T032 | Ready after T032 merged. Acceptance: selecting a retailer filter shows only product/package rows where that retailer has the lowest available price; tied cheapest offers should count for every tied retailer; products missing that retailer or cheaper elsewhere are hidden. Do not run in parallel with T029 because they share frontend comparison-table scope. |
 | T037 | Done | coordinator | 2026-06-28 21:34 UTC+2 | task/T037-post-batch-ledger-sync | https://github.com/fukac99/grocerlo/pull/31 | open | 2026-06-28 21:36 UTC+2 | not_required |  | Sync ledger after T015/T022/T032 merges | `LOOP_TASKS.md`, `LOOP_LOG.md`, `LOOP_STATE.md` |  | Markdown-only coordinator PR; archives merged rows and refreshes next ready tasks. |
 | T038 | Done | coordinator | 2026-06-28 21:44 UTC+2 | task/T038-disable-autonomous-merges | https://github.com/fukac99/grocerlo/pull/35 | open | 2026-06-28 21:47 UTC+2 | not_required |  | Persist no-autonomous-merge loop rule | `docs/LOOP_ENGINEERING.md`, `LOOP_STATE.md`, `LOOP_TASKS.md` |  | Markdown-only coordinator PR. Agents must not merge PRs unless the user explicitly asks. |
+| T039 | Done | coordinator | 2026-06-28 21:53 UTC+2 | task/T039-detailed-pr-descriptions | https://github.com/fukac99/grocerlo/pull/36 | open | 2026-06-28 21:56 UTC+2 | not_required |  | Add detailed PR description standard to loop | `docs/LOOP_ENGINEERING.md`, `LOOP_STATE.md`, `LOOP_TASKS.md` |  | Markdown-only coordinator PR. Future implementation PRs must describe exact code, API, CLI, UI, data-shape, test, risk, and follow-up changes. |
 
 ## In Progress
 

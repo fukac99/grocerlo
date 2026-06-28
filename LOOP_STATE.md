@@ -20,6 +20,8 @@ Every loop run should check existing task pull requests and update `pr_status` p
 
 Every loop run should also compare `LOOP_TASKS.md` against `PRICE_COMPARISON_APP_PLAN.md` and add missing actionable tasks. Every implementation pull request, and every PR that touches non-Markdown files, should track review status on the same task row for architecture, security, bugs, tests, maintainability, and fit with the overall plan. Markdown-only coordinator PRs do not require code review. Implementation and non-Markdown PRs are not merge-ready until their task row has `review_status: passed`. Agents must not merge pull requests unless the user explicitly asks; green PRs should be reported as ready for human review or merge.
 
+Implementation PR descriptions must be detailed enough for review without reconstructing the diff. They should describe user-visible behavior, concrete code/module changes, API/CLI/UI/data-shape changes, tests run, risks, assumptions, and follow-up work.
+
 Every loop run should start with a PM/scoping pass that plans a batch of executor-ready tasks with IDs, branches, dependencies, file/scope boundaries, acceptance criteria, and parallelization notes.
 
 Every loop run should count completed tasks across `LOOP_LOG.md` plus active `Done` rows in `LOOP_TASKS.md`. At each new 100-task boundary, the coordinator must schedule a full-codebase security review before launching additional implementation work.
@@ -37,6 +39,12 @@ Last full-codebase security review boundary: 0 completed tasks.
 | Tesco | SK | Not started | Likely dynamic. May require Playwright and location/session setup. |
 
 ## Last Run
+
+2026-06-28 user-requested PR description detail:
+
+- User asked that PR descriptions include detailed summaries of the code changes made.
+- Started T039 to add a PR Description Standard to the loop protocol and standing state.
+- Updated the open T030 PR description with a more explicit code-changes section.
 
 2026-06-28 user correction on merge autonomy:
 
