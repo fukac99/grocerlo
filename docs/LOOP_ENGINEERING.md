@@ -12,7 +12,7 @@ Use these Linear states:
 
 - `Todo`: ready and dependency-complete work.
 - `In Progress`: claimed work.
-- `In Review`: work has an open pull request waiting for human review or merge.
+- `In Review`: work has an open pull request waiting for review or merge.
 - `Done`: complete work.
 - `Backlog`: blocked or not-yet-actionable work; add a comment explaining the blocker.
 
@@ -37,7 +37,7 @@ Each Linear issue should include branch, pull request URL, dependencies, file/sc
 - Keep matching explainable before adding embeddings.
 - Use checks before claiming a scraper, normalizer, matcher, API, or UI workflow works.
 - Update Linear and `LOOP_STATE.md` at the end of each loop run.
-- Stop when blocked by legal, account, location, anti-bot, or product-definition decisions.
+- Stop when blocked by legal, account, location, anti-bot, or product-definition decisions. Put the Linear issue in `Backlog` in such cases.
 
 ## Coordinator Protocol
 
