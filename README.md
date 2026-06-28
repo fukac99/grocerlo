@@ -54,3 +54,19 @@ python scripts/scrape_once.py --retailer billa --limit-categories 1 --max-produc
 For a low-volume validation run, keep the store command to one category and no more than
 three products. A successful stored run prints the created `scrape_run_id` and the raw
 product count.
+
+Summarize the latest stored BILLA run:
+
+```bash
+python scripts/stored_data_sanity_report.py
+```
+
+Inspect a specific stored run:
+
+```bash
+python scripts/stored_data_sanity_report.py --scrape-run-id 1
+```
+
+The sanity report prints counts for raw rows, missing fields, duplicate source product IDs,
+suspicious prices/unit prices, and row identifiers for inspecting bad records. If the
+database is unavailable, start Postgres and rerun migrations before running the report.
