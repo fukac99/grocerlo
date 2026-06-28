@@ -11,11 +11,14 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 BACKEND_ROOT = REPO_ROOT / "backend"
 sys.path.insert(0, str(BACKEND_ROOT))
 
-from app.scrapers import BillaScraper, RawProductPayload  # noqa: E402
+from app.scrapers import BillaScraper, MpreisScraper, RawProductPayload, RetailerScraper  # noqa: E402
 
 
 async def main() -> None:
     args = parse_args()
+    if args.retailer == "mpreis" and args.store:
+        raise SystemExit("MPREIS discovery is dry-run only; omit --store.")
+
     scraper = build_scraper(args)
 
     categories = await scraper.scrape_categories()
@@ -57,7 +60,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run one low-volume grocery scraper.")
     parser.add_argument(
         "--retailer",
-        choices=["billa"],
+        choices=["billa", "mpreis"],
         default="billa",
         help="Retailer scraper to run.",
     )
@@ -81,9 +84,11 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
-def build_scraper(args: argparse.Namespace) -> BillaScraper:
+def build_scraper(args: argparse.Namespace) -> RetailerScraper:
     if args.retailer == "billa":
         return BillaScraper(max_products_per_category=args.max_products)
+    if args.retailer == "mpreis":
+        return MpreisScraper(max_products_per_category=min(args.max_products, 3))
     raise ValueError(f"Unsupported retailer: {args.retailer}")
 
 
