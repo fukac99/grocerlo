@@ -4,9 +4,10 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT / "scripts"))
 
-from app.scrapers import Category, RawProductPayload  # noqa: E402
+from app.scrapers import BillaScraper, Category, RawProductPayload  # noqa: E402
 from billa_full_ingest import (  # noqa: E402
     BROAD_RUN_CONFIRMATION,
+    build_product_identity_summary,
     build_run_summary,
     effective_category_limit,
     is_broad_run,
@@ -73,6 +74,74 @@ def test_select_categories_resumes_after_source_id_and_applies_limit() -> None:
 
     assert [category.original_index for category in selected] == [1]
     assert [category.category.name for category in selected] == ["Milch"]
+
+
+def test_billa_category_discovery_filters_root_and_pagination_links() -> None:
+    html = """
+    <nav>
+      <a href="/kategorie?page=2">2</a>
+      <a href="/kategorie">Alle Kategorien 100</a>
+      <a href="/kategorie/obst-gemuese?page=2#items">Obst & Gemüse 123</a>
+      <a href="https://shop.billa.at/kategorie/getraenke">Getränke</a>
+      <a href="/produkte/example-product">Produkt 9</a>
+      <a href="https://example.test/kategorie/fremd">Fremd 1</a>
+    </nav>
+    """
+
+    categories = BillaScraper()._parse_categories(html)
+
+    assert [(category.name, category.url, category.source_id) for category in categories] == [
+        (
+            "Obst & Gemüse",
+            "https://shop.billa.at/kategorie/obst-gemuese",
+            "kategorie/obst-gemuese",
+        ),
+        (
+            "Getränke",
+            "https://shop.billa.at/kategorie/getraenke",
+            "kategorie/getraenke",
+        ),
+    ]
+
+
+def test_product_identity_summary_counts_distinct_and_duplicate_products() -> None:
+    products = [
+        RawProductPayload(
+            retailer="billa",
+            country="AT",
+            source_product_id="same-product",
+            source_url="https://shop.billa.at/produkte/same-product",
+            name="Apfel",
+        ),
+        RawProductPayload(
+            retailer="billa",
+            country="AT",
+            source_product_id="same-product",
+            source_url="https://shop.billa.at/produkte/same-product?category=obst",
+            name="Apfel",
+        ),
+        RawProductPayload(
+            retailer="billa",
+            country="AT",
+            source_product_id="other-product",
+            source_url="https://shop.billa.at/produkte/other-product",
+            name="Birne",
+        ),
+    ]
+
+    summary = build_product_identity_summary(products)
+
+    assert summary == {
+        "products_with_source_product_id": 3,
+        "distinct_source_product_ids": 2,
+        "source_product_id_duplicate_groups": 1,
+        "source_product_id_duplicate_rows": 2,
+        "source_product_id_duplicate_extra_rows": 1,
+        "distinct_canonical_products": 2,
+        "canonical_duplicate_groups": 1,
+        "canonical_duplicate_rows": 2,
+        "canonical_duplicate_extra_rows": 1,
+    }
 
 
 def test_build_run_summary_includes_dry_run_quality_and_samples() -> None:
