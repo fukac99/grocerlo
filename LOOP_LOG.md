@@ -33,6 +33,10 @@ Use `LOOP_TASKS.md` for active, blocked, ready, in-progress, open-PR, or review-
 | T031 | 2026-06-28 | `task/T031-md-only-coordinator-review-skip` | https://github.com/fukac99/grocerlo/pull/24 | Updated CI/CD and loop protocol so Markdown-only coordinator PRs skip code review while code PRs still require `review_status: passed`. |
 | T033 | 2026-06-28 | `task/T033-scope-cheapest-highlight-task` | https://github.com/fukac99/grocerlo/pull/25 | Scoped the UI task for light-green cheapest-offer highlighting per comparison row. |
 | T035 | 2026-06-28 | `task/T035-scope-retailer-cheapest-filter` | https://github.com/fukac99/grocerlo/pull/26 | Scoped the UI task for filtering products where a selected retailer is cheapest. |
+| T036 | 2026-06-28 | `task/T036-post-agent-ledger-sync` | https://github.com/fukac99/grocerlo/pull/27 | Synced the loop ledger after T010/T021 and UI scoping merges. |
+| T032 | 2026-06-28 | `task/T032-highlight-cheapest-ui` | https://github.com/fukac99/grocerlo/pull/28 | Highlighted the cheapest retailer offer cells in light green for each product/package row, including ties. |
+| T022 | 2026-06-28 | `task/T022-retailer-ingest-runbook` | https://github.com/fukac99/grocerlo/pull/29 | Added the retailer ingest readiness runbook with approvals, rate limits, commands, stop conditions, cleanup, and sanity-report expectations. |
+| T015 | 2026-06-28 | `task/T015-billa-mpreis-rule-matching` | https://github.com/fukac99/grocerlo/pull/30 | Added deterministic BILLA/MPREIS rule-based matching with explainable score components and focused tests. |
 
 ## Version Notes
 
