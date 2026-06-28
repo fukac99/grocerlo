@@ -2,6 +2,7 @@
 .env
 .env.*
 !.env.example
+credentials.txt
 
 .venv/
 __pycache__/
