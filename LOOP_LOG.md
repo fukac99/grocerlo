@@ -19,6 +19,7 @@ Use `LOOP_TASKS.md` for active, blocked, ready, in-progress, open-PR, or review-
 | T012 | 2026-06-28 | `task/T012-retailer-discovery-checklist` | https://github.com/fukac99/grocerlo/pull/10 | Added the retailer expansion discovery checklist for MPREIS, REWE, Kaufland Slovakia, and Tesco Slovakia. |
 | T017 | 2026-06-28 | `task/T017-refresh-merged-pr-statuses` | https://github.com/fukac99/grocerlo/pull/9 | Refreshed merged PR bookkeeping, added matching/comparison future tasks, and claimed the next executor batch. |
 | T018 | 2026-06-28 | `task/T018-correct-loop-ledger-after-merges` | https://github.com/fukac99/grocerlo/pull/12 | Corrected stale ledger state after merged PRs; superseded by T003 validation success once Docker became available. |
+| T019 | 2026-06-28 | `task/T019-post-merge-ledger-sync` | https://github.com/fukac99/grocerlo/pull/13 | Archived completed tasks, marked T008/T009/T013 ready after T003 merged, and refreshed the next executor batch guidance. |
 
 ## Version Notes
 

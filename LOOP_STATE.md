@@ -34,6 +34,13 @@ Every loop run should start with a PM/scoping pass that plans a batch of executo
 
 ## Last Run
 
+2026-06-28 user-requested scoping:
+
+- Scoped controlled full-ingest work without launching broad scraping yet.
+- Added T021 for a controlled BILLA full-ingest workflow, blocked behind T009 so broad ingest has a sanity-report path.
+- Added T022 for a full-ingest readiness runbook across available retailers, blocked behind BILLA ingest workflow and MPREIS discovery notes.
+- Added T023 as ready work for a Next.js visual inspection shell using static sample data so app progress can be inspected before backend APIs are complete.
+
 2026-06-28 automatic loop tick:
 
 - Confirmed PR #11 merged after successful Postgres store validation.
@@ -200,7 +207,7 @@ Previous run:
 7. Continue using SSH remote `git@github.com:fukac99/grocerlo.git`.
 8. Merge reviewed PRs once checks pass, then update dependency statuses in `LOOP_TASKS.md`.
 9. Claim T008 to normalize stored BILLA raw products into retailer products.
-10. Claim T013 for MPREIS low-volume discovery, or T009 for a stored-data sanity report if its scope avoids T008 DB helper edits.
+10. Claim T013 for MPREIS low-volume discovery, T009 for a stored-data sanity report if its scope avoids T008 DB helper edits, or T023 for a frontend visual inspection shell.
 
 ## Loop Log
 
