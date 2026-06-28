@@ -38,6 +38,14 @@ Last full-codebase security review boundary: 0 completed tasks.
 
 ## Last Run
 
+2026-06-28 automatic loop tick:
+
+- Confirmed PR #20 merged and synced local `main`.
+- PM/scoping pass found 19 completed tasks, so the 100-task full-codebase security review is not due yet.
+- Started T027 to archive merged tasks T008/T009/T013/T020/T023/T024/T026 and unblock T010, T021, and T015.
+- Added T028 for MPREIS low-volume store/normalization, T029 for frontend-to-BILLA-search API wiring, and T030 for `reconcile_once.py`.
+- Recommended next executor batch after T027 merges: T010 and T021 in parallel; defer T015 while T010 touches model/API scope.
+
 2026-06-28 user-requested frontend table layout:
 
 - User clarified the final visual comparison should use columns for `product`, `package`, then price, source link, and promotion per supermarket.
