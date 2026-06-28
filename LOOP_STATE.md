@@ -39,6 +39,7 @@ Every loop run should also compare `LOOP_TASKS.md` against `PRICE_COMPARISON_APP
 - Removed separate review tasks from the protocol so pull requests cannot be treated as independent of their reviews.
 - Added `LOOP_LOG.md` and archived fully completed historical tasks to keep `LOOP_TASKS.md` smaller.
 - Clarified that multiple independent ready tasks can be launched as parallel subagents.
+- Added a GitHub Actions review gate that fails PRs unless their `LOOP_TASKS.md` row has `review_status: passed`.
 - Created T007 pull request: https://github.com/fukac99/grocerlo/pull/2.
 - PR #2 merged before the same-task review correction landed; created follow-up PR #3 for that correction: https://github.com/fukac99/grocerlo/pull/3.
 - PR #3 merged before the archive correction landed; created follow-up PR #4 for that correction: https://github.com/fukac99/grocerlo/pull/4.
@@ -157,3 +158,4 @@ Previous run:
 - Created T006 pull request: https://github.com/fukac99/grocerlo/pull/1.
 - Added loop protocol updates for plan expansion, same-task review tracking, and parallel subagent launch rules.
 - Added `LOOP_LOG.md` for archived tasks and version notes, and pruned completed rows from `LOOP_TASKS.md`.
+- Added CI enforcement for same-task agent review status.

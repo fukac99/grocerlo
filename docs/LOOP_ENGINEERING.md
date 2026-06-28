@@ -18,6 +18,7 @@ The goal is not to make the agent scrape aggressively or make unchecked product 
 - On every loop run, compare `LOOP_TASKS.md` with `PRICE_COMPARISON_APP_PLAN.md` and add missing actionable tasks.
 - Every implementation PR should track review status on the same task row for architecture, security, bugs, tests, maintainability, and fit with the overall plan.
 - Do not merge a pull request until its task row has `review_status: passed`.
+- GitHub Actions enforces this with the `Agent Review Gate / Require agent review status` check.
 - Reviews can be performed by a separate subagent, but the review result must be logged under the implementation task instead of creating a separate review task.
 - Launch multiple subagents only for independent tasks that do not edit the same files and do not depend on each other.
 - Keep scraper runs low-volume until each retailer's behavior is understood.
@@ -176,6 +177,12 @@ Every loop run should update `LOOP_TASKS.md` with:
 - Missing tasks from the overall plan added with dependencies.
 - Review status tracked on implementation task rows.
 - Fully complete tasks archived into `LOOP_LOG.md` to reduce active context.
+
+## GitHub Branch Protection
+
+Enable branch protection for `main` in GitHub and require the status check named `Agent Review Gate / Require agent review status`.
+
+That check reads `LOOP_TASKS.md`, finds the row for the pull request branch or URL, and fails unless `review_status` is `passed`.
 
 ## Stop Conditions
 
