@@ -26,6 +26,10 @@ Start Postgres:
 docker compose up -d postgres
 ```
 
+Docker Desktop or another Docker daemon must be running before starting the service. The
+compose database uses the default local app URL:
+`postgresql+asyncpg://grocery_saver:grocery_saver@localhost:5432/grocery_saver`.
+
 Run migrations:
 
 ```bash
@@ -44,5 +48,9 @@ python scripts/scrape_once.py --retailer billa --limit-categories 1 --max-produc
 Store raw products in Postgres:
 
 ```bash
-python scripts/scrape_once.py --retailer billa --limit-categories 1 --max-products 10 --store
+python scripts/scrape_once.py --retailer billa --limit-categories 1 --max-products 3 --store
 ```
+
+For a low-volume validation run, keep the store command to one category and no more than
+three products. A successful stored run prints the created `scrape_run_id` and the raw
+product count.
