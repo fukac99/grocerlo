@@ -162,7 +162,7 @@ h2 {
 .filters {
   display: grid;
   gap: 14px;
-  grid-template-columns: minmax(260px, 2fr) repeat(3, minmax(160px, 1fr));
+  grid-template-columns: minmax(260px, 1.6fr) repeat(5, minmax(150px, 1fr));
   margin-bottom: 24px;
 }
 
@@ -252,6 +252,29 @@ tbody tr:last-child td {
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.country-savings {
+  background: #edf8e8;
+  border: 1px solid #b8dba9;
+  border-radius: 14px;
+  color: #25521f;
+  display: grid;
+  gap: 4px;
+  margin-top: 12px;
+  max-width: 320px;
+  padding: 10px 12px;
+}
+
+.country-savings strong {
+  color: #1f4b1a;
+  font-size: 0.9rem;
+}
+
+.country-savings span {
+  color: #496443;
+  line-height: 1.35;
+  margin-top: 0;
 }
 
 .missing-offer {

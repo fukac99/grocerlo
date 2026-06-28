@@ -73,6 +73,7 @@ export function mapBillaProductToOffer(product: ApiBillaProduct): RetailerOffer 
     product: product.name,
     brand: product.brand ?? "Unknown brand",
     retailer: product.retailer.toUpperCase(),
+    country: product.country.toUpperCase(),
     category: product.category ?? "Uncategorized",
     packageSize: formatPackageSize(product.package),
     price,

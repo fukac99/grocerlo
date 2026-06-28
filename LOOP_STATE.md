@@ -42,17 +42,15 @@ Last full-codebase security review boundary: 0 completed tasks.
 
 ## Last Run
 
-2026-06-28 T065 Linear task management migration:
+2026-06-28 T044 country-cheapest product filter:
 
-- User asked to use Linear instead of Trello for task management.
-- Added `credentials.txt` to `.gitignore` because it contains the local Linear token.
-- Used the token from `credentials.txt` without printing it.
-- Connected to Linear team `GRO` in workspace Grocerlo.
-- Synced active/migrated `LOOP_TASKS.md` rows into Linear issues:
-  - Created 34 Linear issues: `GRO-5` through `GRO-38`.
-  - Mapped Ready to Todo, In Progress to In Progress, Done with open PR to In Review, completed Done to Done, and Blocked to Backlog.
-- Updated loop instructions so Linear is the task source of truth; `LOOP_TASKS.md` remains as a migration cache and compatibility ledger for current CI checks.
-
+- Claimed T044 on `task/T044-country-cheapest-products-ux` from a clean `origin/main` worktree.
+- Opened PR https://github.com/fukac99/grocerlo/pull/45.
+- Added country metadata to normalized frontend offers and sample data.
+- Added a `Country cheapest in` filter that keeps rows where the selected country has the cheapest offer, including tied cheapest offers.
+- Added row savings copy for absolute EUR and percent savings versus the next-best available offer, with explicit tied-cheapest and no-comparison states.
+- Self-review passed for filter correctness, tie handling, no-comparison copy, accessibility labels, and live API data-shape compatibility.
+- Frontend checks passed: `npm run lint`, `npm run typecheck`, and `npm run build`.
 2026-06-28 T064 anti-overwaiting loop rule:
 
 - User asked to update loop instructions so ready tasks are not skipped because of stale local state or unrelated open PRs.
