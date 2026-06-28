@@ -4,7 +4,7 @@ This file is the persistent memory for loop-style work on the grocery price comp
 
 ## Current Focus
 
-Prioritize real BILLA Austria data ingest.
+Prioritize safe all-retailer raw-data ingest after BILLA dedupe cleanup.
 
 ## Project Mode
 
@@ -32,13 +32,38 @@ Last full-codebase security review boundary: 0 completed tasks.
 
 | Retailer | Country | Status | Notes |
 | --- | --- | --- | --- |
-| BILLA | AT | Next | Best first target. Category listing exposes product cards, prices, unit prices, promotions, and pagination. |
-| MPREIS | AT | Not started | Needs distinction between regular prices, app-only promotions, and store availability. |
-| REWE | DE | Not started | May require selected delivery or pickup market. Store or region context must be recorded. |
-| Kaufland | SK | Not started | Needs discovery to determine product listing and price availability. |
-| Tesco | SK | Not started | Likely dynamic. May require Playwright and location/session setup. |
+| BILLA | AT | Cleanup first | Broad stored ingest succeeded, but duplicate-heavy category overlap must be cleaned up in T042 before BILLA becomes the baseline for non-BILLA ingest. |
+| MPREIS | AT | Discovery-only; storage blocked | Low-volume public dry run exists. Storage is blocked until T054 decides no-market/store policy and app-only promotion handling, then T028/T059 can implement and run controlled storage. |
+| REWE | DE | Discovery-only; storage blocked | T051 should document public price visibility, market/location requirements, robots/terms, source IDs, and stop conditions before any dry-run scraper task. |
+| Kaufland | SK | Discovery-only; storage blocked | T052 should determine whether the Slovak site exposes grocery, marketplace, leaflet, store, loyalty, or app-specific prices before any dry-run scraper task. |
+| Tesco | SK | Discovery-only; storage blocked | T053 should document public price visibility, dynamic loading/Playwright needs, address/slot/session requirements, Clubcard labels, and stop conditions before any dry-run scraper task. |
 
 ## Last Run
+
+2026-06-28 T049 all-retailer raw-ingest planning:
+
+- Claimed T049 as a Markdown-only coordinator task on `task/T049-prioritize-all-retailer-raw-ingest`.
+- Added an all-retailer raw ingest execution plan to `docs/retailer-ingest-runbook.md`.
+- Explicit global order:
+  1. finish T042 BILLA category/dedupe cleanup;
+  2. run a clean post-dedupe BILLA baseline ingest/report in T055;
+  3. complete non-BILLA discovery and MPREIS policy tasks;
+  4. implement non-BILLA low-volume dry-run scrapers only after discovery;
+  5. allow controlled non-BILLA storage only after reviewed dry-run output and explicit legal/location/account policy;
+  6. normalize and report each approved stored validation before matching or broader ingest.
+- Created retailer notes for REWE, Kaufland Slovakia, and Tesco Slovakia with discovery prerequisites, low-volume limits, storage gates, and stop conditions.
+- Extended MPREIS notes to keep storage blocked until a location/store and app-only promotion policy is explicit.
+- Added ready discovery/policy rows:
+  - T051 REWE public price and location discovery.
+  - T052 Kaufland Slovakia price-surface discovery.
+  - T053 Tesco Slovakia public price and session discovery.
+  - T054 MPREIS location and app-only promotion storage policy.
+- Added blocked execution rows:
+  - T055 clean BILLA baseline after T042.
+  - T056-T058 low-volume dry-run scrapers for REWE, Kaufland Slovakia, and Tesco Slovakia after discovery plus T055.
+  - T059-T062 controlled stored ingest, normalization, and reporting tasks for MPREIS, REWE, Kaufland Slovakia, and Tesco Slovakia after policy/dry-run review.
+  - T063 all-retailer raw ingest readiness report after each retailer has a stored validation report or explicit blocker.
+- Non-BILLA raw-product storage remains blocked until the relevant discovery note and legal/location/account policy are explicit.
 
 2026-06-28 user-requested Grocerlo UX stories:
 
