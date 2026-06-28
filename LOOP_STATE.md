@@ -20,6 +20,8 @@ Every loop run should check existing task pull requests and update `pr_status` p
 
 Every loop run should also compare `LOOP_TASKS.md` against `PRICE_COMPARISON_APP_PLAN.md` and add missing actionable tasks. Every implementation pull request should track review status on the same task row for architecture, security, bugs, tests, maintainability, and fit with the overall plan. A pull request is not merge-ready until its task row has `review_status: passed`.
 
+Every loop run should start with a PM/scoping pass that plans a batch of executor-ready tasks with IDs, branches, dependencies, file/scope boundaries, acceptance criteria, and parallelization notes.
+
 ## Retailer Status
 
 | Retailer | Country | Status | Notes |
@@ -32,19 +34,56 @@ Every loop run should also compare `LOOP_TASKS.md` against `PRICE_COMPARISON_APP
 
 ## Last Run
 
+2026-06-28 automatic loop tick:
+
+- GitHub review gates for PR #6, PR #7, and PR #8 were failing.
+- Fixed PR #6 and PR #7 by pushing their passed review statuses into their own PR branches, because the CI gate checks the PR branch copy of `LOOP_TASKS.md`.
+- Added T014 for PR #8 so the coordinator ledger update PR has its own review-gated task row.
+- Corrected T003 and T012 from `Ready` to `Blocked` because their PR-backed dependencies are not complete until T002 and T005 merge.
+- PR #6 and PR #7 then merged; updated their `pr_status` values and marked T003 and T012 `Ready`.
+- Merged latest `main` into PR #8 and resolved loop ledger/state conflicts.
+
 2026-06-28 T005 raw product quality checks:
 
 - Added pure raw product quality checks for missing names, missing prices, duplicate source IDs, suspicious prices/unit prices, and missing source URLs.
 - Added focused pytest coverage for payload-shaped data, stored raw product-shaped data, duplicate scoping, suspicious values, and custom thresholds.
 - Created T005 pull request: https://github.com/fukac99/grocerlo/pull/7.
-- Next action: review and merge the T005 pull request, then run the checker against low-volume raw scrape output.
+- Next action: merge the T005 pull request after the review gate passes.
+
 2026-06-28 T002 BILLA dry scrape validation:
 
 - Ran the constrained BILLA dry scrape with 1 category and 3 products, without `--store`.
 - Sample output looked plausible: product names, EUR prices, package sizes, source URLs, source IDs, and compact raw payload text were present.
 - Unit price extraction worked where BILLA exposed a numeric unit price; variable-weight meat samples only exposed `per 1 kg` in raw text, so no numeric unit price was extracted.
 - Opened T002 pull request: https://github.com/fukac99/grocerlo/pull/6.
-- Next action: review PR #6; if review passes and merges, T003 can test the Postgres `--store` path.
+- Next action: merge PR #6 after the review gate passes; if it merges, T003 can test the Postgres `--store` path.
+
+2026-06-28 PR #6 review update:
+
+- Review subagent completed T002 / PR #6 review with no blocking findings.
+- Updated T002 `review_status` to `passed`.
+
+2026-06-28 PR #7 review update:
+
+- Review subagent completed T005 / PR #7 review with no blocking findings.
+- Updated T005 `review_status` to `passed`.
+
+2026-06-28 PM scoping result:
+
+- PM scoping proposed future executor tasks T008-T013.
+- Added T008-T013 to `LOOP_TASKS.md` with dependencies, file scopes, and acceptance notes.
+- Most new tasks are blocked behind T002/T003/T005; T012 is docs-only and can run once active reviews clear.
+
+2026-06-28 executor task completion:
+
+- T002 completed implementation and opened PR #6: https://github.com/fukac99/grocerlo/pull/6.
+- T005 completed implementation and opened PR #7: https://github.com/fukac99/grocerlo/pull/7.
+- Both PRs are open with `review_status: pending`; next loop work should review them before merge.
+
+2026-06-28 loop PM scoping update:
+
+- Updated loop rules so every tick starts with a PM/scoping pass before executor agents are launched.
+- PM scoping should add or refine batches of executor-ready tasks from the overall plan.
 
 2026-06-28 PR review update:
 
@@ -132,16 +171,14 @@ Previous run:
 
 1. Use `LOOP_TASKS.md` to claim eligible `Ready` tasks.
 2. Use `LOOP_LOG.md` for archived completed dependencies and version history.
-3. Re-read `PRICE_COMPARISON_APP_PLAN.md` and add missing actionable tasks.
-4. Track review status on implementation task rows and require `review_status: passed` before merge readiness.
-5. Archive fully complete tasks to `LOOP_LOG.md` once no longer needed in the active ledger.
-6. Continue using SSH remote `git@github.com:fukac99/grocerlo.git`.
-7. Inspect the BILLA dry-scrape sample output for product plausibility after T006 is merged.
-8. If the dry run returns plausible products, start Postgres, run migrations, and test `--store`.
-9. Review and merge the T005 raw product quality checks PR, then run it against low-volume raw scrape output.
-7. Review the T002 BILLA dry-scrape validation pull request.
-8. If the T002 review passes and merges, start Postgres, run migrations, and test `--store`.
-9. Add a simple data quality check for missing names, missing prices, duplicate source IDs, and suspicious unit prices.
+3. Run a PM/scoping pass to add or refine executor-ready task batches from the overall plan.
+4. Re-read `PRICE_COMPARISON_APP_PLAN.md` and add missing actionable tasks.
+5. Track review status on implementation task rows and require `review_status: passed` before merge readiness.
+6. Archive fully complete tasks to `LOOP_LOG.md` once no longer needed in the active ledger.
+7. Continue using SSH remote `git@github.com:fukac99/grocerlo.git`.
+8. Merge reviewed PRs once checks pass, then update dependency statuses in `LOOP_TASKS.md`.
+9. After T002 merges, start Postgres, run migrations, and test the `--store` path.
+10. After T005 merges, run raw product quality checks against low-volume raw scrape output.
 
 ## Loop Log
 
