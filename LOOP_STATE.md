@@ -40,6 +40,15 @@ Last full-codebase security review boundary: 0 completed tasks.
 
 ## Last Run
 
+2026-06-28 T051 REWE public price discovery:
+
+- Claimed T051 on `task/T051-rewe-public-price-discovery` as a Markdown-only discovery task.
+- Completed safe read-only public discovery for REWE without selecting a postal code, market, delivery/pickup slot, account, cart, checkout, or storage path.
+- Updated `docs/scraper-notes/rewe.md` with robots/terms URLs checked, public price visibility, stop conditions, three sample products, source ID candidates, promotion labels, and dry-run readiness.
+- Finding: no-location public product pages expose product metadata and article numbers, but not numeric prices or availability; pages show `Konkreter Preis abhängig vom Standort` and `Standort wählen`.
+- Decision: no-go for a no-location price-capturing REWE dry-run scraper. A future no-storage dry run is only conditionally acceptable with explicit human approval of the exact test location/market/service context.
+- Opened PR #43: `https://github.com/fukac99/grocerlo/pull/43`; `git diff --check` passed; self-review passed for the Markdown-only discovery documentation and `review_status` is `passed` to satisfy the PR review gate.
+
 2026-06-28 T049 all-retailer raw-ingest planning:
 
 - Claimed T049 as a Markdown-only coordinator task on `task/T049-prioritize-all-retailer-raw-ingest`.
