@@ -103,6 +103,12 @@ h2 {
   font-size: 1.15rem;
 }
 
+.live-banner {
+  background: #eaf6e4;
+  border-color: #add39f;
+  color: #203d1a;
+}
+
 .comparison-card {
   padding: 28px;
 }
@@ -119,6 +125,38 @@ h2 {
   color: #4f5f49;
   font-weight: 700;
   margin: 0;
+}
+
+.source-note {
+  color: #5c6a55;
+  line-height: 1.55;
+  margin: 10px 0 0;
+  max-width: 760px;
+}
+
+.status-panel {
+  border-radius: 18px;
+  display: grid;
+  gap: 6px;
+  margin-bottom: 22px;
+  padding: 16px 18px;
+}
+
+.status-panel strong,
+.status-panel span {
+  display: block;
+}
+
+.status-panel.info {
+  background: #eef4ea;
+  border: 1px solid #c8d9c2;
+  color: #2b4c25;
+}
+
+.status-panel.error {
+  background: #fff0eb;
+  border: 1px solid #e2a28e;
+  color: #6d2818;
 }
 
 .filters {

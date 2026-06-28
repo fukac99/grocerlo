@@ -14,8 +14,17 @@ type ComparisonRow = {
   lowestPrice: number;
 };
 
+type StatusMessage = {
+  tone: "info" | "error";
+  title: string;
+  detail: string;
+};
+
 type ComparisonTableProps = {
   offers: RetailerOffer[];
+  dataSourceLabel: string;
+  dataSourceDescription: string;
+  statusMessage?: StatusMessage | null;
 };
 
 const allRetailers = "All retailers";
@@ -30,7 +39,12 @@ const dateFormatter = new Intl.DateTimeFormat("en-AT", {
   dateStyle: "medium",
 });
 
-export function ComparisonTable({ offers }: ComparisonTableProps) {
+export function ComparisonTable({
+  offers,
+  dataSourceLabel,
+  dataSourceDescription,
+  statusMessage,
+}: ComparisonTableProps) {
   const [query, setQuery] = useState("");
   const [retailer, setRetailer] = useState(allRetailers);
   const [retailerFilterMode, setRetailerFilterMode] =
@@ -114,13 +128,21 @@ export function ComparisonTable({ offers }: ComparisonTableProps) {
     <section className="comparison-card" aria-labelledby="comparison-title">
       <div className="section-heading">
         <div>
-          <p className="eyebrow">Static sample data</p>
+          <p className="eyebrow">{dataSourceLabel}</p>
           <h2 id="comparison-title">Comparison table</h2>
+          <p className="source-note">{dataSourceDescription}</p>
         </div>
         <p className="result-count">
           Showing {comparisonRows.length} comparison rows from {offers.length} offers
         </p>
       </div>
+
+      {statusMessage ? (
+        <div className={`status-panel ${statusMessage.tone}`} role="status">
+          <strong>{statusMessage.title}</strong>
+          <span>{statusMessage.detail}</span>
+        </div>
+      ) : null}
 
       <div className="filters" aria-label="Filter comparison offers">
         <label>
@@ -228,7 +250,7 @@ export function ComparisonTable({ offers }: ComparisonTableProps) {
                             <span>Seen {dateFormatter.format(new Date(offer.lastSeen))}</span>
                           </div>
                         ) : (
-                          <span className="missing-offer">No sample</span>
+                          <span className="missing-offer">No offer</span>
                         )}
                       </td>
                     );
@@ -239,7 +261,7 @@ export function ComparisonTable({ offers }: ComparisonTableProps) {
         </table>
 
         {comparisonRows.length === 0 ? (
-          <p className="empty-state">No sample products match the current filters.</p>
+          <p className="empty-state">No products match the current data set and filters.</p>
         ) : null}
       </div>
     </section>
