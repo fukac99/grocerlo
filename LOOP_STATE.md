@@ -36,6 +36,13 @@ Every loop run should start with a PM/scoping pass that plans a batch of executo
 
 2026-06-28 automatic loop tick:
 
+- Docker daemon is still unavailable, so T003 remains blocked and PR #11 is intentionally not merge-ready.
+- Confirmed PR #10 merged and PR #9 merged.
+- Started T018 to correct stale active-ledger statuses on `main`: T003 blocked/changes requested, T012 merged, and T017 merged.
+- No new executor work should start until T003 storage validation is unblocked or a PM pass scopes work independent of stored data.
+
+2026-06-28 automatic loop tick:
+
 - Confirmed PR #8 merged and synced local `main`.
 - PM/scoping pass confirmed T003 and T012 are the only executor-ready tasks and can run in parallel with non-overlapping scopes.
 - Refreshed stale merged PR bookkeeping for T007 and T014; archived T014 to `LOOP_LOG.md`.
