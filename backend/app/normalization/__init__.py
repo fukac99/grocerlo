@@ -151,10 +151,22 @@ def _normalize_spaces(value: str) -> str:
     return re.sub(r"\s+", " ", value).strip()
 
 
+from app.normalization.retailer_products import (  # noqa: E402
+    RawProductLike,
+    RawProductNormalizationError,
+    RetailerProductFields,
+    normalize_raw_product_to_retailer_product,
+)
+
+
 __all__ = [
     "PackageSize",
+    "RawProductLike",
+    "RawProductNormalizationError",
+    "RetailerProductFields",
     "UnitPrice",
     "normalize_package_size",
+    "normalize_raw_product_to_retailer_product",
     "parse_eur_price",
     "parse_package_size",
     "parse_unit_price",
