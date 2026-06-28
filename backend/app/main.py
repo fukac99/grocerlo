@@ -1,8 +1,9 @@
 from fastapi import FastAPI
 
-from app.api import products_router
+from app.api import comparison_router, products_router
 
 app = FastAPI(title="Grocery Saver API")
+app.include_router(comparison_router)
 app.include_router(products_router)
 
 
