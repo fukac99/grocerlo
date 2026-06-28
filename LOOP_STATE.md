@@ -41,6 +41,16 @@ Last full-codebase security review boundary: 0 completed tasks.
 
 ## Last Run
 
+2026-06-29 coordinator pass / PR #57 merge status:
+
+- Fetched latest remote state from `origin/main`; `origin/main` is at PR #57's merge commit.
+- Checked GitHub pull requests with `gh`: there are no open pull requests in `fukac99/grocerlo`.
+- Checked known PR #57 (`task/T028-mpreis-capped-raw-validation`): GitHub reports it merged at `2026-06-28T22:11:29Z`; the latest Agent Review Gate run passed before merge.
+- No merge was performed during this pass. Current policy remains: agents must not merge pull requests autonomously.
+- Linear team `GRO` remains the source of truth, but this session has no Linear MCP/tool descriptor, no Linear CLI, and no `LINEAR_*` environment variables. Could not query or update GRO issue statuses/comments directly.
+- PM/scoping result: the plan still points toward safe all-retailer raw-data ingest and focused UX work. Because Linear `Todo` status could not be queried, no new implementation issue was claimed; launching work without confirming Linear ownership/dependencies would risk duplicating scope or editing the same files as another active issue.
+- Recommended next loop action: restore Linear API/tool access, mark GRO-8 done if it still reflects PR #57 as In Review, then choose the next dependency-complete Linear `Todo` issue from the retailer discovery/policy or single-file UX queue.
+
 2026-06-29 coordinator pass / T028 MPREIS capped raw validation:
 
 - Fetched latest remote state from `origin/main` and checked GitHub PRs. No pull requests are currently open; PR #56 (`task/T071-disable-self-merge`) is already merged on GitHub with the agent review gate passing.
