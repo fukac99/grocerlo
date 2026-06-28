@@ -24,6 +24,8 @@ Implementation PR descriptions must be detailed enough for review without recons
 
 Every loop run should start with a PM/scoping pass that plans a batch of executor-ready tasks with IDs, branches, dependencies, file/scope boundaries, acceptance criteria, and parallelization notes.
 
+Every loop run must avoid overwaiting: fetch latest remote state before deciding no work is available, treat dirty or stale local checkouts as a reason to create a clean worktree from `origin/main`, and claim or launch at least one dependency-complete `Ready` task unless a concrete blocker is recorded. Unrelated open PRs do not block new work; only direct dependencies or same file/scope conflicts should block a candidate task.
+
 Every loop run should count completed tasks across `LOOP_LOG.md` plus active `Done` rows in `LOOP_TASKS.md`. At each new 100-task boundary, the coordinator must schedule a full-codebase security review before launching additional implementation work.
 
 Last full-codebase security review boundary: 0 completed tasks.
@@ -49,6 +51,23 @@ Last full-codebase security review boundary: 0 completed tasks.
 - Added row savings copy for absolute EUR and percent savings versus the next-best available offer, with explicit tied-cheapest and no-comparison states.
 - Self-review passed for filter correctness, tie handling, no-comparison copy, accessibility labels, and live API data-shape compatibility.
 - Frontend checks passed: `npm run lint`, `npm run typecheck`, and `npm run build`.
+2026-06-28 T064 anti-overwaiting loop rule:
+
+- User asked to update loop instructions so ready tasks are not skipped because of stale local state or unrelated open PRs.
+- Added anti-overwaiting requirements to the loop protocol:
+  - fetch latest remote state before deciding no work is available;
+  - use clean worktrees from `origin/main` when the main checkout is dirty, stale, or on another task branch;
+  - claim or launch at least one dependency-complete `Ready` task unless a concrete blocker is recorded;
+  - block candidates only for direct dependency or same file/scope conflicts, not merely because unrelated PRs are open.
+- This rule was added after the loop incorrectly waited despite ready tasks T044-T047 and T051-T054 existing.
+2026-06-28 T051 REWE public price discovery:
+
+- Claimed T051 on `task/T051-rewe-public-price-discovery` as a Markdown-only discovery task.
+- Completed safe read-only public discovery for REWE without selecting a postal code, market, delivery/pickup slot, account, cart, checkout, or storage path.
+- Updated `docs/scraper-notes/rewe.md` with robots/terms URLs checked, public price visibility, stop conditions, three sample products, source ID candidates, promotion labels, and dry-run readiness.
+- Finding: no-location public product pages expose product metadata and article numbers, but not numeric prices or availability; pages show `Konkreter Preis abhängig vom Standort` and `Standort wählen`.
+- Decision: no-go for a no-location price-capturing REWE dry-run scraper. A future no-storage dry run is only conditionally acceptable with explicit human approval of the exact test location/market/service context.
+- Opened PR #43: `https://github.com/fukac99/grocerlo/pull/43`; `git diff --check` passed; self-review passed for the Markdown-only discovery documentation and `review_status` is `passed` to satisfy the PR review gate.
 
 2026-06-28 T049 all-retailer raw-ingest planning:
 
