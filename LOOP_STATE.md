@@ -22,6 +22,10 @@ Every loop run should also compare `LOOP_TASKS.md` against `PRICE_COMPARISON_APP
 
 Every loop run should start with a PM/scoping pass that plans a batch of executor-ready tasks with IDs, branches, dependencies, file/scope boundaries, acceptance criteria, and parallelization notes.
 
+Every loop run should count completed tasks across `LOOP_LOG.md` plus active `Done` rows in `LOOP_TASKS.md`. At each new 100-task boundary, the coordinator must schedule a full-codebase security review before launching additional implementation work.
+
+Last full-codebase security review boundary: 0 completed tasks.
+
 ## Retailer Status
 
 | Retailer | Country | Status | Notes |
@@ -33,6 +37,12 @@ Every loop run should start with a PM/scoping pass that plans a batch of executo
 | Tesco | SK | Not started | Likely dynamic. May require Playwright and location/session setup. |
 
 ## Last Run
+
+2026-06-28 user-requested loop security cadence:
+
+- Added a loop rule to schedule a full-codebase security review at every 100 completed tasks.
+- Added T025 as the first blocked full-codebase security review milestone, due when the completed-task count reaches 100.
+- The review scope covers the whole repository, dependencies/configuration, scraping/data-handling behavior, secrets exposure, CI/review gates, and generated artifacts.
 
 2026-06-28 user-requested scoping:
 
