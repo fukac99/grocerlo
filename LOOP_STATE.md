@@ -21,7 +21,7 @@ Every loop run should:
 - Claim or launch at least one dependency-complete Linear `Todo` issue unless a concrete blocker is recorded.
 - Use clean worktrees from `origin/main` when the main checkout is dirty, stale, or on another task branch.
 - Avoid launching parallel work that edits the same file/scope.
-- Never merge pull requests unless the user explicitly asks.
+- Temporary merge policy: agents may merge their own pull requests after required checks pass, review status is passed or not required, Linear has the PR URL/status recorded, and there are no known blockers. Do not force-merge or bypass branch protection.
 
 Implementation PR descriptions must describe user-visible behavior, concrete code/module changes, API/CLI/UI/data-shape changes, tests run, risks, assumptions, and follow-up work.
 
@@ -47,6 +47,11 @@ Last full-codebase security review boundary: 0 completed tasks.
 - Kept market selection, account/app flows, broad scraping, normalization, matching, and comparison use blocked.
 - Required app-only labels and coupons to remain promotion metadata, not comparable regular price fields.
 - Unblocked T028 / GRO-8 only for implementing the one-page, three-product raw validation and sanity-report path.
+2026-06-28 T069 temporary agent merge policy:
+
+- User explicitly asked to let agents merge changes for now.
+- Updated loop instructions so agents may merge their own PRs after required checks pass and review status is passed or not required.
+- The policy remains conservative: no force-merges, no branch-protection bypass, and Linear must be updated with PR/check/merge status.
 
 2026-06-28 T068 remove legacy Markdown task ledgers:
 
