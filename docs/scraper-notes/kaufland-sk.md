@@ -4,6 +4,107 @@
 
 Kaufland Slovakia is discovery-only. Do not implement runtime scraping, store rows, select a store/region, authenticate, or use app/account flows until discovery proves which public grocery price surface is safe to use.
 
+T052 low-volume public discovery was completed on 2026-06-28 23:34-23:54 UTC+2 using read-only browser/search fetches only. No Kaufland account was used, no store was manually selected or changed, no app/account/loyalty flow was entered, no bot protection was bypassed, no storage was performed, and product examples were capped at three public offer rows.
+
+## T052 Public Price-Surface Discovery
+
+### URLs Checked
+
+- Start URL: `https://www.kaufland.sk/`
+  - Public fetch returned a verification/bot-protection page requiring JavaScript/cookies and confirmation that the visitor is not a robot. This is a stop condition for `www.kaufland.sk` discovery.
+- Main robots: `https://www.kaufland.sk/robots.txt`
+  - Returned the same verification/bot-protection page, so no robots rules could be safely confirmed for the marketplace host.
+- Store/leaflet robots: `https://predajne.kaufland.sk/robots.txt`
+  - Allows the store/leaflet site generally, with `Disallow: /etc.clientlibs/`, `Allow: /etc.clientlibs/kaufland`, and sitemap `https://predajne.kaufland.sk/.sitemap.xml`.
+- Store offers overview: `https://predajne.kaufland.sk/aktualna-ponuka.html`
+  - Public page describing weekly offers, digital leaflet, Kaufland App, newsletter, and Kaufland Card.
+- Store offers listing: `https://predajne.kaufland.sk/aktualna-ponuka/prehlad.html`
+  - Public overview text exposed offer products, prices, old prices, unit prices, categories, and Kaufland Card labels. One direct fetch timed out, so captured fields come from a search-result page snapshot rather than a scripted crawl.
+- Digital leaflet: `https://predajne.kaufland.sk/aktualna-ponuka/letak.html`
+  - Public page loaded with default store context `Kaufland Poprad-Moyzesova`, current leaflet dates `25.06.2026 - 01.07.2026`, `Zmenit predajnu` controls, and "while supplies last/customary quantities/errors reserved" caveats.
+- App surface: `https://predajne.kaufland.sk/servis/app.html`
+  - Search/result text describes leaflet browsing, favorite-store assortment sorting, shopping lists, offer alarms, recipes, and store search. Some features require a user account.
+- Kaufland Card surface: `https://predajne.kaufland.sk/kaufland-card.html`
+  - Public page text describes card benefits, coupons, loyalty points, and online marketplace integration. Coupon activation and personalized coupons are loyalty/account-specific and not a regular public shelf-price surface.
+- Store FAQ/location guidance: `https://predajne.kaufland.sk/servis/caste-otazky.html`
+  - Search/result text says selected store can be stored with cookies and changed through `Zmenit predajnu`.
+- Privacy/customer data pages checked:
+  - `https://predajne.kaufland.sk/ochrana-osobnych-udajov.html`
+  - `https://spolocnost.kaufland.sk/ochrana-osobnych-udajov-zakaznici.html`
+  - These describe customer accounts, shopping lists, K-App, online marketplace linkage, and data handling.
+- Imprint/legal pages found:
+  - `https://spolocnost.kaufland.sk/tiraz.html`
+  - `https://spolocnost.kaufland.sk/ochrana-osobnych-udajov.html`
+  - Search/result text identifies Kaufland Slovenska republika v.o.s. for Slovak store/company pages and separates marketplace matters from the Slovak store operator.
+- Marketplace customer terms URL found from public Kaufland Card text: `https://www.kaufland.sk/i/legal/tc-customers/~26LEVy9TssxpgS0maITojQ`
+  - Direct fetch returned the same verification/bot-protection page as `www.kaufland.sk`, so the URL was recorded but not used.
+
+### Surface Classification
+
+- Grocery shelf-price surface: no-go found. No public no-location grocery ecommerce surface with regular shelf prices was confirmed on `www.kaufland.sk`; the host was behind verification during discovery.
+- Store offer/leaflet surface: public and low-volume readable on `predajne.kaufland.sk`. It exposes promotional/store-offer prices, old prices, unit prices, and category groupings, but it is a leaflet/offer surface, not a full grocery catalog.
+- Marketplace surface: distinct from grocery/store offers. `www.kaufland.sk` is described as the online marketplace and search snippets showed non-grocery examples such as garden chairs, brush cutters, trampolines, bicycles, dining tables, pans, and tires. It is not suitable as a grocery price source for this task, and direct access hit bot-protection verification.
+- Store surface: public store pages and leaflet pages include a selected-store context. Discovery observed default context `Kaufland Poprad-Moyzesova`; FAQ/search text says the selected store is persisted with cookies and can be changed through `Zmenit predajnu`.
+- Loyalty/app surface: public pages document Kaufland Card, coupons, personalized offers, offer alarms, shopping lists, digital receipts, and app features. These are loyalty/account/app-adjacent and must be kept separate from public regular prices.
+
+### Location And Store Dependence
+
+The safe public store/leaflet surface is store-contextual. The leaflet page rendered a default selected store (`Kaufland Poprad-Moyzesova`) and `Zmenit predajnu` controls. FAQ/search text says users can change the store and that the chosen store can be retained by cookies.
+
+Stop before selecting or changing a store, using browser geolocation, writing a cookie-backed location policy, entering postal/location search, or treating default-store offers as national shelf prices. If a future task wants store-specific discovery, it needs an explicit human-approved store context and must continue to label every output with that store.
+
+### Sample Public Offer Rows
+
+Observed from the public `prehlad.html` overview snapshot with no manual store selection. The snapshot text included `Ponuka platna 02.05.`; because the separately fetched leaflet page showed a different current leaflet date and selected store, treat these as surface/field examples only, not current-price assertions.
+
+| Field | Sample 1 | Sample 2 | Sample 3 |
+| --- | --- | --- | --- |
+| `retailer` | `kaufland_sk` | `kaufland_sk` | `kaufland_sk` |
+| `country` | `SK` | `SK` | `SK` |
+| `source_product_id` | Not visible in rendered text | Not visible in rendered text | Not visible in rendered text |
+| `source_url` | `https://predajne.kaufland.sk/aktualna-ponuka/prehlad.html` | `https://predajne.kaufland.sk/aktualna-ponuka/prehlad.html` | `https://predajne.kaufland.sk/aktualna-ponuka/prehlad.html` |
+| `category` | `Aktualna ponuka - top produkty` | `Aktualna ponuka - top produkty` | `Aktualna ponuka - top produkty` |
+| `raw_name` | `Mliekarna Kunin Termix Tvarohovy dezert` | `Uhorka salatova` | `Zemiaky "C"` |
+| `raw_brand` | `Mliekarna Kunin Termix` | Not displayed separately | `Z lasky k tradicii` |
+| `raw_price` | `0,29` | `0,36` | `0,95` |
+| `raw_old_price` | `0,75` | `0,89` | `2,19` |
+| `raw_unit_price` | `(=1 kg 3,22)` | Not visible | `(=1 kg 0,48)` |
+| `raw_package_size` | `90 g` | `1 kus` | `2 kg balenie` |
+| `raw_currency` | EUR implied by Slovak Kaufland offer page; currency symbol not present in fetched text | EUR implied by Slovak Kaufland offer page; currency symbol not present in fetched text | EUR implied by Slovak Kaufland offer page; currency symbol not present in fetched text |
+| `raw_availability` | Offer caveat only: products available while supplies last/customary quantities | Offer caveat only: products available while supplies last/customary quantities | Offer caveat only: products available while supplies last/customary quantities |
+| `raw_promotion_text` | `-61%` | `-59%` | `-56%` |
+| `location_context` | No manual store selected; public leaflet/store context present | No manual store selected; public leaflet/store context present | No manual store selected; public leaflet/store context present |
+| `observed_at` | 2026-06-28 23:34-23:54 UTC+2 | 2026-06-28 23:34-23:54 UTC+2 | 2026-06-28 23:34-23:54 UTC+2 |
+| `raw_payload_notes` | Rendered public text only; no stable product ID visible | Rendered public text only; no stable product ID visible | Rendered public text only; no stable product ID visible |
+
+### Stable Source ID Candidates
+
+- No stable product-level IDs were visible in the rendered public offer overview text.
+- Current fallback candidate for a future dry run: canonical leaflet/overview URL plus category, product display name, package size, promotion validity text, and selected-store context. This is offer-specific and weaker than a product ID.
+- Do not use marketplace product IDs, Kaufland Card coupon IDs, digital receipt IDs, app shopping-list IDs, cookie/store-selection IDs, or account-specific identifiers as `source_product_id` for grocery prices.
+
+### Stop Conditions
+
+- Stop on `www.kaufland.sk` verification, CAPTCHA, JavaScript/cookie challenge, marketplace terms access behind verification, or any bot-protection page.
+- Stop before account registration, login, Kaufland Card activation, coupon activation, personalized coupons, digital receipts, app-only offer alarms, shopping-list APIs, newsletter/WhatsApp enrollment, cart/checkout, payment, or customer-specific marketplace flows.
+- Stop before selecting/changing a store, using current-location detection, relying on persisted store cookies, or comparing regions without explicit human approval.
+- Stop before treating leaflet/store-offer prices, Kaufland Card prices, app/coupon prices, marketplace prices, or press-release price claims as ordinary national grocery shelf prices.
+- Stop before storage. This task is documentation-only discovery.
+
+### Go/No-Go For Dry-Run Scraper Implementation
+
+No-go for a grocery shelf-price dry-run scraper against `www.kaufland.sk`: the host and marketplace terms returned verification/bot-protection pages, and no public no-location grocery price surface was confirmed.
+
+No-go for stored scraping or broad scraping from any Kaufland Slovakia surface.
+
+Conditional go only for a future no-storage leaflet/offer dry run on `predajne.kaufland.sk` if all of these are true:
+
+- The task is explicitly scoped to leaflet/store-offer prices, not regular national grocery shelf prices.
+- A human approves the exact store/location policy before the run, or the run is explicitly labeled as default-store/public-context observation only.
+- The scraper avoids `www.kaufland.sk`, account/app/loyalty-specific flows, bot-protected pages, disallowed asset paths, store-changing flows, and any personal/session-specific endpoints.
+- The run is capped to one offer page or one category group with at most three products, no storage, and at least a 2-second delay plus jitter for any scripted page loads.
+- Output keeps regular offer price, old price, unit price, package size, category, store/location context, Kaufland Card labels, missing IDs, and uncertainty separate.
+
 ## Required Discovery Before Implementation
 
 Start URL: `https://www.kaufland.sk/`
