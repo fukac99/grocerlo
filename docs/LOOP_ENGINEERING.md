@@ -29,7 +29,7 @@ Each Linear issue should include branch, pull request URL, dependencies, file/sc
 - Each task should end with a GitHub pull request against `https://github.com/fukac99/grocerlo`.
 - Pull request descriptions must be detailed enough for a reviewer to understand exactly what changed without reconstructing the whole diff.
 - Record pull request URLs and review status in the Linear issue.
-- Do not merge pull requests unless the user explicitly asks. Agents may open PRs, verify checks, update Linear metadata, and report readiness.
+- Temporary merge policy: agents may merge their own pull requests after required checks pass, review status is passed or not required, Linear has the PR URL/status recorded, and there are no known blockers. Do not force-merge or bypass branch protection.
 - Launch multiple subagents only for independent tasks that do not edit the same files and do not depend on each other.
 - Open PRs only block new work when they are direct dependencies for the candidate issue or edit the same file/scope.
 - Keep scraper runs low-volume until each retailer's behavior is understood.
@@ -62,8 +62,9 @@ Every automated loop tick should act as a coordinator before doing implementatio
 17. Keep one task local if it involves coordination, PM scoping, environment setup, GitHub setup, or state-file updates.
 18. When implementation finishes, push the task branch and open a GitHub pull request using the PR Description Standard below.
 19. Record the pull request URL, PR status, review status, and checks in the Linear issue.
-20. Move issues to `In Review`, `Done`, or `Backlog` with a blocker comment as appropriate.
-21. Record checks, PR statuses, review statuses, PM decisions, failures, next actions, and any reason no ready issue was launched in `LOOP_STATE.md`.
+20. If required checks pass and review status is passed or not required, merge the pull request without bypassing branch protection, then move the Linear issue to `Done`.
+21. If the PR is not ready to merge, move the Linear issue to `In Review` or `Backlog` with a blocker comment as appropriate.
+22. Record checks, PR statuses, review statuses, merges, PM decisions, failures, next actions, and any reason no ready issue was launched in `LOOP_STATE.md`.
 
 ## PR Description Standard
 
@@ -80,7 +81,7 @@ Avoid vague summaries like "add API" or "update UI" without explaining the actua
 ## Builder Loop Prompt
 
 ```text
-Read Linear team GRO, LOOP_STATE.md, and PRICE_COMPARISON_APP_PLAN.md. Act as the loop coordinator. Fetch latest remote state, check Linear issues with linked PRs, update Linear state/comments, run a PM/scoping pass, claim at least one dependency-complete Todo issue when available, use clean worktrees for new tasks, open PRs without merging, and update Linear plus LOOP_STATE.md with progress and blockers. Stop if blocked by GitHub access, scraping legality, account, store-location, or matching decision.
+Read Linear team GRO, LOOP_STATE.md, and PRICE_COMPARISON_APP_PLAN.md. Act as the loop coordinator. Fetch latest remote state, check Linear issues with linked PRs, update Linear state/comments, run a PM/scoping pass, claim at least one dependency-complete Todo issue when available, use clean worktrees for new tasks, open PRs, and merge your own PRs after required checks pass and review status is passed or not required. Do not force-merge or bypass branch protection. Update Linear plus LOOP_STATE.md with progress, merges, and blockers. Stop if blocked by GitHub access, scraping legality, account, store-location, or matching decision.
 ```
 
 ## Scraper Quality Loop
