@@ -81,7 +81,7 @@ Avoid vague summaries like "add API" or "update UI" without explaining the actua
 ## Builder Loop Prompt
 
 ```text
-Read Linear team GRO, LOOP_STATE.md, and PRICE_COMPARISON_APP_PLAN.md. Act as the loop coordinator. Fetch latest remote state, check Linear issues with linked PRs, update Linear state/comments, run a PM/scoping pass, claim at least one dependency-complete Todo issue when available, use clean worktrees for new tasks, open PRs, and merge your own PRs after required checks pass and review status is passed or not required. Do not force-merge or bypass branch protection. Update Linear plus LOOP_STATE.md with progress, merges, and blockers. Stop if blocked by GitHub access, scraping legality, account, store-location, or matching decision.
+Read Linear team GRO, LOOP_STATE.md, and PRICE_COMPARISON_APP_PLAN.md. Act as the loop coordinator. Fetch latest remote state, check Linear issues with linked PRs, update Linear state/comments, run a PM/scoping pass, claim at least one dependency-complete Todo issue when available, use clean worktrees for new tasks, open PRs, and report merge-ready PRs for explicit user-directed merge. Do not merge pull requests autonomously, force-merge, or bypass branch protection. Update Linear plus LOOP_STATE.md with progress, merge readiness, and blockers. Stop if blocked by GitHub access, scraping legality, account, store-location, or matching decision.
 ```
 
 ## Scraper Quality Loop

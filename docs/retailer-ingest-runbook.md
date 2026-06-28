@@ -6,32 +6,31 @@ This runbook is for controlled raw-product ingest only. It does not approve broa
 
 | Retailer | Country | Status | Operator notes |
 | --- | --- | --- | --- |
-| BILLA | AT | Cleanup before next baseline ingest | Stored raw ingest is available through `scripts/billa_full_ingest.py`, but the broad run exposed category overlap and duplicate source IDs. Finish T042 before using BILLA counts as the baseline for non-BILLA sequencing. |
-| MPREIS | AT | Policy-approved for capped raw validation | `no_market_selected` rows are approved only for one raw stored validation run: one page, three products, no normalization or matching. App-only labels are promotion metadata only. Implementation may still block `--store` until the follow-up task narrows the guard. |
+| BILLA | AT | Clean baseline complete | Post-dedupe stored baseline `scrape_run_id=3` produced 3 raw rows, 3 normalized rows, 3 distinct source IDs, and no duplicate-source-ID issues. Broader BILLA runs still require explicit human approval and token. |
+| MPREIS | AT | Capped raw validation complete; downstream blocked | `scrape_run_id=4` stored 3 `no_market_selected` raw rows with no sanity-report quality issues. Do not normalize, match, or show MPREIS rows until follow-up approval. |
 | REWE | DE | Discovery-only; storage blocked | No runtime scraper is ready. Complete public-price, market/location, robots/terms, and account-flow discovery before any dry-run scraper work. |
 | Kaufland Slovakia | SK | Discovery-only; storage blocked | No runtime scraper is ready. Complete discovery to distinguish public grocery prices from marketplace, leaflet, store, and Kaufland Card/app-only prices. |
 | Tesco Slovakia | SK | Discovery-only; storage blocked | No runtime scraper is ready. Complete discovery for public prices, location/session requirements, Clubcard labels, and dynamic page behavior before any dry-run scraper work. |
 
 ## All-Retailer Raw Ingest Execution Plan
 
-The raw-data priority is to make each retailer safe and repeatable before storing any non-BILLA rows. BILLA remains the only approved stored source today. Non-BILLA storage is blocked until retailer-specific discovery notes and policy prerequisites are explicit.
+The raw-data priority is to make each retailer safe and repeatable before storing any non-BILLA rows. BILLA remains the only approved stored source for reusable baselines today. MPREIS has a one-time capped raw validation approval; all other non-BILLA storage is blocked until retailer-specific discovery notes and policy prerequisites are explicit.
 
 ### Global Order
 
-1. Finish BILLA dedupe cleanup in T042. Do not treat run 2's duplicate-heavy counts as a clean baseline.
-2. Run a clean BILLA baseline ingest/report task after T042. Record raw count, distinct source IDs, duplicate count, normalization count, and cleanup decision.
-3. Complete documentation-only discovery for REWE, Kaufland Slovakia, and Tesco Slovakia.
-4. Implement the MPREIS capped raw stored validation now that policy allows only `no_market_selected`, one page, three products, and app-only labels as promotion metadata.
-5. Implement low-volume dry-run scrapers only after discovery and policy notes are explicit. Dry runs should use one or two categories/pages, at most three products, no storage, and at least a two-second delay.
-6. Create retailer-specific controlled stored-ingest tasks only after dry-run outputs are reviewed. Each stored task must start with one category/page and no more than three products, produce a sanity report, and stop before broad volume.
-7. Normalize and report each approved stored run before adding matching or comparison work. MPREIS is excluded from this step until its capped stored validation is reviewed and downstream use is separately approved.
+1. Keep the clean BILLA baseline as the reusable stored-data reference until another explicitly approved BILLA run is needed.
+2. Review the quarantined MPREIS capped raw validation before approving any normalization, matching, comparison UI use, market-selected scraping, or broader volume.
+3. Complete or refresh documentation-only discovery for REWE, Kaufland Slovakia, and Tesco Slovakia before any scraper/storage implementation.
+4. Implement low-volume dry-run scrapers only after discovery and policy notes are explicit. Dry runs should use one or two categories/pages, at most three products, no storage, and at least a two-second delay.
+5. Create retailer-specific controlled stored-ingest tasks only after dry-run outputs are reviewed. Each stored task must start with one category/page and no more than three products, produce a sanity report, and stop before broad volume.
+6. Normalize and report each approved stored run before adding matching or comparison work. MPREIS is excluded from this step until its capped stored validation is reviewed and downstream use is separately approved.
 
 ### Retailer Sequence
 
 | Order | Retailer | Next safe step | Storage gate |
 | --- | --- | --- | --- |
-| 1 | BILLA AT | Complete T042, then run a clean stored baseline and report. | Already approved for controlled BILLA only; broader runs still require explicit human approval and token. |
-| 2 | MPREIS AT | Implement and run the capped `no_market_selected` raw stored validation from GRO-29 / T054. | Approved only for one page and three products; no market context, app/account flow, normalization, matching, comparison use, or broader volume is approved. |
+| 1 | BILLA AT | Use `scrape_run_id=3` as the clean controlled baseline while planning the next approved BILLA run. | Already approved for controlled BILLA only; broader runs still require explicit human approval and token. |
+| 2 | MPREIS AT | Review `scrape_run_id=4` and decide whether any downstream raw normalization or market/location policy task is appropriate. | Only the capped raw validation is complete; no market context, app/account flow, normalization, matching, comparison use, or broader volume is approved. |
 | 3 | REWE DE | Document public price visibility and delivery/pickup market requirements. | Blocked if login, postal code, market, delivery area, pickup branch, or delivery slot is required without an approved default context. |
 | 4 | Kaufland SK | Document whether data is online grocery, marketplace, leaflet, or store-specific. | Blocked if prices are leaflet-only, region-specific, Kaufland Card/app-only, or not grocery product prices without policy approval. |
 | 5 | Tesco SK | Document dynamic page behavior, location/session requirements, and Clubcard labeling. | Blocked if prices need account, delivery slot, address, or postal-code context without an approved default context. |
@@ -179,10 +178,10 @@ GRO-29 / T054 unblocks only this validation shape after the implementation guard
 python scripts/scrape_once.py --retailer mpreis --limit-categories 1 --max-products 3 --store
 ```
 
-The current script may still exit with `MPREIS discovery is dry-run only; omit --store.` until the follow-up implementation task lands. When storage succeeds, record the `scrape_run_id`, run the sanity report, and keep the run quarantined from normalization and matching:
+The CLI allows stored MPREIS only inside this cap. When storage succeeds, record the `scrape_run_id`, run the sanity report, and keep the run quarantined from normalization and matching:
 
 ```bash
-python scripts/stored_data_sanity_report.py --scrape-run-id <scrape_run_id>
+python scripts/stored_data_sanity_report.py --retailer mpreis --scrape-run-id <scrape_run_id>
 ```
 
 ## Sanity Report Expectations

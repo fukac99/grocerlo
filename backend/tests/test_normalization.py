@@ -86,6 +86,9 @@ def test_normalize_package_size_accepts_decimal_input() -> None:
         ("1 kg 7,98 €", "kg", Decimal("7.98")),
         ("100 g 1,25 €", "kg", Decimal("12.5")),
         ("1 Liter 1,89 €", "l", Decimal("1.89")),
+        ("7,96 € /kg", "kg", Decimal("7.96")),
+        ("1,85 € /l", "l", Decimal("1.85")),
+        ("0,60 € /Stk", "piece", Decimal("0.60")),
     ],
 )
 def test_parse_unit_price(raw_unit_price: str, base_unit: str, base_price: Decimal) -> None:

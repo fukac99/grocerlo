@@ -59,7 +59,32 @@ Unblock decision: T028 / GRO-8 can be unblocked only for implementing and runnin
 
 ## Storage Gate
 
-MPREIS storage policy is resolved for a single capped raw validation run under `no_market_selected`. The existing implementation may still block `scripts/scrape_once.py --retailer mpreis --store`; remove or narrow that guard only in the follow-up implementation issue, and only under the caps and cleanup plan above.
+MPREIS storage policy is resolved for a single capped raw validation run under `no_market_selected`. `scripts/scrape_once.py --retailer mpreis --store` is allowed only when the run stays within one category-equivalent page and no more than three products; broader stored MPREIS runs still exit before scraping.
+
+## 2026-06-29 Capped Raw Stored Validation
+
+Command:
+
+```bash
+python3 scripts/scrape_once.py --retailer mpreis --limit-categories 1 --max-products 3 --store
+```
+
+Result: stored `scrape_run_id=4` with three raw rows from `https://www.mpreis.at/schneller-erster-einkauf`.
+
+Sanity report:
+
+```bash
+python3 scripts/stored_data_sanity_report.py --retailer mpreis --scrape-run-id 4
+```
+
+The sanity report found 3 raw rows, 0 quality issues, 0 missing source IDs, 0 missing source URLs, 0 missing names, 0 missing prices, 0 missing unit prices, 0 missing package sizes, and 0 bad rows.
+
+Validation notes:
+
+- All 3 rows kept `raw_payload_json.location_context` as `no_market_selected`.
+- All 3 rows stored `NUR MIT APP` only as `raw_promotion_text`.
+- No market, postal code, pickup branch, delivery area, delivery slot, app session, account, normalization, matching, or comparison UI use was performed.
+- Cleanup decision: keep the run quarantined as the approved capped raw validation sample.
 
 Before any broader stored MPREIS task, another policy task must document:
 
@@ -70,7 +95,6 @@ Before any broader stored MPREIS task, another policy task must document:
 
 ## Planned Task Sequence
 
-1. Update the follow-up implementation issue to allow only the capped MPREIS `no_market_selected` raw stored validation.
-2. Run a one-page, three-product stored validation only after that implementation lands.
-3. Produce and review the stored-data sanity report, including location context, app-only promotion caveats, missing fields, duplicate source IDs, suspicious prices, and package-size parse results.
-4. Keep normalization, matching, comparison UI use, market-selected scraping, and broader volume blocked until another explicit approval task lands.
+1. Run a one-page, three-product stored validation through the narrowed CLI guard.
+2. Produce and review the stored-data sanity report, including location context, app-only promotion caveats, missing fields, duplicate source IDs, suspicious prices, and package-size parse results.
+3. Keep normalization, matching, comparison UI use, market-selected scraping, and broader volume blocked until another explicit approval task lands.

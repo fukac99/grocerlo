@@ -21,7 +21,7 @@ Every loop run should:
 - Claim or launch at least one dependency-complete Linear `Todo` issue unless a concrete blocker is recorded.
 - Use clean worktrees from `origin/main` when the main checkout is dirty, stale, or on another task branch.
 - Avoid launching parallel work that edits the same file/scope.
-- Temporary merge policy: agents may merge their own pull requests after required checks pass, review status is passed or not required, Linear has the PR URL/status recorded, and there are no known blockers. Do not force-merge or bypass branch protection.
+- Merge policy: agents must not merge pull requests autonomously. Agents may open PRs, verify checks, update Linear metadata, and report merge readiness, but merging requires an explicit user instruction for that PR.
 
 Implementation PR descriptions must describe user-visible behavior, concrete code/module changes, API/CLI/UI/data-shape changes, tests run, risks, assumptions, and follow-up work.
 
@@ -34,12 +34,29 @@ Last full-codebase security review boundary: 0 completed tasks.
 | Retailer | Country | Status | Notes |
 | --- | --- | --- | --- |
 | BILLA | AT | Clean baseline complete | Controlled post-dedupe stored baseline `scrape_run_id=3` produced 3 raw rows, 3 normalized rows, 3 distinct source IDs, and no duplicate-source-ID issues. |
-| MPREIS | AT | Policy-approved for capped raw validation | GRO-29 / T054 allows one `no_market_selected` raw stored validation run only: one page, three products, app-only labels as promotion metadata, no normalization or matching until later approval. |
+| MPREIS | AT | Capped raw validation complete; downstream blocked | `scrape_run_id=4` stored 3 `no_market_selected` raw rows from one page. Sanity report found 0 quality issues and 0 missing key fields. Do not normalize, match, or show MPREIS rows until a follow-up approval task reviews downstream use. |
 | REWE | DE | Discovery-only; storage blocked | Public no-location pages expose metadata/article numbers but not numeric prices. Price scraping needs an approved location/market/service context first. |
 | Kaufland | SK | Discovery-only; storage blocked | Needs discovery to distinguish grocery, marketplace, leaflet, store, loyalty, and app-specific price surfaces. |
 | Tesco | SK | Discovery-only; storage blocked | Needs discovery for public price visibility, dynamic loading, address/slot/session requirements, and Clubcard labels. |
 
 ## Last Run
+
+2026-06-29 coordinator pass / T028 MPREIS capped raw validation:
+
+- Fetched latest remote state from `origin/main` and checked GitHub PRs. No pull requests are currently open; PR #56 (`task/T071-disable-self-merge`) is already merged on GitHub with the agent review gate passing.
+- Linear remains the source of truth, but this local agent session has no Linear MCP/tool or `LINEAR_*` environment access. Could not update Linear issue state/comments directly from this pass.
+- PM/scoping result: BILLA dedupe and the clean post-dedupe baseline are merged; REWE, Kaufland Slovakia, and Tesco Slovakia remain storage-blocked; MPREIS is the eligible independent implementation scope because GRO-29 / T054 approved exactly one capped `no_market_selected` raw validation path.
+- Claimed T028 / GRO-8 locally on `task/T028-mpreis-capped-raw-validation` from a clean `origin/main` worktree.
+- Narrowed `scripts/scrape_once.py` so MPREIS storage is allowed only inside the approved cap: one category-equivalent page and no more than three raw products. Broader stored MPREIS runs exit before scraping.
+- Extended the stored-data sanity report CLI to accept MPREIS runs and fixed unit-price normalization for price-first MPREIS strings such as `7,96 € /kg`, `1,85 € /l`, and `0,60 € /Stk`.
+- Ran the approved capped MPREIS stored validation against the existing local Postgres service: `python3 scripts/scrape_once.py --retailer mpreis --limit-categories 1 --max-products 3 --store`.
+- Result: `scrape_run_id=4`, 3 raw rows, all with `raw_payload_json.location_context = no_market_selected`, all with app-only labels stored as `raw_promotion_text`, no normalization or matching performed.
+- Sanity report command: `python3 scripts/stored_data_sanity_report.py --retailer mpreis --scrape-run-id 4`. Result: 3 raw rows, 0 quality issues, 0 missing key fields, 0 bad rows.
+- Checks passed: `python3 -m pytest backend/tests/test_scrape_once.py backend/tests/test_mpreis_scraper.py backend/tests/test_normalization.py backend/tests/test_stored_data_sanity_report.py`.
+- Updated MPREIS/runbook notes and the loop builder prompt to align with the narrowed guard, validation result, and the no-autonomous-merge policy.
+- Opened PR #57: `https://github.com/fukac99/grocerlo/pull/57`.
+- PR #57 status: open and mergeable, but not merge-ready. The Agent Review Gate failed because `review_status: pending`; this is expected until a review is run and the PR body records `review_status: passed`.
+- Next action: run the required agent review for PR #57, update review metadata if it passes, then re-check the gate. A follow-up PM issue should review whether the quarantined MPREIS raw run can be normalized or whether a market/location policy is needed first.
 
 2026-06-28 T055 BILLA post-dedupe baseline ingest:
 
@@ -61,7 +78,7 @@ Last full-codebase security review boundary: 0 completed tasks.
 
 - User explicitly asked to let agents merge changes for now.
 - Updated loop instructions so agents may merge their own PRs after required checks pass and review status is passed or not required.
-- The policy remains conservative: no force-merges, no branch-protection bypass, and Linear must be updated with PR/check/merge status.
+- Superseded on 2026-06-28 by PR #56 / T071: agents must not merge pull requests autonomously.
 
 2026-06-28 T068 remove legacy Markdown task ledgers:
 
