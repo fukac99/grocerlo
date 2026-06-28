@@ -1,13 +1,14 @@
 # Grocery Saver Loop Tasks
 
-This file is the task ledger and lightweight lock file for automated loop runs.
+This file is the migrated task ledger and lightweight compatibility cache for automated loop runs. The task source of truth is now Linear team `GRO`: `https://linear.app/grocerlo/team/GRO/active`.
 
-Before a loop run starts work, it must move any claimed task from `Ready` to `In Progress` and set the `owner` field. This prevents two subagents from choosing the same task.
+Before a loop run starts work, it must claim the corresponding Linear issue by moving it from `Todo` to `In Progress` and adding an owner/start comment. This prevents two subagents from choosing the same task. Update this file only when preserving migration notes or satisfying existing CI/review-gate compatibility.
 
 ## Rules
 
-- Only tasks with `status: Ready` can be claimed.
-- Set `status: In Progress` before launching a subagent or starting work.
+- Prefer Linear `Todo` issues over rows in this file when choosing work.
+- Only tasks with `status: Ready` can be claimed if no corresponding Linear issue exists.
+- Set the Linear issue to `In Progress` before launching a subagent or starting work.
 - Set `owner` to the coordinator or subagent role that claimed the task.
 - Set `started` when a task is claimed.
 - Move finished tasks to `Done`.
@@ -18,11 +19,11 @@ Before a loop run starts work, it must move any claimed task from `Ready` to `In
 - Prefer one coordinator task plus multiple implementation subagents only when tasks are independent.
 - Each implementation task should happen on its own branch and end with a GitHub pull request against the project repository.
 - Use branch names like `task/T002-billa-dry-scrape-validation`.
-- Record the branch and pull request URL in this ledger.
-- On every loop run, check existing pull requests and update `pr_status` and `pr_last_checked`.
+- Record the branch and pull request URL in Linear; mirror here only when CI still needs it.
+- On every loop run, check existing pull requests and update Linear issue status/comments.
 - Use PR statuses: `none`, `open`, `merged`, `closed`, `blocked`, or `unknown`.
-- On every loop run, compare `LOOP_TASKS.md` against `PRICE_COMPARISON_APP_PLAN.md` and add missing actionable tasks.
-- On every loop run, start with a PM/scoping pass that plans a batch of next executor-ready tasks.
+- On every loop run, compare Linear, `LOOP_TASKS.md`, and `PRICE_COMPARISON_APP_PLAN.md` and add missing actionable tasks in Linear.
+- On every loop run, start with a PM/scoping pass that plans a batch of next executor-ready Linear issues.
 - The PM pass should define task IDs, dependencies, file/scope boundaries, branch names, and acceptance criteria.
 - Executor agents should only receive tasks that are already scoped in this ledger.
 - Every implementation task, and every task that touches non-Markdown files, with a pull request must track review under the same task row.
@@ -71,6 +72,7 @@ Before a loop run starts work, it must move any claimed task from `Ready` to `In
 | T061 | Blocked | implementation-subagent |  | task/T061-kaufland-sk-controlled-store-normalize-report |  | none |  | none |  | Run Kaufland Slovakia controlled stored ingest, normalization, and report | `backend/app/scrapers`, `scripts/scrape_once.py`, `scripts/normalize_once.py`, docs, focused tests | T057 | Blocked until Kaufland Slovakia dry-run output is reviewed and legal/store/price-surface policy explicitly approves storage. Acceptance: one category/page, up to 3 products, recorded price-surface and location context, sanity report, normalization report, cleanup decision, and no broad collection. |
 | T062 | Blocked | implementation-subagent |  | task/T062-tesco-sk-controlled-store-normalize-report |  | none |  | none |  | Run Tesco Slovakia controlled stored ingest, normalization, and report | `backend/app/scrapers`, `scripts/scrape_once.py`, `scripts/normalize_once.py`, docs, focused tests | T058 | Blocked until Tesco Slovakia dry-run output is reviewed and legal/location/session policy explicitly approves storage. Acceptance: one category/page, up to 3 products, recorded language/location/session context, sanity report, normalization report, cleanup decision, and no broad collection. |
 | T063 | Blocked | coordinator |  | task/T063-all-retailer-raw-ingest-readiness-report |  | none |  | none |  | Summarize all-retailer raw ingest readiness and next volume gates | `LOOP_STATE.md`, `docs/retailer-ingest-runbook.md`, retailer scraper notes | T055,T059,T060,T061,T062 | Blocked until each retailer has either a controlled stored validation report or an explicit policy blocker. Acceptance: report per-retailer raw/normalized counts, stop conditions, cleanup decisions, remaining legal/location/account blockers, and whether any retailer is safe for capped multi-category ingest. |
+| T065 | Done | coordinator | 2026-06-28 23:08 UTC+2 | task/T065-linear-task-management |  | none |  | passed | self-review | Move task management source of truth to Linear | `.gitignore`, `docs/LOOP_ENGINEERING.md`, `LOOP_STATE.md`, `LOOP_TASKS.md`, Linear team `GRO` |  | Linear `GRO-39`. Created Linear issues `GRO-5` through `GRO-38` from migrated active task rows, added `credentials.txt` to `.gitignore`, and updated loop instructions to use Linear as the source of truth while keeping this file as a compatibility cache. |
 
 ## In Progress
 
