@@ -16,6 +16,8 @@ Each implementation task should use its own branch and open a GitHub pull reques
 
 Every loop run should check existing task pull requests and update `pr_status` plus `pr_last_checked` in `LOOP_TASKS.md`. Downstream tasks should treat prior PR-backed dependencies as complete only after their pull requests are merged.
 
+Every loop run should also compare `LOOP_TASKS.md` against `PRICE_COMPARISON_APP_PLAN.md` and add missing actionable tasks. Every implementation pull request should get a separate review task for architecture, security, bugs, tests, maintainability, and fit with the overall plan.
+
 ## Retailer Status
 
 | Retailer | Country | Status | Notes |
@@ -27,6 +29,14 @@ Every loop run should check existing task pull requests and update `pr_status` p
 | Tesco | SK | Not started | Likely dynamic. May require Playwright and location/session setup. |
 
 ## Last Run
+
+2026-06-28 loop protocol update:
+
+- Added T007 to update the loop protocol for plan expansion and PR review tasks.
+- Added T008 as the separate review task for T007.
+- Updated coordinator rules so every tick re-reads the overall plan, adds missing actionable tasks, and creates review tasks for implementation pull requests.
+- Clarified that multiple independent ready tasks can be launched as parallel subagents.
+- Created T007 pull request: https://github.com/fukac99/grocerlo/pull/2.
 
 2026-06-28 automatic builder loop, immediate coordinator run:
 
@@ -95,10 +105,12 @@ Previous run:
 ## Next Actions
 
 1. Use `LOOP_TASKS.md` to claim eligible `Ready` tasks.
-2. Continue using SSH remote `git@github.com:fukac99/grocerlo.git`.
-3. Inspect the BILLA dry-scrape sample output for product plausibility after T006 is merged.
-4. If the dry run returns plausible products, start Postgres, run migrations, and test `--store`.
-5. Add a simple data quality check for missing names, missing prices, duplicate source IDs, and suspicious unit prices.
+2. Re-read `PRICE_COMPARISON_APP_PLAN.md` and add missing actionable tasks.
+3. Add review tasks for implementation pull requests that do not already have one.
+4. Continue using SSH remote `git@github.com:fukac99/grocerlo.git`.
+5. Inspect the BILLA dry-scrape sample output for product plausibility after T006 is merged.
+6. If the dry run returns plausible products, start Postgres, run migrations, and test `--store`.
+7. Add a simple data quality check for missing names, missing prices, duplicate source IDs, and suspicious unit prices.
 
 ## Loop Log
 
@@ -136,3 +148,4 @@ Previous run:
 - T006 remains blocked only on `gh auth login` for pull request creation.
 - `gh` authentication completed for account `fukac99`; T006 branch and PR creation can proceed.
 - Created T006 pull request: https://github.com/fukac99/grocerlo/pull/1.
+- Added loop protocol updates for plan expansion, review tasks, and parallel subagent launch rules.

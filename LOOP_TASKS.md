@@ -19,6 +19,9 @@ Before a loop run starts work, it must move any claimed task from `Ready` to `In
 - Record the branch and pull request URL in this ledger.
 - On every loop run, check existing pull requests and update `pr_status` and `pr_last_checked`.
 - Use PR statuses: `none`, `open`, `merged`, `closed`, `blocked`, or `unknown`.
+- On every loop run, compare `LOOP_TASKS.md` against `PRICE_COMPARISON_APP_PLAN.md` and add missing actionable tasks.
+- Every implementation task with a pull request must get a separate review task for architecture, security, bugs, tests, and maintainability.
+- Review tasks do not spawn additional review tasks unless they make code or workflow changes.
 - The repository connection task may need to bootstrap the base branch first if the remote repository is empty.
 
 ## Tasks
@@ -31,6 +34,8 @@ Before a loop run starts work, it must move any claimed task from `Ready` to `In
 | T004 | Done | normalization-subagent | 2026-06-28 18:06 UTC+2 |  |  | none |  | Add EUR price and unit normalization utilities | `backend/app/normalization` |  | Completed before branch/PR rule with Decimal-based utilities and focused pytest coverage. |
 | T005 | Ready |  |  | task/T005-raw-product-quality-checks |  | none |  | Add raw product data quality checks | `backend/app`, `scripts` | T004,T006 | Check missing names, missing prices, duplicate source IDs, suspicious unit prices. |
 | T006 | Done | coordinator | 2026-06-28 18:31 UTC+2 | task/T006-connect-github-repository | https://github.com/fukac99/grocerlo/pull/1 | open | 2026-06-28 18:39 UTC+2 | Connect this project to `https://github.com/fukac99/grocerlo` | git remote, branch strategy, GitHub PR setup |  | Local git repo initialized, `origin` switched to SSH, `main` pushed to GitHub, `gh` installed and authenticated. |
+| T007 | Done | coordinator | 2026-06-28 18:44 UTC+2 | task/T007-loop-planning-review-protocol | https://github.com/fukac99/grocerlo/pull/2 | open | 2026-06-28 18:44 UTC+2 | Update loop protocol for plan expansion and PR review tasks | `LOOP_TASKS.md`, `LOOP_STATE.md`, `docs/LOOP_ENGINEERING.md` | T006 | Add plan-vs-task reconciliation and separate review task requirements. |
+| T008 | Ready |  |  | task/T008-review-loop-planning-review-protocol |  | none |  | Review T007 pull request for architecture, security, bugs, tests, and maintainability | T007 PR review | T007 | Review-only task; do not spawn another review task unless it changes files. |
 
 ## In Progress
 
