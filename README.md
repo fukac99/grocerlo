@@ -86,6 +86,10 @@ database is unavailable, start Postgres and rerun migrations before running the 
 
 ## Controlled BILLA Full Ingest
 
+Read `docs/retailer-ingest-runbook.md` before any stored or broad retailer
+ingest. It records current retailer readiness, required approvals, conservative
+limits, stop conditions, cleanup steps, and MPREIS dry-run-only status.
+
 Use `scripts/billa_full_ingest.py` when an operator intentionally wants a broader BILLA
 raw ingest. The command is safe by default: it runs as a dry run, scrapes one category,
 caps output at 10 products, waits between category requests, and prints a run summary
