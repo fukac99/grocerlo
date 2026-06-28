@@ -180,6 +180,10 @@ td {
   color: #2b3827;
 }
 
+.cheapest-offer-cell {
+  background: #e5f8dd;
+}
+
 td strong,
 td span {
   display: block;
@@ -202,6 +206,14 @@ tbody tr:last-child td {
 
 .offer-cell a {
   width: fit-content;
+}
+
+.cheapest-offer-label {
+  color: #21643b;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .missing-offer {
