@@ -33,13 +33,22 @@ Last full-codebase security review boundary: 0 completed tasks.
 
 | Retailer | Country | Status | Notes |
 | --- | --- | --- | --- |
-| BILLA | AT | Cleanup first | Broad stored ingest succeeded, but duplicate-heavy category overlap needs the merged dedupe cleanup before BILLA becomes the baseline for non-BILLA ingest. |
+| BILLA | AT | Clean baseline complete | Controlled post-dedupe stored baseline `scrape_run_id=3` produced 3 raw rows, 3 normalized rows, 3 distinct source IDs, and no duplicate-source-ID issues. |
 | MPREIS | AT | Policy-approved for capped raw validation | GRO-29 / T054 allows one `no_market_selected` raw stored validation run only: one page, three products, app-only labels as promotion metadata, no normalization or matching until later approval. |
 | REWE | DE | Discovery-only; storage blocked | Public no-location pages expose metadata/article numbers but not numeric prices. Price scraping needs an approved location/market/service context first. |
 | Kaufland | SK | Discovery-only; storage blocked | Needs discovery to distinguish grocery, marketplace, leaflet, store, loyalty, and app-specific price surfaces. |
 | Tesco | SK | Discovery-only; storage blocked | Needs discovery for public price visibility, dynamic loading, address/slot/session requirements, and Clubcard labels. |
 
 ## Last Run
+
+2026-06-28 T055 BILLA post-dedupe baseline ingest:
+
+- Ran the smallest approved stored BILLA baseline after the dedupe cleanup: `python3 scripts/scrape_once.py --retailer billa --limit-categories 1 --max-products 3 --store`.
+- Stored `scrape_run_id=3` with 3 raw rows, then normalized it with `python3 scripts/normalize_once.py 3`.
+- Normalization created 3 retailer products, found 0 existing rows, and skipped 0 raw products.
+- Sanity report: 3 raw rows, 0 quality issues, 3 distinct source product IDs, 0 duplicate-source-ID groups, 2 missing unit prices, and 0 missing package sizes.
+- Cleanup decision: keep the run as the clean controlled BILLA baseline. Missing unit prices are limited to two product rows, package sizes are present, and no duplicate source IDs or stop-condition quality issues were observed.
+- Next action: non-BILLA stored ingest may proceed only through the already documented retailer-specific gates and caps.
 
 2026-06-28 T054 MPREIS location and app-only storage policy:
 
