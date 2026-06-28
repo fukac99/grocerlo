@@ -1,13 +1,37 @@
+from dataclasses import dataclass
+from datetime import UTC, datetime
 from decimal import Decimal
 
 import pytest
 
 from app.normalization import (
+    RawProductNormalizationError,
     normalize_package_size,
+    normalize_raw_product_to_retailer_product,
     parse_eur_price,
     parse_package_size,
     parse_unit_price,
 )
+
+
+@dataclass(frozen=True)
+class StoredRawProduct:
+    id: int = 10
+    retailer: str = "billa"
+    country: str = "AT"
+    source_product_id: str | None = "produkte/billa-bio-milch"
+    source_url: str | None = "https://shop.billa.at/produkte/billa-bio-milch"
+    raw_name: str | None = " BILLA Bio Milch  "
+    raw_brand: str | None = "BILLA Bio"
+    raw_category: str | None = "Milchprodukte"
+    raw_price: str | None = "2,39"
+    raw_old_price: str | None = None
+    raw_unit_price: str | None = "1 Liter 2,39 €"
+    raw_package_size: str | None = "1 liter"
+    raw_currency: str | None = "EUR"
+    raw_availability: str | None = "online"
+    raw_promotion_text: str | None = None
+    scraped_at: datetime = datetime(2026, 6, 28, 18, 0, tzinfo=UTC)
 
 
 @pytest.mark.parametrize(
@@ -71,3 +95,57 @@ def test_parse_unit_price(raw_unit_price: str, base_unit: str, base_price: Decim
     assert unit_price.currency == "EUR"
     assert unit_price.normalized_reference_unit == base_unit
     assert unit_price.price_per_base_unit == base_price
+
+
+def test_normalize_raw_product_to_retailer_product_preserves_source_references() -> None:
+    retailer_product = normalize_raw_product_to_retailer_product(StoredRawProduct())
+
+    assert retailer_product.raw_product_id == 10
+    assert retailer_product.source_product_id == "produkte/billa-bio-milch"
+    assert retailer_product.product_url == "https://shop.billa.at/produkte/billa-bio-milch"
+    assert retailer_product.name == "BILLA Bio Milch"
+    assert retailer_product.brand == "BILLA Bio"
+    assert retailer_product.category == "Milchprodukte"
+    assert retailer_product.observed_at == datetime(2026, 6, 28, 18, 0, tzinfo=UTC)
+
+
+def test_normalize_raw_product_to_retailer_product_handles_price_and_package_fields() -> None:
+    retailer_product = normalize_raw_product_to_retailer_product(
+        StoredRawProduct(
+            raw_price="2,49",
+            raw_unit_price="100 g 1,25 €",
+            raw_package_size="500 g",
+        )
+    )
+
+    assert retailer_product.price_amount == Decimal("2.49")
+    assert retailer_product.currency == "EUR"
+    assert retailer_product.unit_price_amount == Decimal("1.25")
+    assert retailer_product.unit_price_unit == "100 g"
+    assert retailer_product.package_quantity == Decimal("500")
+    assert retailer_product.package_unit == "g"
+    assert retailer_product.normalized_quantity_base == Decimal("0.500")
+    assert retailer_product.normalized_unit_base == "kg"
+    assert retailer_product.price_per_base_unit == Decimal("12.5")
+
+
+def test_normalize_raw_product_to_retailer_product_derives_base_price_from_package() -> None:
+    retailer_product = normalize_raw_product_to_retailer_product(
+        StoredRawProduct(raw_price="2,00", raw_unit_price=None, raw_package_size="500 g")
+    )
+
+    assert retailer_product.price_per_base_unit == Decimal("4.0")
+
+
+def test_normalize_raw_product_to_retailer_product_marks_promotions() -> None:
+    retailer_product = normalize_raw_product_to_retailer_product(
+        StoredRawProduct(raw_old_price="2,99 €", raw_promotion_text="in Aktion")
+    )
+
+    assert retailer_product.is_promotion is True
+    assert retailer_product.promotion_type == "old_price"
+
+
+def test_normalize_raw_product_to_retailer_product_requires_name() -> None:
+    with pytest.raises(RawProductNormalizationError, match="missing a name"):
+        normalize_raw_product_to_retailer_product(StoredRawProduct(raw_name=" "))
