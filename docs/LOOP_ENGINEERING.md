@@ -7,22 +7,22 @@ The goal is not to make the agent scrape aggressively or make unchecked product 
 ## Loop Principles
 
 - Read `LOOP_STATE.md` and `PRICE_COMPARISON_APP_PLAN.md` before choosing work.
-- Read `LOOP_TASKS.md` before claiming or launching work.
+- Read Linear team `GRO` before claiming or launching work; use `LOOP_TASKS.md` only as a migrated historical/cache ledger until it is fully retired.
 - Use `LOOP_LOG.md` for archived completed tasks and version history.
 - Fetch the latest remote state before deciding that no work is available; stale local task rows or dirty local checkouts are not blockers by themselves.
 - If any dependency-complete `Ready` task exists after PR/status checks and the security-review boundary check, the loop must claim or launch at least one eligible task unless it records a concrete blocker in `LOOP_STATE.md`.
 - Prefer the smallest useful next task.
-- Claim tasks by moving them to `In Progress` before starting work or launching a subagent.
-- Before implementation, create or switch to the task branch recorded in `LOOP_TASKS.md`.
+- Claim tasks by moving the Linear issue to `In Progress` before starting work or launching a subagent.
+- Before implementation, create or switch to the task branch recorded in the Linear issue description.
 - Each task should end with a GitHub pull request against `https://github.com/fukac99/grocerlo`.
 - Pull request descriptions must be detailed enough for a reviewer to understand exactly what changed without reconstructing the whole diff.
-- Record the branch name and pull request URL in `LOOP_TASKS.md`.
-- On every loop run, check existing task pull requests and update `pr_status` plus `pr_last_checked`.
-- On every loop run, compare `LOOP_TASKS.md` with `PRICE_COMPARISON_APP_PLAN.md` and add missing actionable tasks.
+- Record the branch name and pull request URL in the Linear issue description or comments.
+- On every loop run, check existing task pull requests and update the corresponding Linear issue state/comment.
+- On every loop run, compare Linear team `GRO`, `LOOP_TASKS.md`, and `PRICE_COMPARISON_APP_PLAN.md`; create missing actionable work in Linear.
 - On every loop run, launch or perform a PM/scoping pass before executor agents are assigned.
 - The PM pass should produce a batch of executor-ready tasks with IDs, dependencies, file/scope boundaries, branch names, and acceptance criteria.
 - On every loop run, count completed tasks across `LOOP_LOG.md` plus `Done` rows in `LOOP_TASKS.md`; at every 100-task boundary, schedule a full-codebase security review before launching more implementation work.
-- Executor agents should only receive tasks that are already scoped in `LOOP_TASKS.md`.
+- Executor agents should only receive tasks that are already scoped as Linear issues.
 - Every implementation PR, and every PR that touches non-Markdown files, should track review status on the same task row for architecture, security, bugs, tests, maintainability, and fit with the overall plan.
 - Markdown-only coordinator PRs do not require code review; they may keep `review_status: none` or use `review_status: not_required`.
 - Do not merge an implementation or non-Markdown pull request until its task row has `review_status: passed`.
@@ -36,7 +36,7 @@ The goal is not to make the agent scrape aggressively or make unchecked product 
 - Store raw data before normalization.
 - Keep matching explainable before adding embeddings.
 - Use checks before claiming a scraper, normalizer, or matcher works.
-- Update `LOOP_TASKS.md` and `LOOP_STATE.md` at the end of each loop run.
+- Update Linear and `LOOP_STATE.md` at the end of each loop run. Update `LOOP_TASKS.md` only when preserving migration notes or compatibility with existing CI checks.
 - Archive fully complete tasks from `LOOP_TASKS.md` into `LOOP_LOG.md` once their PR is merged, review is passed or not applicable, and no active bookkeeping is needed.
 - Stop when blocked by legal, account, location, anti-bot, or product-definition decisions.
 
@@ -44,33 +44,33 @@ The goal is not to make the agent scrape aggressively or make unchecked product 
 
 Every automated loop tick should act as a coordinator before doing implementation work:
 
-1. Fetch the latest remote state before reading the ledger. Use `origin/main` as the source of truth when the local checkout is stale, dirty, or on another task branch.
-2. Read `LOOP_TASKS.md`, `LOOP_LOG.md`, `LOOP_STATE.md`, and `PRICE_COMPARISON_APP_PLAN.md`.
-3. Check every row with a `pull_request` URL using `gh pr view` or GitHub API.
-4. Update `pr_status` and `pr_last_checked` for those rows before claiming new work.
+1. Fetch the latest remote state before reading task state. Use `origin/main` as the source of truth for code when the local checkout is stale, dirty, or on another task branch.
+2. Read Linear team `GRO`, `LOOP_TASKS.md`, `LOOP_LOG.md`, `LOOP_STATE.md`, and `PRICE_COMPARISON_APP_PLAN.md`.
+3. Check every Linear issue or migrated task row with a pull request URL using `gh pr view` or GitHub API.
+4. Update the Linear issue state/comment with PR status before claiming new work. Keep `LOOP_TASKS.md` in sync only where current CI still needs task metadata.
 5. Run a PM/scoping pass before executor assignment.
-6. The PM pass should re-read the overall plan, compare it with the task ledger and log, and add or refine a batch of missing actionable tasks.
+6. The PM pass should re-read the overall plan, compare it with Linear, the migrated task ledger, and log, and add or refine a batch of missing actionable Linear issues.
 7. Each PM-scoped task should include task ID, branch, dependencies, file/scope boundaries, acceptance criteria, and notes about whether it can run in parallel.
-8. Count completed tasks across archived rows in `LOOP_LOG.md` and active `Done` rows in `LOOP_TASKS.md`.
+8. Count completed tasks across archived rows in `LOOP_LOG.md`, Linear `Done` issues, and active `Done` rows in `LOOP_TASKS.md`.
 9. If the completed-task count has reached a new multiple of 100 since the last full security review, add or claim a security review task before launching more implementation work.
 10. The 100-task security review should inspect the whole codebase, dependency/config surface, scraping/data-handling behavior, secrets exposure, CI/review gates, and generated artifacts. Record findings in a PR and keep any required fixes as follow-up tasks.
-11. For every implementation task, and every task touching non-Markdown files, that has an open pull request and `review_status: none`, set `review_status: pending`.
-12. Identify tasks with `status: Ready` whose dependencies are complete.
-13. Treat a dependency as complete only when its task is `Done` and its `pr_status` is `merged`, unless the task is archived in `LOOP_LOG.md` or was explicitly completed before the branch/PR rule and has `pr_status: none`.
-14. Treat review work as eligible when the implementation PR is open and `review_status` is `pending` or `changes_requested`.
+11. For every implementation task, and every task touching non-Markdown files, that has an open pull request and no review status, set review status to pending in Linear and mirror it in `LOOP_TASKS.md` if CI needs it.
+12. Identify Linear issues in `Todo` whose dependencies are complete. Use migrated `Ready` rows only as a fallback until all active work is represented in Linear.
+13. Treat a dependency as complete only when its Linear issue is `Done` and any linked PR is merged, unless the task is archived in `LOOP_LOG.md` or was explicitly completed before the branch/PR rule.
+14. Treat review work as eligible when the implementation PR is open and review status is `pending` or `changes_requested`.
 15. Group ready tasks by file/scope.
-16. Select one or more independent tasks. If at least one dependency-complete `Ready` task exists, claim or launch at least one unless a concrete blocker is recorded in `LOOP_STATE.md`.
+16. Select one or more independent tasks. If at least one dependency-complete Linear `Todo` issue exists, claim or launch at least one unless a concrete blocker is recorded in `LOOP_STATE.md`.
 17. Open PRs only block candidate tasks that depend on those PRs or edit the same file/scope. Do not pause unrelated work because other PRs are open.
-18. Move each selected task to `In Progress`, set `owner`, and set `started`.
-19. Ensure the task has a branch name. If it does not, add one before launch.
+18. Move each selected Linear issue to `In Progress` and add a comment naming the owner/subagent and start timestamp.
+19. Ensure the Linear issue has a branch name. If it does not, add one before launch.
 20. Create or switch to the task branch before implementation tasks. If the main checkout is dirty or stale, create a clean worktree from `origin/main` for the task.
 21. Launch multiple executor subagents at the same time when there are independent ready tasks; do not assign two agents to the same files/scope.
 22. Keep one task local if it involves coordination, PM scoping, environment setup, GitHub setup, or state-file updates.
 23. When implementation work finishes, push the task branch and open a GitHub pull request using the PR Description Standard below.
-24. Record the pull request URL, `pr_status: open`, and `pr_last_checked` in `LOOP_TASKS.md`.
-25. For each new implementation or non-Markdown PR, set `review_status: pending`; for Markdown-only coordinator PRs, use `review_status: none` or `not_required`.
+24. Record the pull request URL, open PR status, and last checked timestamp in the Linear issue.
+25. For each new implementation or non-Markdown PR, set review status to pending; for Markdown-only coordinator PRs, use no review requirement or `not_required`.
 26. Do not merge PRs unless the user explicitly asks for that merge. If checks and reviews are green, report that the PR is ready for human review or merge.
-27. Move tasks to `Done` or `Blocked`.
+27. Move Linear issues to `Done` or `Backlog`/blocked-with-comment.
 28. Archive fully complete tasks into `LOOP_LOG.md` to keep `LOOP_TASKS.md` small.
 29. Record checks, PR statuses, review statuses, newly planned tasks, archived tasks, PM decisions, failures, next actions, and any reason no ready task was launched in `LOOP_STATE.md`.
 
@@ -89,6 +89,22 @@ Every implementation PR should include a detailed description with:
 - `Review notes`: risks, assumptions, follow-up tasks, and any areas where the reviewer should pay special attention.
 
 Avoid vague summaries like "add API" or "update UI" without explaining the actual route, component behavior, data shape, or command semantics. Markdown-only coordinator PRs can be shorter, but should still explain which task/state rules changed and why.
+
+## Linear Task Management
+
+Task management now lives in Linear team `GRO`: `https://linear.app/grocerlo/team/GRO/active`.
+
+Use these mappings when coordinating loop work:
+
+- Linear `Todo`: ready and dependency-complete work.
+- Linear `In Progress`: claimed work.
+- Linear `In Review`: task has an open pull request waiting for human review or merge.
+- Linear `Done`: task is complete and any required PR is merged or no PR is needed.
+- Linear `Backlog`: blocked or not-yet-actionable work; add a comment with the blocker.
+
+Each Linear issue should include the migrated task ID when one exists, for example `[T044]`, plus branch, PR URL, dependency, scope, acceptance criteria, review status, and relevant run/check notes in the description or comments.
+
+`LOOP_TASKS.md` remains in the repository as a migration cache and for compatibility with the current GitHub review gate. Do not treat it as the primary source of truth for choosing new work once a corresponding Linear issue exists.
 
 ## Main Loops
 

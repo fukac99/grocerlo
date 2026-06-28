@@ -10,15 +10,15 @@ Prioritize safe all-retailer raw-data ingest after BILLA dedupe cleanup.
 
 Automatic builder loop every 10 minutes. Do not run recurring scrapes yet.
 
-Loop coordination uses `LOOP_TASKS.md` as the task ledger and lightweight lock file. Tasks must be moved to `In Progress` before local work or subagent launch.
+Loop coordination now uses Linear team `GRO` as the task source of truth: `https://linear.app/grocerlo/team/GRO/active`. Tasks must be moved to Linear `In Progress` before local work or subagent launch.
 
-Historical completed tasks and version notes live in `LOOP_LOG.md` so `LOOP_TASKS.md` can stay focused on active, ready, blocked, open-PR, and review-gated work.
+`LOOP_TASKS.md` is now a migrated cache and compatibility ledger for existing CI/review-gate behavior. Historical completed tasks and version notes live in `LOOP_LOG.md`.
 
 Each implementation task should use its own branch and open a GitHub pull request against `https://github.com/fukac99/grocerlo`. The repository connection task should run before other ready tasks that need pull requests.
 
-Every loop run should check existing task pull requests and update `pr_status` plus `pr_last_checked` in `LOOP_TASKS.md`. Downstream tasks should treat prior PR-backed dependencies as complete only after their pull requests are merged.
+Every loop run should check existing task pull requests and update the corresponding Linear issue with PR status and last checked timestamp. Downstream tasks should treat prior PR-backed dependencies as complete only after their pull requests are merged.
 
-Every loop run should also compare `LOOP_TASKS.md` against `PRICE_COMPARISON_APP_PLAN.md` and add missing actionable tasks. Every implementation pull request, and every PR that touches non-Markdown files, should track review status on the same task row for architecture, security, bugs, tests, maintainability, and fit with the overall plan. Markdown-only coordinator PRs do not require code review. Implementation and non-Markdown PRs are not merge-ready until their task row has `review_status: passed`. Agents must not merge pull requests unless the user explicitly asks; green PRs should be reported as ready for human review or merge.
+Every loop run should also compare Linear, `LOOP_TASKS.md`, and `PRICE_COMPARISON_APP_PLAN.md` and add missing actionable tasks in Linear. Every implementation pull request, and every PR that touches non-Markdown files, should track review status on the corresponding Linear issue and any compatibility task row needed by CI. Markdown-only coordinator PRs do not require code review. Implementation and non-Markdown PRs are not merge-ready until review status has passed. Agents must not merge pull requests unless the user explicitly asks; green PRs should be reported as ready for human review or merge.
 
 Implementation PR descriptions must be detailed enough for review without reconstructing the diff. They should describe user-visible behavior, concrete code/module changes, API/CLI/UI/data-shape changes, tests run, risks, assumptions, and follow-up work.
 
@@ -42,6 +42,17 @@ Last full-codebase security review boundary: 0 completed tasks.
 
 ## Last Run
 
+2026-06-28 T065 Linear task management migration:
+
+- User asked to use Linear instead of Trello for task management.
+- Added `credentials.txt` to `.gitignore` because it contains the local Linear token.
+- Used the token from `credentials.txt` without printing it.
+- Connected to Linear team `GRO` in workspace Grocerlo.
+- Synced active/migrated `LOOP_TASKS.md` rows into Linear issues:
+  - Created 34 Linear issues: `GRO-5` through `GRO-38`.
+  - Mapped Ready to Todo, In Progress to In Progress, Done with open PR to In Review, completed Done to Done, and Blocked to Backlog.
+- Updated loop instructions so Linear is the task source of truth; `LOOP_TASKS.md` remains as a migration cache and compatibility ledger for current CI checks.
+
 2026-06-28 T064 anti-overwaiting loop rule:
 
 - User asked to update loop instructions so ready tasks are not skipped because of stale local state or unrelated open PRs.
@@ -51,6 +62,7 @@ Last full-codebase security review boundary: 0 completed tasks.
   - claim or launch at least one dependency-complete `Ready` task unless a concrete blocker is recorded;
   - block candidates only for direct dependency or same file/scope conflicts, not merely because unrelated PRs are open.
 - This rule was added after the loop incorrectly waited despite ready tasks T044-T047 and T051-T054 existing.
+
 2026-06-28 T051 REWE public price discovery:
 
 - Claimed T051 on `task/T051-rewe-public-price-discovery` as a Markdown-only discovery task.
