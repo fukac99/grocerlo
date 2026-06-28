@@ -18,7 +18,7 @@ Each implementation task should use its own branch and open a GitHub pull reques
 
 Every loop run should check existing task pull requests and update `pr_status` plus `pr_last_checked` in `LOOP_TASKS.md`. Downstream tasks should treat prior PR-backed dependencies as complete only after their pull requests are merged.
 
-Every loop run should also compare `LOOP_TASKS.md` against `PRICE_COMPARISON_APP_PLAN.md` and add missing actionable tasks. Every implementation pull request, and every PR that touches non-Markdown files, should track review status on the same task row for architecture, security, bugs, tests, maintainability, and fit with the overall plan. Markdown-only coordinator PRs do not require code review. Implementation and non-Markdown PRs are not merge-ready until their task row has `review_status: passed`.
+Every loop run should also compare `LOOP_TASKS.md` against `PRICE_COMPARISON_APP_PLAN.md` and add missing actionable tasks. Every implementation pull request, and every PR that touches non-Markdown files, should track review status on the same task row for architecture, security, bugs, tests, maintainability, and fit with the overall plan. Markdown-only coordinator PRs do not require code review. Implementation and non-Markdown PRs are not merge-ready until their task row has `review_status: passed`. Agents must not merge pull requests unless the user explicitly asks; green PRs should be reported as ready for human review or merge.
 
 Every loop run should start with a PM/scoping pass that plans a batch of executor-ready tasks with IDs, branches, dependencies, file/scope boundaries, acceptance criteria, and parallelization notes.
 
@@ -37,6 +37,12 @@ Last full-codebase security review boundary: 0 completed tasks.
 | Tesco | SK | Not started | Likely dynamic. May require Playwright and location/session setup. |
 
 ## Last Run
+
+2026-06-28 user correction on merge autonomy:
+
+- User clarified that agents should not autonomously merge changes.
+- Started T038 to persist the no-autonomous-merge rule in the loop protocol and state.
+- Current open PRs: #32, #33, and #34 have green agent review gates and are waiting for human review/merge. Do not merge them without explicit user instruction.
 
 2026-06-28 automatic loop tick after T015/T022/T032 merges:
 
