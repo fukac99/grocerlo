@@ -24,6 +24,6 @@ Open http://localhost:3000 to inspect the mock comparison table.
 
 ```bash
 npm run lint
-npm run typecheck
 npm run build
+npm run typecheck
 ```
