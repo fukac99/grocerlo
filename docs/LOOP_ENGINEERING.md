@@ -29,7 +29,7 @@ Each Linear issue should include branch, pull request URL, dependencies, file/sc
 - Each task should end with a GitHub pull request against `https://github.com/fukac99/grocerlo`.
 - Pull request descriptions must be detailed enough for a reviewer to understand exactly what changed without reconstructing the whole diff.
 - Record pull request URLs and review status in the Linear issue.
-- Temporary merge policy: agents may merge their own pull requests after required checks pass, review status is passed or not required, Linear has the PR URL/status recorded, and there are no known blockers. Do not force-merge or bypass branch protection.
+- Merge policy: agents must not merge pull requests autonomously. Agents may open PRs, verify checks, update Linear metadata, and report merge readiness, but merging requires an explicit user instruction for that PR.
 - Launch multiple subagents only for independent tasks that do not edit the same files and do not depend on each other.
 - Open PRs only block new work when they are direct dependencies for the candidate issue or edit the same file/scope.
 - Keep scraper runs low-volume until each retailer's behavior is understood.
@@ -62,9 +62,9 @@ Every automated loop tick should act as a coordinator before doing implementatio
 17. Keep one task local if it involves coordination, PM scoping, environment setup, GitHub setup, or state-file updates.
 18. When implementation finishes, push the task branch and open a GitHub pull request using the PR Description Standard below.
 19. Record the pull request URL, PR status, review status, and checks in the Linear issue.
-20. If required checks pass and review status is passed or not required, merge the pull request without bypassing branch protection, then move the Linear issue to `Done`.
-21. If the PR is not ready to merge, move the Linear issue to `In Review` or `Backlog` with a blocker comment as appropriate.
-22. Record checks, PR statuses, review statuses, merges, PM decisions, failures, next actions, and any reason no ready issue was launched in `LOOP_STATE.md`.
+20. If required checks pass and review status is passed or not required, report that the pull request is ready for user-directed merge and keep the Linear issue in `In Review`.
+21. If the PR is not ready for merge, move the Linear issue to `In Review` or `Backlog` with a blocker comment as appropriate.
+22. Record checks, PR statuses, review statuses, merge readiness, PM decisions, failures, next actions, and any reason no ready issue was launched in `LOOP_STATE.md`.
 
 ## PR Description Standard
 
