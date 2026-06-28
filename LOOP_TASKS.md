@@ -29,6 +29,7 @@ Before a loop run starts work, it must move any claimed task from `Ready` to `In
 - Use review statuses: `none`, `pending`, `in_progress`, `passed`, `changes_requested`, `blocked`, or `not_required`.
 - Markdown-only coordinator PRs do not require code review and may use `review_status: none` or `not_required`.
 - Do not consider an implementation or non-Markdown pull request merge-ready until its task has `review_status: passed`.
+- Do not merge pull requests unless the user explicitly asks. Agents should open PRs, verify checks, update this ledger, and report readiness for human review or merge.
 - The repository connection task may need to bootstrap the base branch first if the remote repository is empty.
 
 ## Tasks
@@ -43,6 +44,7 @@ Before a loop run starts work, it must move any claimed task from `Ready` to `In
 | T030 | Ready |  |  | task/T030-reconcile-once-cli |  | none |  | none |  | Add one-off reconciliation CLI | `scripts/reconcile_once.py`, `backend/app/matching` | T015 | Ready after T015 merged; acceptance: run matching over normalized retailer products and report candidate match counts/confidence buckets. |
 | T034 | Ready |  |  | task/T034-filter-by-cheapest-retailer |  | none |  | none |  | Add retailer filter for products cheapest at selected retailer | `frontend/components/comparison-table.tsx`, focused frontend checks | T032 | Ready after T032 merged. Acceptance: selecting a retailer filter shows only product/package rows where that retailer has the lowest available price; tied cheapest offers should count for every tied retailer; products missing that retailer or cheaper elsewhere are hidden. Do not run in parallel with T029 because they share frontend comparison-table scope. |
 | T037 | Done | coordinator | 2026-06-28 21:34 UTC+2 | task/T037-post-batch-ledger-sync | https://github.com/fukac99/grocerlo/pull/31 | open | 2026-06-28 21:36 UTC+2 | not_required |  | Sync ledger after T015/T022/T032 merges | `LOOP_TASKS.md`, `LOOP_LOG.md`, `LOOP_STATE.md` |  | Markdown-only coordinator PR; archives merged rows and refreshes next ready tasks. |
+| T038 | Done | coordinator | 2026-06-28 21:44 UTC+2 | task/T038-disable-autonomous-merges |  | none |  | not_required |  | Persist no-autonomous-merge loop rule | `docs/LOOP_ENGINEERING.md`, `LOOP_STATE.md`, `LOOP_TASKS.md` |  | Markdown-only coordinator PR. Agents must not merge PRs unless the user explicitly asks. |
 
 ## In Progress
 
