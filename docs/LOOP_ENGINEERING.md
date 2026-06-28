@@ -8,6 +8,8 @@ The goal is not to scrape aggressively or make unchecked product matches. The go
 
 Task management lives in Linear team `GRO`: `https://linear.app/grocerlo/team/GRO/active`.
 
+Linear credentials are kept out of git in `credentials.txt`. Before using the Linear API from a local shell or subagent worktree, run `source credentials.txt` from the repository root so `LINEAR_TOKEN` is available.
+
 Use these Linear states:
 
 - `Todo`: ready and dependency-complete work.
@@ -44,27 +46,28 @@ Each Linear issue should include branch, pull request URL, dependencies, file/sc
 Every automated loop tick should act as a coordinator before doing implementation work:
 
 1. Fetch the latest remote state.
-2. Read Linear team `GRO`, `LOOP_STATE.md`, and `PRICE_COMPARISON_APP_PLAN.md`.
-3. Check Linear issues with pull request URLs using `gh pr view` or GitHub API.
-4. Update the Linear issue state/comment with PR status, review status, and last checked time.
-5. Run a PM/scoping pass before executor assignment.
-6. Compare the overall plan, Linear issues, and current project state; create or refine missing actionable Linear issues.
-7. Ensure each PM-scoped issue has dependencies, file/scope boundaries, branch name, acceptance criteria, and parallelization notes.
-8. Count completed work from Linear `Done` issues. At each new 100-task boundary, schedule a full-codebase security review before launching additional implementation work.
-9. For each implementation or non-Markdown PR with no review status, set review status to pending in Linear.
-10. Identify Linear `Todo` issues whose dependencies are complete.
-11. Treat a dependency as complete only when its Linear issue is `Done` and any linked PR is merged, unless the task was explicitly completed before the branch/PR rule.
-12. Group ready issues by file/scope.
-13. Select one or more independent issues.
-14. Move each selected issue to `In Progress` and add an owner/start comment.
-15. Create or switch to the task branch. If the main checkout is dirty or stale, create a clean worktree from `origin/main`.
-16. Launch multiple executor subagents at the same time when issues are independent.
-17. Keep one task local if it involves coordination, PM scoping, environment setup, GitHub setup, or state-file updates.
-18. When implementation finishes, push the task branch and open a GitHub pull request using the PR Description Standard below.
-19. Record the pull request URL, PR status, review status, and checks in the Linear issue.
-20. If required checks pass and review status is passed or not required, report that the pull request is ready for user-directed merge and keep the Linear issue in `In Review`.
-21. If the PR is not ready for merge, move the Linear issue to `In Review` or `Backlog` with a blocker comment as appropriate.
-22. Record checks, PR statuses, review statuses, merge readiness, PM decisions, failures, next actions, and any reason no ready issue was launched in `LOOP_STATE.md`.
+2. Run `source credentials.txt` from the repository root before Linear API calls.
+3. Read Linear team `GRO`, `LOOP_STATE.md`, and `PRICE_COMPARISON_APP_PLAN.md`.
+4. Check Linear issues with pull request URLs using `gh pr view` or GitHub API.
+5. Update the Linear issue state/comment with PR status, review status, and last checked time.
+6. Run a PM/scoping pass before executor assignment.
+7. Compare the overall plan, Linear issues, and current project state; create or refine missing actionable Linear issues.
+8. Ensure each PM-scoped issue has dependencies, file/scope boundaries, branch name, acceptance criteria, and parallelization notes.
+9. Count completed work from Linear `Done` issues. At each new 100-task boundary, schedule a full-codebase security review before launching additional implementation work.
+10. For each implementation or non-Markdown PR with no review status, set review status to pending in Linear.
+11. Identify Linear `Todo` issues whose dependencies are complete.
+12. Treat a dependency as complete only when its Linear issue is `Done` and any linked PR is merged, unless the task was explicitly completed before the branch/PR rule.
+13. Group ready issues by file/scope.
+14. Select one or more independent issues.
+15. Move each selected issue to `In Progress` and add an owner/start comment.
+16. Create or switch to the task branch. If the main checkout is dirty or stale, create a clean worktree from `origin/main`.
+17. Launch multiple executor subagents at the same time when issues are independent.
+18. Keep one task local if it involves coordination, PM scoping, environment setup, GitHub setup, or state-file updates.
+19. When implementation finishes, push the task branch and open a GitHub pull request using the PR Description Standard below.
+20. Record the pull request URL, PR status, review status, and checks in the Linear issue.
+21. If required checks pass and review status is passed or not required, report that the pull request is ready for user-directed merge and keep the Linear issue in `In Review`.
+22. If the PR is not ready for merge, move the Linear issue to `In Review` or `Backlog` with a blocker comment as appropriate.
+23. Record checks, PR statuses, review statuses, merge readiness, PM decisions, failures, next actions, and any reason no ready issue was launched in `LOOP_STATE.md`.
 
 ## PR Description Standard
 
