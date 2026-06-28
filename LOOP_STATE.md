@@ -34,6 +34,11 @@ Every loop run should start with a PM/scoping pass that plans a batch of executo
 
 ## Last Run
 
+2026-06-28 PR #6 review update:
+
+- Review subagent completed T002 / PR #6 review with no blocking findings.
+- Updated T002 `review_status` to `passed`.
+
 2026-06-28 PR #7 review update:
 
 - Review subagent completed T005 / PR #7 review with no blocking findings.
