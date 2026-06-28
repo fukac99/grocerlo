@@ -30,11 +30,11 @@ Before a loop run starts work, it must move any claimed task from `Ready` to `In
 | T003 | Ready |  |  | task/T003-postgres-store-path |  | none |  | Start Postgres, run migrations, and test `--store` path | `docker-compose.yml`, `backend/alembic`, database | T001,T002,T006 | Only after dry scrape output looks plausible. |
 | T004 | Done | normalization-subagent | 2026-06-28 18:06 UTC+2 |  |  | none |  | Add EUR price and unit normalization utilities | `backend/app/normalization` |  | Completed before branch/PR rule with Decimal-based utilities and focused pytest coverage. |
 | T005 | Ready |  |  | task/T005-raw-product-quality-checks |  | none |  | Add raw product data quality checks | `backend/app`, `scripts` | T004,T006 | Check missing names, missing prices, duplicate source IDs, suspicious unit prices. |
-| T006 | In Progress | coordinator | 2026-06-28 18:31 UTC+2 | task/T006-connect-github-repository |  | none |  | Connect this project to `https://github.com/fukac99/grocerlo` | git remote, branch strategy, GitHub PR setup |  | Repository appears empty from GitHub page; bootstrap base branch if needed, then use PRs for subsequent tasks. |
+| T006 | Done | coordinator | 2026-06-28 18:31 UTC+2 | task/T006-connect-github-repository | https://github.com/fukac99/grocerlo/pull/1 | open | 2026-06-28 18:39 UTC+2 | Connect this project to `https://github.com/fukac99/grocerlo` | git remote, branch strategy, GitHub PR setup |  | Local git repo initialized, `origin` switched to SSH, `main` pushed to GitHub, `gh` installed and authenticated. |
 
 ## In Progress
 
-- T006: Claimed by `coordinator` for GitHub repository setup and branch/PR workflow bootstrap.
+No tasks currently claimed.
 
 ## Done
 
