@@ -40,6 +40,23 @@ Every loop run should start with a PM/scoping pass that plans a batch of executo
 - Fixed PR #6 and PR #7 by pushing their passed review statuses into their own PR branches, because the CI gate checks the PR branch copy of `LOOP_TASKS.md`.
 - Added T014 for PR #8 so the coordinator ledger update PR has its own review-gated task row.
 - Corrected T003 and T012 from `Ready` to `Blocked` because their PR-backed dependencies are not complete until T002 and T005 merge.
+- PR #6 and PR #7 then merged; updated their `pr_status` values and marked T003 and T012 `Ready`.
+- Merged latest `main` into PR #8 and resolved loop ledger/state conflicts.
+
+2026-06-28 T005 raw product quality checks:
+
+- Added pure raw product quality checks for missing names, missing prices, duplicate source IDs, suspicious prices/unit prices, and missing source URLs.
+- Added focused pytest coverage for payload-shaped data, stored raw product-shaped data, duplicate scoping, suspicious values, and custom thresholds.
+- Created T005 pull request: https://github.com/fukac99/grocerlo/pull/7.
+- Next action: merge the T005 pull request after the review gate passes.
+
+2026-06-28 T002 BILLA dry scrape validation:
+
+- Ran the constrained BILLA dry scrape with 1 category and 3 products, without `--store`.
+- Sample output looked plausible: product names, EUR prices, package sizes, source URLs, source IDs, and compact raw payload text were present.
+- Unit price extraction worked where BILLA exposed a numeric unit price; variable-weight meat samples only exposed `per 1 kg` in raw text, so no numeric unit price was extracted.
+- Opened T002 pull request: https://github.com/fukac99/grocerlo/pull/6.
+- Next action: merge PR #6 after the review gate passes; if it merges, T003 can test the Postgres `--store` path.
 
 2026-06-28 PR #6 review update:
 
@@ -159,9 +176,9 @@ Previous run:
 5. Track review status on implementation task rows and require `review_status: passed` before merge readiness.
 6. Archive fully complete tasks to `LOOP_LOG.md` once no longer needed in the active ledger.
 7. Continue using SSH remote `git@github.com:fukac99/grocerlo.git`.
-8. Inspect the BILLA dry-scrape sample output for product plausibility after T006 is merged.
-9. If the dry run returns plausible products, start Postgres, run migrations, and test `--store`.
-10. Add a simple data quality check for missing names, missing prices, duplicate source IDs, and suspicious unit prices.
+8. Merge reviewed PRs once checks pass, then update dependency statuses in `LOOP_TASKS.md`.
+9. After T002 merges, start Postgres, run migrations, and test the `--store` path.
+10. After T005 merges, run raw product quality checks against low-volume raw scrape output.
 
 ## Loop Log
 
