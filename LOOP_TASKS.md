@@ -34,12 +34,12 @@ Before a loop run starts work, it must move any claimed task from `Ready` to `In
 | T004 | Done | normalization-subagent | 2026-06-28 18:06 UTC+2 |  |  | none |  | Add EUR price and unit normalization utilities | `backend/app/normalization` |  | Completed before branch/PR rule with Decimal-based utilities and focused pytest coverage. |
 | T005 | Ready |  |  | task/T005-raw-product-quality-checks |  | none |  | Add raw product data quality checks | `backend/app`, `scripts` | T004,T006 | Check missing names, missing prices, duplicate source IDs, suspicious unit prices. |
 | T006 | Done | coordinator | 2026-06-28 18:31 UTC+2 | task/T006-connect-github-repository | https://github.com/fukac99/grocerlo/pull/1 | open | 2026-06-28 18:39 UTC+2 | Connect this project to `https://github.com/fukac99/grocerlo` | git remote, branch strategy, GitHub PR setup |  | Local git repo initialized, `origin` switched to SSH, `main` pushed to GitHub, `gh` installed and authenticated. |
-| T007 | In Progress | coordinator | 2026-06-28 18:44 UTC+2 | task/T007-loop-planning-review-protocol | pending | open | 2026-06-28 18:44 UTC+2 | Update loop protocol for plan expansion and PR review tasks | `LOOP_TASKS.md`, `LOOP_STATE.md`, `docs/LOOP_ENGINEERING.md` | T006 | Add plan-vs-task reconciliation and separate review task requirements. |
+| T007 | Done | coordinator | 2026-06-28 18:44 UTC+2 | task/T007-loop-planning-review-protocol | https://github.com/fukac99/grocerlo/pull/2 | open | 2026-06-28 18:44 UTC+2 | Update loop protocol for plan expansion and PR review tasks | `LOOP_TASKS.md`, `LOOP_STATE.md`, `docs/LOOP_ENGINEERING.md` | T006 | Add plan-vs-task reconciliation and separate review task requirements. |
 | T008 | Ready |  |  | task/T008-review-loop-planning-review-protocol |  | none |  | Review T007 pull request for architecture, security, bugs, tests, and maintainability | T007 PR review | T007 | Review-only task; do not spawn another review task unless it changes files. |
 
 ## In Progress
 
-- T007: Claimed by `coordinator` for loop planning and review protocol update.
+No tasks currently claimed.
 
 ## Done
 

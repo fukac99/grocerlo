@@ -36,6 +36,7 @@ Every loop run should also compare `LOOP_TASKS.md` against `PRICE_COMPARISON_APP
 - Added T008 as the separate review task for T007.
 - Updated coordinator rules so every tick re-reads the overall plan, adds missing actionable tasks, and creates review tasks for implementation pull requests.
 - Clarified that multiple independent ready tasks can be launched as parallel subagents.
+- Created T007 pull request: https://github.com/fukac99/grocerlo/pull/2.
 
 2026-06-28 automatic builder loop, immediate coordinator run:
 
