@@ -32,6 +32,14 @@ Every loop run should also compare `LOOP_TASKS.md` against `PRICE_COMPARISON_APP
 
 ## Last Run
 
+2026-06-28 T002 BILLA dry scrape validation:
+
+- Ran the constrained BILLA dry scrape with 1 category and 3 products, without `--store`.
+- Sample output looked plausible: product names, EUR prices, package sizes, source URLs, source IDs, and compact raw payload text were present.
+- Unit price extraction worked where BILLA exposed a numeric unit price; variable-weight meat samples only exposed `per 1 kg` in raw text, so no numeric unit price was extracted.
+- Opened T002 pull request: https://github.com/fukac99/grocerlo/pull/6.
+- Next action: review PR #6; if review passes and merges, T003 can test the Postgres `--store` path.
+
 2026-06-28 PR review update:
 
 - Review subagent completed PR #5 review with no blocking findings.
@@ -122,8 +130,8 @@ Previous run:
 4. Track review status on implementation task rows and require `review_status: passed` before merge readiness.
 5. Archive fully complete tasks to `LOOP_LOG.md` once no longer needed in the active ledger.
 6. Continue using SSH remote `git@github.com:fukac99/grocerlo.git`.
-7. Inspect the BILLA dry-scrape sample output for product plausibility after T006 is merged.
-8. If the dry run returns plausible products, start Postgres, run migrations, and test `--store`.
+7. Review the T002 BILLA dry-scrape validation pull request.
+8. If the T002 review passes and merges, start Postgres, run migrations, and test `--store`.
 9. Add a simple data quality check for missing names, missing prices, duplicate source IDs, and suspicious unit prices.
 
 ## Loop Log
