@@ -16,7 +16,7 @@ export type RetailerOffer = {
 export const sampleOffers: RetailerOffer[] = [
   {
     id: "billa-ja-natuerlich-milk-1l",
-    product: "Organic Whole Milk",
+    product: "Whole Milk",
     brand: "Ja! Natürlich",
     retailer: "BILLA",
     category: "Dairy",
@@ -30,7 +30,7 @@ export const sampleOffers: RetailerOffer[] = [
   },
   {
     id: "mpreis-bio-milk-1l",
-    product: "Bio Whole Milk",
+    product: "Whole Milk",
     brand: "Bio vom Berg",
     retailer: "MPREIS",
     category: "Dairy",
@@ -58,7 +58,7 @@ export const sampleOffers: RetailerOffer[] = [
   },
   {
     id: "spar-barilla-spaghetti-500g",
-    product: "Spaghetti No. 5",
+    product: "Spaghetti",
     brand: "Barilla",
     retailer: "SPAR",
     category: "Pantry",
@@ -100,7 +100,7 @@ export const sampleOffers: RetailerOffer[] = [
   },
   {
     id: "mpreis-arabica-coffee-500g",
-    product: "Arabica Coffee Beans",
+    product: "Coffee Beans",
     brand: "MPreis Privat",
     retailer: "MPREIS",
     category: "Coffee",
@@ -114,7 +114,7 @@ export const sampleOffers: RetailerOffer[] = [
   },
   {
     id: "billa-dallmayr-coffee-500g",
-    product: "Crema Coffee Beans",
+    product: "Coffee Beans",
     brand: "Dallmayr",
     retailer: "BILLA",
     category: "Coffee",

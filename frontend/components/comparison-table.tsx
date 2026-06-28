@@ -3,7 +3,15 @@
 import { useMemo, useState } from "react";
 import type { RetailerOffer } from "../data/sample-offers";
 
-type SortKey = "product" | "retailer" | "price" | "unitPrice" | "lastSeen";
+type SortKey = "product" | "packageSize" | "lowestPrice";
+type ComparisonRow = {
+  key: string;
+  product: string;
+  packageSize: string;
+  category: string;
+  offersByRetailer: Map<RetailerOffer["retailer"], RetailerOffer>;
+  lowestPrice: number;
+};
 
 type ComparisonTableProps = {
   offers: RetailerOffer[];
@@ -25,7 +33,7 @@ export function ComparisonTable({ offers }: ComparisonTableProps) {
   const [query, setQuery] = useState("");
   const [retailer, setRetailer] = useState(allRetailers);
   const [category, setCategory] = useState(allCategories);
-  const [sortKey, setSortKey] = useState<SortKey>("unitPrice");
+  const [sortKey, setSortKey] = useState<SortKey>("lowestPrice");
 
   const retailers = useMemo(
     () => [allRetailers, ...Array.from(new Set(offers.map((offer) => offer.retailer))).sort()],
@@ -36,20 +44,45 @@ export function ComparisonTable({ offers }: ComparisonTableProps) {
     [offers],
   );
 
-  const filteredOffers = useMemo(() => {
+  const comparisonRows = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
 
-    return offers
-      .filter((offer) => {
-        const matchesRetailer = retailer === allRetailers || offer.retailer === retailer;
-        const matchesCategory = category === allCategories || offer.category === category;
+    const rows = new Map<string, ComparisonRow>();
+
+    for (const offer of offers) {
+      const rowKey = `${offer.product}|${offer.packageSize}`;
+      const existingRow = rows.get(rowKey);
+
+      if (existingRow) {
+        existingRow.offersByRetailer.set(offer.retailer, offer);
+        existingRow.lowestPrice = Math.min(existingRow.lowestPrice, offer.price);
+      } else {
+        rows.set(rowKey, {
+          key: rowKey,
+          product: offer.product,
+          packageSize: offer.packageSize,
+          category: offer.category,
+          offersByRetailer: new Map([[offer.retailer, offer]]),
+          lowestPrice: offer.price,
+        });
+      }
+    }
+
+    return Array.from(rows.values())
+      .filter((row) => {
+        const rowOffers = Array.from(row.offersByRetailer.values());
+        const matchesRetailer =
+          retailer === allRetailers || row.offersByRetailer.has(retailer as RetailerOffer["retailer"]);
+        const matchesCategory = category === allCategories || row.category === category;
         const searchableText = [
-          offer.product,
-          offer.brand,
-          offer.retailer,
-          offer.category,
-          offer.packageSize,
-          offer.promotion ?? "",
+          row.product,
+          row.packageSize,
+          row.category,
+          ...rowOffers.flatMap((offer) => [
+            offer.retailer,
+            offer.brand,
+            offer.promotion ?? "",
+          ]),
         ]
           .join(" ")
           .toLowerCase();
@@ -60,12 +93,12 @@ export function ComparisonTable({ offers }: ComparisonTableProps) {
           (normalizedQuery.length === 0 || searchableText.includes(normalizedQuery))
         );
       })
-      .sort((firstOffer, secondOffer) => {
-        if (sortKey === "price" || sortKey === "unitPrice") {
-          return firstOffer[sortKey] - secondOffer[sortKey];
+      .sort((firstRow, secondRow) => {
+        if (sortKey === "lowestPrice") {
+          return firstRow.lowestPrice - secondRow.lowestPrice;
         }
 
-        return String(firstOffer[sortKey]).localeCompare(String(secondOffer[sortKey]));
+        return String(firstRow[sortKey]).localeCompare(String(secondRow[sortKey]));
       });
   }, [category, offers, query, retailer, sortKey]);
 
@@ -77,7 +110,7 @@ export function ComparisonTable({ offers }: ComparisonTableProps) {
           <h2 id="comparison-title">Comparison table</h2>
         </div>
         <p className="result-count">
-          Showing {filteredOffers.length} of {offers.length} offers
+          Showing {comparisonRows.length} comparison rows from {offers.length} offers
         </p>
       </div>
 
@@ -113,11 +146,9 @@ export function ComparisonTable({ offers }: ComparisonTableProps) {
         <label>
           Sort by
           <select value={sortKey} onChange={(event) => setSortKey(event.target.value as SortKey)}>
-            <option value="unitPrice">Unit price</option>
-            <option value="price">Shelf price</option>
+            <option value="lowestPrice">Lowest price</option>
             <option value="product">Product</option>
-            <option value="retailer">Retailer</option>
-            <option value="lastSeen">Last seen</option>
+            <option value="packageSize">Package</option>
           </select>
         </label>
       </div>
@@ -127,45 +158,56 @@ export function ComparisonTable({ offers }: ComparisonTableProps) {
           <thead>
             <tr>
               <th scope="col">Product</th>
-              <th scope="col">Retailer</th>
               <th scope="col">Package</th>
-              <th scope="col">Shelf price</th>
-              <th scope="col">Unit price</th>
-              <th scope="col">Promotion</th>
-              <th scope="col">Last seen</th>
-              <th scope="col">Source</th>
+              {retailers
+                .filter((retailerName) => retailerName !== allRetailers)
+                .map((retailerName) => (
+                  <th key={retailerName} scope="col">
+                    {retailerName}
+                  </th>
+                ))}
             </tr>
           </thead>
           <tbody>
-            {filteredOffers.map((offer) => (
-              <tr key={offer.id}>
+            {comparisonRows.map((row) => (
+              <tr key={row.key}>
                 <td>
-                  <strong>{offer.product}</strong>
-                  <span>{offer.brand}</span>
+                  <strong>{row.product}</strong>
+                  <span>{row.category}</span>
                 </td>
-                <td>
-                  <span className="retailer-pill">{offer.retailer}</span>
-                  <span>{offer.category}</span>
-                </td>
-                <td>{offer.packageSize}</td>
-                <td>{currencyFormatter.format(offer.price)}</td>
-                <td>
-                  {currencyFormatter.format(offer.unitPrice)} / {offer.unit}
-                </td>
-                <td>{offer.promotion ?? "None"}</td>
-                <td>{dateFormatter.format(new Date(offer.lastSeen))}</td>
-                <td>
-                  <a href={offer.sourceUrl} target="_blank" rel="noreferrer">
-                    Open
-                  </a>
-                </td>
+                <td>{row.packageSize}</td>
+                {retailers
+                  .filter((retailerName) => retailerName !== allRetailers)
+                  .map((retailerName) => {
+                    const offer = row.offersByRetailer.get(retailerName as RetailerOffer["retailer"]);
+
+                    return (
+                      <td key={retailerName}>
+                        {offer ? (
+                          <div className="offer-cell">
+                            <strong>{currencyFormatter.format(offer.price)}</strong>
+                            <span>
+                              {currencyFormatter.format(offer.unitPrice)} / {offer.unit}
+                            </span>
+                            <a href={offer.sourceUrl} target="_blank" rel="noreferrer">
+                              Source
+                            </a>
+                            <span>{offer.promotion ?? "No promotion"}</span>
+                            <span>Seen {dateFormatter.format(new Date(offer.lastSeen))}</span>
+                          </div>
+                        ) : (
+                          <span className="missing-offer">No sample</span>
+                        )}
+                      </td>
+                    );
+                  })}
               </tr>
             ))}
           </tbody>
         </table>
 
-        {filteredOffers.length === 0 ? (
-          <p className="empty-state">No sample offers match the current filters.</p>
+        {comparisonRows.length === 0 ? (
+          <p className="empty-state">No sample products match the current filters.</p>
         ) : null}
       </div>
     </section>

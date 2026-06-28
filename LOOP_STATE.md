@@ -38,6 +38,11 @@ Last full-codebase security review boundary: 0 completed tasks.
 
 ## Last Run
 
+2026-06-28 user-requested frontend table layout:
+
+- User clarified the final visual comparison should use columns for `product`, `package`, then price, source link, and promotion per supermarket.
+- Started T026 to align the mock frontend table with that target comparison shape.
+
 2026-06-28 user-requested loop security cadence:
 
 - Added a loop rule to schedule a full-codebase security review at every 100 completed tasks.
