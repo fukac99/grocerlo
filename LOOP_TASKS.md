@@ -21,6 +21,10 @@ Before a loop run starts work, it must move any claimed task from `Ready` to `In
 - Record the branch and pull request URL in this ledger.
 - On every loop run, check existing pull requests and update `pr_status` and `pr_last_checked`.
 - Use PR statuses: `none`, `open`, `merged`, `closed`, `blocked`, or `unknown`.
+- On every loop run, fetch latest remote state before concluding no work is available.
+- Dirty or stale local checkouts are not blockers by themselves; use a clean worktree from `origin/main` for new tasks.
+- If any dependency-complete `Ready` task exists after PR/status checks and security-boundary checks, claim or launch at least one eligible task unless a concrete blocker is recorded in `LOOP_STATE.md`.
+- Unrelated open PRs do not block new work; only direct dependencies or same file/scope conflicts should block a candidate task.
 - On every loop run, compare `LOOP_TASKS.md` against `PRICE_COMPARISON_APP_PLAN.md` and add missing actionable tasks.
 - On every loop run, start with a PM/scoping pass that plans a batch of next executor-ready tasks.
 - The PM pass should define task IDs, dependencies, file/scope boundaries, branch names, and acceptance criteria.
@@ -71,6 +75,7 @@ Before a loop run starts work, it must move any claimed task from `Ready` to `In
 | T061 | Blocked | implementation-subagent |  | task/T061-kaufland-sk-controlled-store-normalize-report |  | none |  | none |  | Run Kaufland Slovakia controlled stored ingest, normalization, and report | `backend/app/scrapers`, `scripts/scrape_once.py`, `scripts/normalize_once.py`, docs, focused tests | T057 | Blocked until Kaufland Slovakia dry-run output is reviewed and legal/store/price-surface policy explicitly approves storage. Acceptance: one category/page, up to 3 products, recorded price-surface and location context, sanity report, normalization report, cleanup decision, and no broad collection. |
 | T062 | Blocked | implementation-subagent |  | task/T062-tesco-sk-controlled-store-normalize-report |  | none |  | none |  | Run Tesco Slovakia controlled stored ingest, normalization, and report | `backend/app/scrapers`, `scripts/scrape_once.py`, `scripts/normalize_once.py`, docs, focused tests | T058 | Blocked until Tesco Slovakia dry-run output is reviewed and legal/location/session policy explicitly approves storage. Acceptance: one category/page, up to 3 products, recorded language/location/session context, sanity report, normalization report, cleanup decision, and no broad collection. |
 | T063 | Blocked | coordinator |  | task/T063-all-retailer-raw-ingest-readiness-report |  | none |  | none |  | Summarize all-retailer raw ingest readiness and next volume gates | `LOOP_STATE.md`, `docs/retailer-ingest-runbook.md`, retailer scraper notes | T055,T059,T060,T061,T062 | Blocked until each retailer has either a controlled stored validation report or an explicit policy blocker. Acceptance: report per-retailer raw/normalized counts, stop conditions, cleanup decisions, remaining legal/location/account blockers, and whether any retailer is safe for capped multi-category ingest. |
+| T064 | Done | coordinator | 2026-06-28 22:54 UTC+2 | task/T064-prevent-loop-overwaiting |  | none |  | not_required |  | Prevent loop overwaiting when ready tasks exist | `docs/LOOP_ENGINEERING.md`, `LOOP_TASKS.md`, `LOOP_STATE.md` |  | Markdown-only coordinator PR. Adds explicit anti-overwaiting rules: fetch remote first, use clean worktrees for dirty/stale checkouts, launch at least one dependency-complete Ready task unless a concrete blocker is recorded, and only let direct dependencies or same-scope PRs block candidate work. |
 
 ## In Progress
 
