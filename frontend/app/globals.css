@@ -254,7 +254,8 @@ tbody tr:last-child td {
   text-transform: uppercase;
 }
 
-.country-savings {
+.country-savings,
+.retailer-savings {
   background: #edf8e8;
   border: 1px solid #b8dba9;
   border-radius: 14px;
@@ -266,15 +267,31 @@ tbody tr:last-child td {
   padding: 10px 12px;
 }
 
-.country-savings strong {
+.retailer-savings {
+  background: #fff8df;
+  border-color: #e2ca79;
+  color: #5a4310;
+}
+
+.country-savings strong,
+.retailer-savings strong {
   color: #1f4b1a;
   font-size: 0.9rem;
 }
 
-.country-savings span {
+.retailer-savings strong {
+  color: #5a4310;
+}
+
+.country-savings span,
+.retailer-savings span {
   color: #496443;
   line-height: 1.35;
   margin-top: 0;
+}
+
+.retailer-savings span {
+  color: #6f5b28;
 }
 
 .missing-offer {
