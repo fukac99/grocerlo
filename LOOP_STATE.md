@@ -12,6 +12,8 @@ Automatic builder loop every 10 minutes. Do not run recurring scrapes yet.
 
 Loop coordination uses `LOOP_TASKS.md` as the task ledger and lightweight lock file. Tasks must be moved to `In Progress` before local work or subagent launch.
 
+Historical completed tasks and version notes live in `LOOP_LOG.md` so `LOOP_TASKS.md` can stay focused on active, ready, blocked, open-PR, and review-gated work.
+
 Each implementation task should use its own branch and open a GitHub pull request against `https://github.com/fukac99/grocerlo`. The repository connection task should run before other ready tasks that need pull requests.
 
 Every loop run should check existing task pull requests and update `pr_status` plus `pr_last_checked` in `LOOP_TASKS.md`. Downstream tasks should treat prior PR-backed dependencies as complete only after their pull requests are merged.
@@ -35,9 +37,11 @@ Every loop run should also compare `LOOP_TASKS.md` against `PRICE_COMPARISON_APP
 - Added T007 to update the loop protocol for plan expansion and PR review tasks.
 - Updated coordinator rules so every tick re-reads the overall plan, adds missing actionable tasks, and tracks review status on implementation task rows.
 - Removed separate review tasks from the protocol so pull requests cannot be treated as independent of their reviews.
+- Added `LOOP_LOG.md` and archived fully completed historical tasks to keep `LOOP_TASKS.md` smaller.
 - Clarified that multiple independent ready tasks can be launched as parallel subagents.
 - Created T007 pull request: https://github.com/fukac99/grocerlo/pull/2.
 - PR #2 merged before the same-task review correction landed; created follow-up PR #3 for that correction: https://github.com/fukac99/grocerlo/pull/3.
+- PR #3 merged before the archive correction landed; created follow-up PR #4 for that correction: https://github.com/fukac99/grocerlo/pull/4.
 
 2026-06-28 automatic builder loop, immediate coordinator run:
 
@@ -106,12 +110,14 @@ Previous run:
 ## Next Actions
 
 1. Use `LOOP_TASKS.md` to claim eligible `Ready` tasks.
-2. Re-read `PRICE_COMPARISON_APP_PLAN.md` and add missing actionable tasks.
-3. Track review status on implementation task rows and require `review_status: passed` before merge readiness.
-4. Continue using SSH remote `git@github.com:fukac99/grocerlo.git`.
-5. Inspect the BILLA dry-scrape sample output for product plausibility after T006 is merged.
-6. If the dry run returns plausible products, start Postgres, run migrations, and test `--store`.
-7. Add a simple data quality check for missing names, missing prices, duplicate source IDs, and suspicious unit prices.
+2. Use `LOOP_LOG.md` for archived completed dependencies and version history.
+3. Re-read `PRICE_COMPARISON_APP_PLAN.md` and add missing actionable tasks.
+4. Track review status on implementation task rows and require `review_status: passed` before merge readiness.
+5. Archive fully complete tasks to `LOOP_LOG.md` once no longer needed in the active ledger.
+6. Continue using SSH remote `git@github.com:fukac99/grocerlo.git`.
+7. Inspect the BILLA dry-scrape sample output for product plausibility after T006 is merged.
+8. If the dry run returns plausible products, start Postgres, run migrations, and test `--store`.
+9. Add a simple data quality check for missing names, missing prices, duplicate source IDs, and suspicious unit prices.
 
 ## Loop Log
 
@@ -150,3 +156,4 @@ Previous run:
 - `gh` authentication completed for account `fukac99`; T006 branch and PR creation can proceed.
 - Created T006 pull request: https://github.com/fukac99/grocerlo/pull/1.
 - Added loop protocol updates for plan expansion, same-task review tracking, and parallel subagent launch rules.
+- Added `LOOP_LOG.md` for archived tasks and version notes, and pruned completed rows from `LOOP_TASKS.md`.
