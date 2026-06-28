@@ -37,6 +37,19 @@ cd backend
 alembic upgrade head
 ```
 
+## Frontend Visual Shell
+
+The frontend is a Next.js visual inspection shell that currently uses static
+mock data only. It is not connected to live scraper output or backend APIs yet.
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Open http://localhost:3000 to view the searchable comparison table.
+
 ## Scraper Dry Run
 
 Dry runs print JSON and do not write to the database:
