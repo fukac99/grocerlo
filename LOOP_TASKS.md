@@ -9,12 +9,10 @@ Before a loop run starts work, it must claim the corresponding Linear issue by m
 - Prefer Linear `Todo` issues over rows in this file when choosing work.
 - Only tasks with `status: Ready` can be claimed if no corresponding Linear issue exists.
 - Set the Linear issue to `In Progress` before launching a subagent or starting work.
-- Set `owner` to the coordinator or subagent role that claimed the task.
-- Set `started` when a task is claimed.
-- Move finished tasks to `Done`.
-- Archive fully complete tasks to `LOOP_LOG.md` once their PR is merged and no review or dependency bookkeeping needs to stay active.
-- Keep `LOOP_TASKS.md` focused on active, ready, in-progress, blocked, open-PR, and review-gated work.
-- Move blocked tasks to `Blocked` with a short reason.
+- Record owner/start information in the Linear issue comment when a task is claimed.
+- Move finished work to Linear `Done`.
+- Keep `LOOP_TASKS.md` focused on compatibility rows needed by the current GitHub review gate.
+- Move blocked work to Linear `Backlog` or add a blocker comment.
 - Do not launch parallel tasks that edit the same files unless they are explicitly coordinated.
 - Prefer one coordinator task plus multiple implementation subagents only when tasks are independent.
 - Each implementation task should happen on its own branch and end with a GitHub pull request against the project repository.
@@ -28,13 +26,13 @@ Before a loop run starts work, it must claim the corresponding Linear issue by m
 - Dirty or stale local checkouts are not blockers by themselves; use a clean worktree from `origin/main` for new tasks.
 - If any dependency-complete `Ready` task exists after PR/status checks and security-boundary checks, claim or launch at least one eligible task unless a concrete blocker is recorded in `LOOP_STATE.md`.
 - Unrelated open PRs do not block new work; only direct dependencies or same file/scope conflicts should block a candidate task.
-- The PM pass should define task IDs, dependencies, file/scope boundaries, branch names, and acceptance criteria.
-- Executor agents should only receive tasks that are already scoped in this ledger.
-- Every implementation task, and every task that touches non-Markdown files, with a pull request must track review under the same task row.
+- The PM pass should define Linear issues with dependencies, file/scope boundaries, branch names, and acceptance criteria.
+- Executor agents should only receive tasks that are already scoped in Linear.
+- Every implementation task, and every task that touches non-Markdown files, with a pull request must track review on the Linear issue and in this file only when CI compatibility requires it.
 - Use review statuses: `none`, `pending`, `in_progress`, `passed`, `changes_requested`, `blocked`, or `not_required`.
 - Markdown-only coordinator PRs do not require code review and may use `review_status: none` or `not_required`.
-- Do not consider an implementation or non-Markdown pull request merge-ready until its task has `review_status: passed`.
-- Do not merge pull requests unless the user explicitly asks. Agents should open PRs, verify checks, update this ledger, and report readiness for human review or merge.
+- Do not consider an implementation or non-Markdown pull request merge-ready until its Linear issue or compatibility row has review status passed.
+- Do not merge pull requests unless the user explicitly asks. Agents should open PRs, verify checks, update Linear, and report readiness for human review or merge.
 - Implementation PR descriptions must clearly explain what changed: behavior, code/module areas, API/CLI/UI/data-shape changes, tests, risks, assumptions, and follow-ups.
 - The repository connection task may need to bootstrap the base branch first if the remote repository is empty.
 
@@ -76,9 +74,10 @@ Before a loop run starts work, it must claim the corresponding Linear issue by m
 | T061 | Blocked | implementation-subagent |  | task/T061-kaufland-sk-controlled-store-normalize-report |  | none |  | none |  | Run Kaufland Slovakia controlled stored ingest, normalization, and report | `backend/app/scrapers`, `scripts/scrape_once.py`, `scripts/normalize_once.py`, docs, focused tests | T057 | Blocked until Kaufland Slovakia dry-run output is reviewed and legal/store/price-surface policy explicitly approves storage. Acceptance: one category/page, up to 3 products, recorded price-surface and location context, sanity report, normalization report, cleanup decision, and no broad collection. |
 | T062 | Blocked | implementation-subagent |  | task/T062-tesco-sk-controlled-store-normalize-report |  | none |  | none |  | Run Tesco Slovakia controlled stored ingest, normalization, and report | `backend/app/scrapers`, `scripts/scrape_once.py`, `scripts/normalize_once.py`, docs, focused tests | T058 | Blocked until Tesco Slovakia dry-run output is reviewed and legal/location/session policy explicitly approves storage. Acceptance: one category/page, up to 3 products, recorded language/location/session context, sanity report, normalization report, cleanup decision, and no broad collection. |
 | T063 | Blocked | coordinator |  | task/T063-all-retailer-raw-ingest-readiness-report |  | none |  | none |  | Summarize all-retailer raw ingest readiness and next volume gates | `LOOP_STATE.md`, `docs/retailer-ingest-runbook.md`, retailer scraper notes | T055,T059,T060,T061,T062 | Blocked until each retailer has either a controlled stored validation report or an explicit policy blocker. Acceptance: report per-retailer raw/normalized counts, stop conditions, cleanup decisions, remaining legal/location/account blockers, and whether any retailer is safe for capped multi-category ingest. |
-| T065 | Done | coordinator | 2026-06-28 23:08 UTC+2 | task/T065-linear-task-management | https://github.com/fukac99/grocerlo/pull/46 | open | 2026-06-28 23:13 UTC+2 | passed | self-review | Move task management source of truth to Linear | `.gitignore`, `docs/LOOP_ENGINEERING.md`, `LOOP_STATE.md`, `LOOP_TASKS.md`, Linear team `GRO` |  | Linear `GRO-39`. Created Linear issues `GRO-5` through `GRO-38` from migrated active task rows, added `credentials.txt` to `.gitignore`, and updated loop instructions to use Linear as the source of truth while keeping this file as a compatibility cache. |
 | T064 | Done | coordinator | 2026-06-28 22:54 UTC+2 | task/T064-prevent-loop-overwaiting | https://github.com/fukac99/grocerlo/pull/44 | open | 2026-06-28 23:00 UTC+2 | not_required |  | Prevent loop overwaiting when ready tasks exist | `docs/LOOP_ENGINEERING.md`, `LOOP_TASKS.md`, `LOOP_STATE.md` |  | Markdown-only coordinator PR. Adds explicit anti-overwaiting rules: fetch remote first, use clean worktrees for dirty/stale checkouts, launch at least one dependency-complete Ready task unless a concrete blocker is recorded, and only let direct dependencies or same-scope PRs block candidate work. |
 | T065 | Done | coordinator | 2026-06-28 23:08 UTC+2 | task/T065-linear-task-management | https://github.com/fukac99/grocerlo/pull/46 | open | 2026-06-28 23:13 UTC+2 | passed | self-review | Move task management source of truth to Linear | `.gitignore`, `docs/LOOP_ENGINEERING.md`, `LOOP_STATE.md`, `LOOP_TASKS.md`, Linear team `GRO` |  | Linear `GRO-39`. Created Linear issues `GRO-5` through `GRO-38` from migrated active task rows, added `credentials.txt` to `.gitignore`, and updated loop instructions to use Linear as the source of truth while keeping this file as a compatibility cache. |
+| T066 | Done | coordinator | 2026-06-28 23:24 UTC+2 | task/T066-linear-ledger-cleanup |  | none |  | not_required |  | Clean up loop files after Linear migration | `docs/LOOP_ENGINEERING.md`, `LOOP_STATE.md`, `LOOP_TASKS.md`, Linear team `GRO` | T065 | Linear `GRO-40`. Restores Linear-first coordination after all PRs merged, marks `LOOP_TASKS.md` compatibility-only, stops routine `LOOP_LOG.md` updates, and keeps this row only for the current Markdown-only coordinator PR gate. |
+| T067 | Ready |  |  | task/T067-linear-review-gate |  | none |  | none |  | Migrate review gate away from LOOP_TASKS.md | `.github/workflows/agent-review.yml`, `scripts/check_pr_review_status.py`, tests, Linear API/token docs | T066 | Linear follow-up. Replace CI's dependency on compatibility rows in `LOOP_TASKS.md` with Linear issue lookup or another durable PR metadata source; acceptance: non-Markdown PRs still require passed review status, Markdown-only coordinator PRs remain exempt, and `LOOP_TASKS.md` can be deleted or frozen afterward. |
 
 ## In Progress
 

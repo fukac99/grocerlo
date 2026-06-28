@@ -12,7 +12,9 @@ Automatic builder loop every 10 minutes. Do not run recurring scrapes yet.
 
 Loop coordination now uses Linear team `GRO` as the task source of truth: `https://linear.app/grocerlo/team/GRO/active`. Tasks must be moved to Linear `In Progress` before local work or subagent launch.
 
-`LOOP_TASKS.md` is now a migrated cache and compatibility ledger for existing CI/review-gate behavior. Historical completed tasks and version notes live in `LOOP_LOG.md`.
+`LOOP_TASKS.md` is now a migrated cache and compatibility ledger for existing CI/review-gate behavior. Do not use it as the active task queue when a corresponding Linear issue exists.
+
+`LOOP_LOG.md` is now historical only. Do not append routine Linear task completions to it; use Linear issue state/comments and `LOOP_STATE.md` for active coordination.
 
 Each implementation task should use its own branch and open a GitHub pull request against `https://github.com/fukac99/grocerlo`. The repository connection task should run before other ready tasks that need pull requests.
 
@@ -24,9 +26,9 @@ Implementation PR descriptions must be detailed enough for review without recons
 
 Every loop run should start with a PM/scoping pass that plans a batch of executor-ready tasks with IDs, branches, dependencies, file/scope boundaries, acceptance criteria, and parallelization notes.
 
-Every loop run must avoid overwaiting: fetch latest remote state before deciding no work is available, treat dirty or stale local checkouts as a reason to create a clean worktree from `origin/main`, and claim or launch at least one dependency-complete `Ready` task unless a concrete blocker is recorded. Unrelated open PRs do not block new work; only direct dependencies or same file/scope conflicts should block a candidate task.
+Every loop run must avoid overwaiting: fetch latest remote state before deciding no work is available, treat dirty or stale local checkouts as a reason to create a clean worktree from `origin/main`, and claim or launch at least one dependency-complete Linear `Todo` issue unless a concrete blocker is recorded. Unrelated open PRs do not block new work; only direct dependencies or same file/scope conflicts should block a candidate issue.
 
-Every loop run should count completed tasks across `LOOP_LOG.md` plus active `Done` rows in `LOOP_TASKS.md`. At each new 100-task boundary, the coordinator must schedule a full-codebase security review before launching additional implementation work.
+Every loop run should count completed tasks primarily from Linear `Done` issues. Use `LOOP_LOG.md` only as historical backfill for the 100-task security-review boundary. At each new 100-task boundary, the coordinator must schedule a full-codebase security review before launching additional implementation work.
 
 Last full-codebase security review boundary: 0 completed tasks.
 
@@ -41,6 +43,16 @@ Last full-codebase security review boundary: 0 completed tasks.
 | Tesco | SK | Discovery-only; storage blocked | T053 should document public price visibility, dynamic loading/Playwright needs, address/slot/session requirements, Clubcard labels, and stop conditions before any dry-run scraper task. |
 
 ## Last Run
+
+2026-06-28 T066 Linear ledger cleanup:
+
+- User confirmed all PRs were merged and asked whether `LOOP_TASKS.md`/`LOOP_LOG.md` still need cleanup.
+- Restored Linear-first loop instructions after the frontend PR merged after the Linear migration PR and left stale Markdown-ledger wording behind.
+- Clarified:
+  - Linear team `GRO` is the active task source of truth.
+  - `LOOP_TASKS.md` is compatibility/cache only for the current GitHub review gate.
+  - `LOOP_LOG.md` is historical only and should not receive routine Linear task completion updates.
+- Added a follow-up compatibility task to migrate the GitHub review gate away from `LOOP_TASKS.md`.
 
 2026-06-28 T044 country-cheapest product filter:
 
