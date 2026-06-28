@@ -28,6 +28,22 @@ Every loop run should check existing task pull requests and update `pr_status` p
 
 ## Last Run
 
+2026-06-28 automatic builder loop, immediate coordinator run:
+
+- Restarted the automatic 10-minute loop.
+- Claimed T006 for GitHub repository connection.
+- Initialized local git on `main`.
+- Added `origin` as `https://github.com/fukac99/grocerlo.git`.
+- Created local bootstrap commits.
+- Push and PR creation are blocked because HTTPS git authentication is not configured and `gh` is not installed.
+- Switched `origin` to SSH as `git@github.com:fukac99/grocerlo.git`.
+- Verified GitHub SSH authentication for `fukac99`.
+- Pushed `main` to GitHub over SSH.
+- PR creation remains blocked because `gh` is not installed.
+- Installed GitHub CLI `gh` 2.95.0.
+- `gh auth status` reports no logged-in GitHub hosts, so PR creation remains blocked until `gh auth login` is completed.
+- `gh auth login` completed for GitHub account `fukac99`.
+
 2026-06-28 automatic builder loop, coordinator pass:
 
 - Armed the automatic 30-minute loop.
@@ -78,10 +94,11 @@ Previous run:
 ## Next Actions
 
 1. Use `LOOP_TASKS.md` to claim eligible `Ready` tasks.
-2. Connect this local project to `https://github.com/fukac99/grocerlo` and establish the branch/PR workflow.
-3. Inspect the BILLA dry-scrape sample output for product plausibility.
-4. If the dry run returns plausible products, start Postgres, run migrations, and test `--store`.
-5. Add a simple data quality check for missing names, missing prices, duplicate source IDs, and suspicious unit prices.
+2. Record the T006 pull request URL after creation.
+3. Continue using SSH remote `git@github.com:fukac99/grocerlo.git`.
+4. Inspect the BILLA dry-scrape sample output for product plausibility.
+5. If the dry run returns plausible products, start Postgres, run migrations, and test `--store`.
+6. Add a simple data quality check for missing names, missing prices, duplicate source IDs, and suspicious unit prices.
 
 ## Loop Log
 
@@ -112,3 +129,9 @@ Previous run:
 - Added T006 to connect the project to `https://github.com/fukac99/grocerlo`.
 - Updated loop rules so future tasks use dedicated branches and GitHub pull requests.
 - Added PR status tracking so each loop tick records whether previous task pull requests are open, merged, closed, blocked, or unknown.
+- Restarted the automatic 10-minute loop and ran the coordinator once immediately.
+- T006 is blocked after local git initialization because GitHub push/PR creation needs authentication tooling.
+- Switched GitHub remote to SSH and pushed `main` successfully.
+- Installed GitHub CLI `gh` 2.95.0.
+- T006 remains blocked only on `gh auth login` for pull request creation.
+- `gh` authentication completed for account `fukac99`; T006 branch and PR creation can proceed.
