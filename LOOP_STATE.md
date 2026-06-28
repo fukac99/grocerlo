@@ -32,6 +32,12 @@ Every loop run should also compare `LOOP_TASKS.md` against `PRICE_COMPARISON_APP
 
 ## Last Run
 
+2026-06-28 T005 raw product quality checks:
+
+- Added pure raw product quality checks for missing names, missing prices, duplicate source IDs, suspicious prices/unit prices, and missing source URLs.
+- Added focused pytest coverage for payload-shaped data, stored raw product-shaped data, duplicate scoping, suspicious values, and custom thresholds.
+- Created T005 pull request: https://github.com/fukac99/grocerlo/pull/7.
+- Next action: review and merge the T005 pull request, then run the checker against low-volume raw scrape output.
 2026-06-28 T002 BILLA dry scrape validation:
 
 - Ran the constrained BILLA dry scrape with 1 category and 3 products, without `--store`.
@@ -130,6 +136,9 @@ Previous run:
 4. Track review status on implementation task rows and require `review_status: passed` before merge readiness.
 5. Archive fully complete tasks to `LOOP_LOG.md` once no longer needed in the active ledger.
 6. Continue using SSH remote `git@github.com:fukac99/grocerlo.git`.
+7. Inspect the BILLA dry-scrape sample output for product plausibility after T006 is merged.
+8. If the dry run returns plausible products, start Postgres, run migrations, and test `--store`.
+9. Review and merge the T005 raw product quality checks PR, then run it against low-volume raw scrape output.
 7. Review the T002 BILLA dry-scrape validation pull request.
 8. If the T002 review passes and merges, start Postgres, run migrations, and test `--store`.
 9. Add a simple data quality check for missing names, missing prices, duplicate source IDs, and suspicious unit prices.
