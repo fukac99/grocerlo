@@ -37,7 +37,8 @@ Every loop run should also compare `LOOP_TASKS.md` against `PRICE_COMPARISON_APP
 - Ran the constrained BILLA dry scrape with 1 category and 3 products, without `--store`.
 - Sample output looked plausible: product names, EUR prices, package sizes, source URLs, source IDs, and compact raw payload text were present.
 - Unit price extraction worked where BILLA exposed a numeric unit price; variable-weight meat samples only exposed `per 1 kg` in raw text, so no numeric unit price was extracted.
-- Next action: open the T002 pull request for review; if review passes, T003 can test the Postgres `--store` path.
+- Opened T002 pull request: https://github.com/fukac99/grocerlo/pull/6.
+- Next action: review PR #6; if review passes and merges, T003 can test the Postgres `--store` path.
 
 2026-06-28 PR review update:
 
