@@ -20,6 +20,11 @@ type CountrySavingsSummary = {
   detail: string;
 };
 
+type RetailerSavingsSummary = {
+  label: string;
+  detail: string;
+};
+
 type StatusMessage = {
   tone: "info" | "error";
   title: string;
@@ -159,6 +164,9 @@ export function ComparisonTable({
         <p className="result-count">
           Showing {comparisonRows.length} comparison rows from {offers.length} offers
           {country !== allCountries ? ` cheapest in ${country}` : ""}
+          {retailer !== allRetailers && retailerFilterMode === "cheapest"
+            ? ` cheapest at ${retailer}`
+            : ""}
         </p>
       </div>
 
@@ -257,6 +265,11 @@ export function ComparisonTable({
           <tbody>
             {comparisonRows.map((row) => {
               const countrySavingsSummary = getCountrySavingsSummary(row, country);
+              const retailerSavingsSummary = getRetailerSavingsSummary(
+                row,
+                retailer,
+                retailerFilterMode,
+              );
 
               return (
                 <tr key={row.key}>
@@ -267,6 +280,12 @@ export function ComparisonTable({
                       <span className="country-savings">
                         <strong>{countrySavingsSummary.label}</strong>
                         <span>{countrySavingsSummary.detail}</span>
+                      </span>
+                    ) : null}
+                    {retailerSavingsSummary ? (
+                      <span className="retailer-savings">
+                        <strong>{retailerSavingsSummary.label}</strong>
+                        <span>{retailerSavingsSummary.detail}</span>
                       </span>
                     ) : null}
                   </td>
@@ -321,6 +340,63 @@ export function ComparisonTable({
       </div>
     </section>
   );
+}
+
+function getRetailerSavingsSummary(
+  row: ComparisonRow,
+  selectedRetailer: string,
+  retailerFilterMode: RetailerFilterMode,
+): RetailerSavingsSummary | null {
+  if (selectedRetailer === allRetailers || retailerFilterMode !== "cheapest") {
+    return null;
+  }
+
+  const selectedOffer = row.offersByRetailer.get(selectedRetailer);
+
+  if (!selectedOffer || !pricesAreEqual(selectedOffer.price, row.lowestPrice)) {
+    return null;
+  }
+
+  const comparableOffers = row.offers.filter((offer) => offer.retailer !== selectedRetailer);
+
+  if (comparableOffers.length === 0) {
+    return {
+      label: "No savings delta",
+      detail: "No comparable retailer offer is available for this product.",
+    };
+  }
+
+  const tiedOffers = comparableOffers.filter((offer) =>
+    pricesAreEqual(offer.price, selectedOffer.price),
+  );
+
+  if (tiedOffers.length > 0) {
+    const tiedRetailers = Array.from(new Set(tiedOffers.map((offer) => offer.retailer))).sort();
+
+    return {
+      label: "Tied cheapest",
+      detail: `${currencyFormatter.format(0)} (0%) versus tied cheapest at ${tiedRetailers.join(", ")}.`,
+    };
+  }
+
+  const nextBestOffer = comparableOffers.sort(
+    (firstOffer, secondOffer) => firstOffer.price - secondOffer.price,
+  )[0];
+
+  if (!nextBestOffer) {
+    return {
+      label: "No savings delta",
+      detail: "No comparable retailer offer is available for this product.",
+    };
+  }
+
+  const savingsAmount = nextBestOffer.price - selectedOffer.price;
+  const savingsPercent = savingsAmount / nextBestOffer.price;
+
+  return {
+    label: `${currencyFormatter.format(savingsAmount)} cheaper`,
+    detail: `${currencyFormatter.format(savingsAmount)} (${percentFormatter.format(savingsPercent)}) below next-best offer at ${nextBestOffer.retailer}.`,
+  };
 }
 
 function getCountrySavingsSummary(
