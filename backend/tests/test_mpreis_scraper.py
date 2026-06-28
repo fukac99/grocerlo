@@ -53,3 +53,9 @@ def test_mpreis_scraper_caps_discovery_volume_to_three_products() -> None:
     scraper = MpreisScraper(max_products_per_category=20)
 
     assert scraper.max_products_per_category == 3
+
+
+def test_mpreis_scraper_rejects_negative_discovery_volume() -> None:
+    scraper = MpreisScraper(max_products_per_category=-1)
+
+    assert scraper.max_products_per_category == 1

@@ -15,7 +15,7 @@ class MpreisScraper:
     category_url = "https://www.mpreis.at/schneller-erster-einkauf"
 
     def __init__(self, *, max_products_per_category: int = 3) -> None:
-        self.max_products_per_category = min(max_products_per_category, 3)
+        self.max_products_per_category = max(1, min(max_products_per_category, 3))
 
     async def scrape_categories(self) -> list[Category]:
         return [

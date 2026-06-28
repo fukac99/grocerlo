@@ -16,6 +16,9 @@ from app.scrapers import BillaScraper, MpreisScraper, RawProductPayload, Retaile
 
 async def main() -> None:
     args = parse_args()
+    validate_positive_limit("--limit-categories", args.limit_categories)
+    validate_positive_limit("--max-products", args.max_products)
+
     if args.retailer == "mpreis" and args.store:
         raise SystemExit("MPREIS discovery is dry-run only; omit --store.")
 
@@ -82,6 +85,11 @@ def parse_args() -> argparse.Namespace:
         help="Store raw products in Postgres. Omit for JSON dry-run output.",
     )
     return parser.parse_args()
+
+
+def validate_positive_limit(name: str, value: int) -> None:
+    if value < 1:
+        raise SystemExit(f"{name} must be at least 1.")
 
 
 def build_scraper(args: argparse.Namespace) -> RetailerScraper:
