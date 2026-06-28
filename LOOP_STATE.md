@@ -40,6 +40,19 @@ Last full-codebase security review boundary: 0 completed tasks.
 
 ## Last Run
 
+2026-06-28 user-requested Grocerlo UX stories:
+
+- User requested UX tasks for:
+  - country filter: show products cheapest in the selected country and by how much.
+  - retailer filter: show products cheapest at the selected retailer and by how much.
+  - category filtering and product-name search.
+  - Grocerlo branding with a clean minimalist design that hides details such as last seen date and source link behind hover or another disclosure mechanism.
+- Added T044 for country-cheapest filtering with savings deltas.
+- Added T045 for retailer-cheapest savings deltas, building on the existing retailer-cheapest filter.
+- Added T046 for category/search UX polish and empty/result-count states.
+- Added T047 for Grocerlo branding and minimalist progressive detail disclosure.
+- Frontend sequencing note: T044, T045, T046, and T047 all touch `frontend/components/comparison-table.tsx`; run them one at a time unless a coordinator explicitly combines them.
+
 2026-06-28 user-prioritized real data ingest:
 
 - User asked to prioritize a full data scrape so development can use real data ASAP.
