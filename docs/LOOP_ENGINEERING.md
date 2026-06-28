@@ -15,8 +15,9 @@ The goal is not to make the agent scrape aggressively or make unchecked product 
 - Record the branch name and pull request URL in `LOOP_TASKS.md`.
 - On every loop run, check existing task pull requests and update `pr_status` plus `pr_last_checked`.
 - On every loop run, compare `LOOP_TASKS.md` with `PRICE_COMPARISON_APP_PLAN.md` and add missing actionable tasks.
-- Every implementation PR should get a separate review task for architecture, security, bugs, tests, maintainability, and fit with the overall plan.
-- Review tasks do not recursively create review tasks unless the review task changes code or workflow files.
+- Every implementation PR should track review status on the same task row for architecture, security, bugs, tests, maintainability, and fit with the overall plan.
+- Do not merge a pull request until its task row has `review_status: passed`.
+- Reviews can be performed by a separate subagent, but the review result must be logged under the implementation task instead of creating a separate review task.
 - Launch multiple subagents only for independent tasks that do not edit the same files and do not depend on each other.
 - Keep scraper runs low-volume until each retailer's behavior is understood.
 - Store raw data before normalization.
@@ -34,10 +35,10 @@ Every automated loop tick should act as a coordinator before doing implementatio
 3. Update `pr_status` and `pr_last_checked` for those rows before claiming new work.
 4. Re-read the overall plan and compare it with the task ledger.
 5. Add missing actionable tasks for the next plan steps, avoiding duplicates and preserving dependencies.
-6. For every implementation task that has an open pull request and no review task, add a separate review task.
+6. For every implementation task that has an open pull request and `review_status: none`, set `review_status: pending`.
 7. Identify tasks with `status: Ready` whose dependencies are complete.
 8. Treat a dependency as complete only when its task is `Done` and its `pr_status` is `merged`, unless the task was explicitly completed before the branch/PR rule and has `pr_status: none`.
-9. Treat review tasks as eligible when the implementation PR they review is open, unless the task notes say to wait for merge.
+9. Treat review work as eligible when the implementation PR is open and `review_status` is `pending` or `changes_requested`.
 10. Group ready tasks by file/scope.
 11. Select one or more independent tasks.
 12. Move each selected task to `In Progress`, set `owner`, and set `started`.
@@ -47,7 +48,7 @@ Every automated loop tick should act as a coordinator before doing implementatio
 16. Keep one task local if it involves coordination, environment setup, GitHub setup, or state-file updates.
 17. When implementation work finishes, push the task branch and open a GitHub pull request.
 18. Record the pull request URL, `pr_status: open`, and `pr_last_checked` in `LOOP_TASKS.md`.
-19. For each new implementation PR, create a review task if one does not already exist.
+19. For each new implementation PR, set `review_status: pending`.
 20. Move tasks to `Done` or `Blocked`.
 21. Record checks, PR statuses, newly planned tasks, failures, and next actions in `LOOP_STATE.md`.
 
@@ -64,7 +65,7 @@ Use this while the MVP is still being built.
 Prompt:
 
 ```text
-Read LOOP_TASKS.md, LOOP_STATE.md, and PRICE_COMPARISON_APP_PLAN.md. Act as the loop coordinator. First check existing task pull requests and update pr_status plus pr_last_checked in LOOP_TASKS.md. Re-read the overall plan and add missing actionable tasks, avoiding duplicates. For every implementation PR without a review task, add a separate review task for architecture, security, bugs, tests, maintainability, and fit with the plan. Claim eligible Ready tasks by marking them In Progress before starting work. Use the task branch recorded in LOOP_TASKS.md, or add one before work starts. If multiple independent tasks are available, launch multiple subagents at the same time; do not assign two agents to the same files/scope. Each completed implementation task should push its branch and open a GitHub pull request, then record the PR URL, pr_status, and pr_last_checked in LOOP_TASKS.md. Review tasks should review the target PR and report findings; they do not spawn review tasks unless they change files. Implement or coordinate scoped changes. Run relevant checks. Update LOOP_TASKS.md and LOOP_STATE.md with progress, PR statuses, newly planned tasks, failures, and next actions. Stop if blocked by a decision about GitHub access, scraping legality, accounts, store location, or product matching semantics.
+Read LOOP_TASKS.md, LOOP_STATE.md, and PRICE_COMPARISON_APP_PLAN.md. Act as the loop coordinator. First check existing task pull requests and update pr_status plus pr_last_checked in LOOP_TASKS.md. Re-read the overall plan and add missing actionable tasks, avoiding duplicates. For every implementation PR with review_status none, set review_status pending. Do not consider a PR merge-ready until its task row has review_status passed. Claim eligible Ready tasks by marking them In Progress before starting work. Use the task branch recorded in LOOP_TASKS.md, or add one before work starts. If multiple independent tasks are available, launch multiple subagents at the same time; do not assign two agents to the same files/scope. Each completed implementation task should push its branch and open a GitHub pull request, then record the PR URL, pr_status, pr_last_checked, and review_status pending in LOOP_TASKS.md. Review work should review the target PR for architecture, security, bugs, tests, maintainability, and fit with the plan, then update review_status and notes on the same task row. Implement or coordinate scoped changes. Run relevant checks. Update LOOP_TASKS.md and LOOP_STATE.md with progress, PR statuses, review statuses, newly planned tasks, failures, and next actions. Stop if blocked by a decision about GitHub access, scraping legality, accounts, store location, or product matching semantics.
 ```
 
 Recommended cadence:
@@ -134,13 +135,13 @@ Checks this loop should run:
 Manual builder run:
 
 ```text
-Read LOOP_TASKS.md, LOOP_STATE.md, and PRICE_COMPARISON_APP_PLAN.md. Act as the loop coordinator. First check existing task pull requests and update pr_status plus pr_last_checked in LOOP_TASKS.md. Re-read the overall plan and add missing actionable tasks, avoiding duplicates. For every implementation PR without a review task, add a separate review task for architecture, security, bugs, tests, maintainability, and fit with the plan. Claim eligible Ready tasks by marking them In Progress before starting work. Use the task branch recorded in LOOP_TASKS.md, or add one before work starts. If multiple independent tasks are available, launch multiple subagents at the same time; do not assign two agents to the same files/scope. Each completed implementation task should push its branch and open a GitHub pull request, then record the PR URL, pr_status, and pr_last_checked in LOOP_TASKS.md. Review tasks should review the target PR and report findings; they do not spawn review tasks unless they change files. Implement or coordinate scoped changes. Run relevant checks. Update LOOP_TASKS.md and LOOP_STATE.md with progress, PR statuses, newly planned tasks, failures, and next actions.
+Read LOOP_TASKS.md, LOOP_STATE.md, and PRICE_COMPARISON_APP_PLAN.md. Act as the loop coordinator. First check existing task pull requests and update pr_status plus pr_last_checked in LOOP_TASKS.md. Re-read the overall plan and add missing actionable tasks, avoiding duplicates. For every implementation PR with review_status none, set review_status pending. Do not consider a PR merge-ready until its task row has review_status passed. Claim eligible Ready tasks by marking them In Progress before starting work. Use the task branch recorded in LOOP_TASKS.md, or add one before work starts. If multiple independent tasks are available, launch multiple subagents at the same time; do not assign two agents to the same files/scope. Each completed implementation task should push its branch and open a GitHub pull request, then record the PR URL, pr_status, pr_last_checked, and review_status pending in LOOP_TASKS.md. Review work should review the target PR for architecture, security, bugs, tests, maintainability, and fit with the plan, then update review_status and notes on the same task row. Implement or coordinate scoped changes. Run relevant checks. Update LOOP_TASKS.md and LOOP_STATE.md with progress, PR statuses, review statuses, newly planned tasks, failures, and next actions.
 ```
 
 In-session recurring builder loop:
 
 ```text
-/loop 10m Read LOOP_TASKS.md, LOOP_STATE.md, and PRICE_COMPARISON_APP_PLAN.md. Act as the loop coordinator. First check existing task pull requests and update pr_status plus pr_last_checked in LOOP_TASKS.md. Re-read the overall plan and add missing actionable tasks, avoiding duplicates. For every implementation PR without a review task, add a separate review task for architecture, security, bugs, tests, maintainability, and fit with the plan. Claim eligible Ready tasks by marking them In Progress before starting work. Use the task branch recorded in LOOP_TASKS.md, or add one before work starts. If multiple independent tasks are available, launch multiple subagents at the same time; do not assign two agents to the same files/scope. Each completed implementation task should push its branch and open a GitHub pull request, then record the PR URL, pr_status, and pr_last_checked in LOOP_TASKS.md. Review tasks should review the target PR and report findings; they do not spawn review tasks unless they change files. Implement or coordinate scoped changes. Run relevant checks. Update LOOP_TASKS.md and LOOP_STATE.md with progress, PR statuses, newly planned tasks, failures, and next actions. Stop if blocked by GitHub access, scraping legality, account, store-location, or matching decision.
+/loop 10m Read LOOP_TASKS.md, LOOP_STATE.md, and PRICE_COMPARISON_APP_PLAN.md. Act as the loop coordinator. First check existing task pull requests and update pr_status plus pr_last_checked in LOOP_TASKS.md. Re-read the overall plan and add missing actionable tasks, avoiding duplicates. For every implementation PR with review_status none, set review_status pending. Do not consider a PR merge-ready until its task row has review_status passed. Claim eligible Ready tasks by marking them In Progress before starting work. Use the task branch recorded in LOOP_TASKS.md, or add one before work starts. If multiple independent tasks are available, launch multiple subagents at the same time; do not assign two agents to the same files/scope. Each completed implementation task should push its branch and open a GitHub pull request, then record the PR URL, pr_status, pr_last_checked, and review_status pending in LOOP_TASKS.md. Review work should review the target PR for architecture, security, bugs, tests, maintainability, and fit with the plan, then update review_status and notes on the same task row. Implement or coordinate scoped changes. Run relevant checks. Update LOOP_TASKS.md and LOOP_STATE.md with progress, PR statuses, review statuses, newly planned tasks, failures, and next actions. Stop if blocked by GitHub access, scraping legality, account, store-location, or matching decision.
 ```
 
 Daily scraper quality loop:
@@ -170,7 +171,7 @@ Every loop run should update `LOOP_TASKS.md` with:
 - Pull request URLs recorded for completed tasks.
 - Pull request status and last checked timestamp updated on every loop run.
 - Missing tasks from the overall plan added with dependencies.
-- Review tasks added for implementation pull requests.
+- Review status tracked on implementation task rows.
 
 ## Stop Conditions
 
