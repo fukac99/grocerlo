@@ -36,6 +36,7 @@ Every loop run should also compare `LOOP_TASKS.md` against `PRICE_COMPARISON_APP
 
 - Added pure raw product quality checks for missing names, missing prices, duplicate source IDs, suspicious prices/unit prices, and missing source URLs.
 - Added focused pytest coverage for payload-shaped data, stored raw product-shaped data, duplicate scoping, suspicious values, and custom thresholds.
+- Created T005 pull request: https://github.com/fukac99/grocerlo/pull/7.
 - Next action: review and merge the T005 pull request, then run the checker against low-volume raw scrape output.
 
 2026-06-28 PR review update:
