@@ -25,10 +25,21 @@ jobs:
           "origin/${{ github.base_ref }}...HEAD"
           > changed-files.txt
 
-      - name: Require task review_status passed
+      - name: Collect pull request body
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+
+          Path("pr-body.txt").write_text(os.environ.get("PR_BODY", ""), encoding="utf-8")
+          PY
+
+      - name: Require pull request review_status passed
         run: >-
           python3 scripts/check_pr_review_status.py
-          --tasks-file LOOP_TASKS.md
           --head-ref "${{ github.head_ref }}"
           --pr-url "${{ github.event.pull_request.html_url }}"
+          --pr-body-file pr-body.txt
           --changed-files-file changed-files.txt
