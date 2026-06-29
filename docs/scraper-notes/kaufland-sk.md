@@ -6,6 +6,24 @@ Kaufland Slovakia is discovery-only. Do not implement runtime scraping, store ro
 
 T052 low-volume public discovery was completed on 2026-06-28 23:34-23:54 UTC+2 using read-only browser/search fetches only. No Kaufland account was used, no store was manually selected or changed, no app/account/loyalty flow was entered, no bot protection was bypassed, no storage was performed, and product examples were capped at three public offer rows.
 
+## T080 Source-Policy Recommendation
+
+Recommendation: keep Kaufland Slovakia blocked for regular grocery product-price scraping, storage, matching, and comparison UI use. The only potentially safe future automation target is a no-storage, low-volume `predajne.kaufland.sk` leaflet/store-offer dry run, and that should be modeled as store-contextual promotional offer data rather than national shelf-price grocery data.
+
+Source modeling decision:
+
+- Do not model `www.kaufland.sk` marketplace listings as grocery retailer prices. The host returned verification/bot-protection pages during discovery, appears marketplace-oriented, and mixes non-grocery product semantics that do not match the app's supermarket price-comparison goal.
+- Do not model Kaufland Card, app coupons, personalized coupons, shopping lists, digital receipts, account flows, or loyalty prices as ordinary public grocery offers. Keep these as explicit stop conditions unless a later human-approved policy creates a separate loyalty/app data model.
+- If a future task is approved, model `predajne.kaufland.sk` only as `source_surface=leaflet_store_offer` with required validity dates, selected-store/default-store context, old price, offer price, unit price, missing source-ID caveat, and promotion labels preserved in raw payload metadata.
+
+Minimum human decision before any safe dry-run implementation:
+
+- Decide whether the project may inspect the public default-store leaflet context exactly as rendered, or whether a named test store must be explicitly approved first.
+- Decide whether leaflet/store-offer prices are useful for Grocerlo as promotional regional offers, knowing they are not regular national shelf prices and may not have stable product IDs.
+- Approve the exact dry-run cap and allowed URL path before implementation. Recommended maximum: one public offer page or one category group, at most three products, no storage, no matching, no comparison API/UI exposure, and at least a 2-second delay plus jitter.
+
+Until those decisions are recorded in Linear, keep `GRO-32` / T057 and `GRO-36` / T061 blocked. This recommendation does not approve scraping, storage, bot-challenge handling, store selection, account/app flows, loyalty-price capture, normalization, matching, or UI exposure.
+
 ## T052 Public Price-Surface Discovery
 
 ### URLs Checked

@@ -204,6 +204,22 @@ The CLI allows stored MPREIS only inside this cap. When storage succeeds, record
 python scripts/stored_data_sanity_report.py --retailer mpreis --scrape-run-id <scrape_run_id>
 ```
 
+### MPREIS Report-Only Normalization
+
+GRO-48 / T079 allows parser and data-quality validation for the existing quarantined
+`scrape_run_id=4` rows only. This command does not scrape, does not create
+`retailer_products`, and labels MPREIS output as non-comparable validation data:
+
+```bash
+python scripts/normalize_once.py 4 --retailer mpreis --report-only
+```
+
+Use the report to inspect normalized package quantity/unit, unit-price parse results,
+missing key fields, skipped rows, suspicious values, location context, and app-only label
+separation. Do not use MPREIS rows for matching, comparison APIs, frontend comparison UI,
+or reusable price baselines until a separate human-approved market/location downstream-use
+policy allows that.
+
 ## Sanity Report Expectations
 
 For every stored BILLA run, keep the JSON run summary and the sanity report with the operator notes. A usable run should have:

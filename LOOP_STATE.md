@@ -52,6 +52,19 @@ Last full-codebase security review boundary: 0 completed tasks.
 - Created `GRO-54` / T085 as the next `Todo` PM/scoping issue so Linear does not sit at zero Todo while an agent can produce a user-facing Kaufland/Tesco decision packet. T085 is scoped away from PR #68 implementation files, PR #69/#70 retailer notes, and `LOOP_STATE.md`.
 - Checks: `git diff --check`.
 - Next action: PR #71 is ready for user-directed review/merge and must not be merged autonomously. The next loop should claim `GRO-54` / T085 to draft the Kaufland/Tesco human-review decision packet, unless the user first resolves the Human Review decisions directly.
+2026-06-29 coordinator pass / T079 MPREIS report-only normalization:
+
+- Fetched latest remote state from `origin/main`. The local primary checkout is dirty on `task/T042-billa-scale-scrape-dedupe`, so T079 used a clean worktree from `origin/main`.
+- Checked GitHub PRs. `gh pr list` reported no open pull requests; PR #64, PR #65, PR #66, and PR #67 are merged on GitHub. This coordinator pass did not merge any pull request.
+- Loaded Linear credentials with `source credentials.txt` before Linear API calls. Moved `GRO-38` / T063 to `Done` after observing PR #67 merged, then claimed `GRO-48` / T079.
+- PM/scoping result: `GRO-48` / T079 was the only dependency-complete `Todo` issue. It was eligible because it is the next narrow MPREIS report-only validation task and does not overlap the dirty primary checkout or any open PR scope.
+- Added `python scripts/normalize_once.py 4 --retailer mpreis --report-only` for MPREIS parser/data-quality reporting over the existing quarantined raw rows. The report labels output as non-comparable validation data, performs no scraping, creates no `retailer_products`, and records guardrails blocking matching, comparison API/UI use, reusable baselines, broader volume, and market-selected scraping.
+- Preserved existing BILLA normalization behavior and added CLI guardrails that reject normal MPREIS normalization unless `--report-only` is supplied.
+- Documented the MPREIS report-only command in the retailer ingest runbook, MPREIS scraper notes, and README status wording.
+- Opened PR #68: `https://github.com/fukac99/grocerlo/pull/68`. Review status is `pending`; because this is a non-Markdown implementation PR, the Agent Review Gate failed as expected until review status is updated to `passed`.
+- PM/scoping follow-up: created `GRO-49` / T080 as a `Todo` issue for a Kaufland Slovakia source-policy recommendation. This keeps Linear from having zero actionable Todo issues while avoiding new scraping/storage approval. T080 should avoid editing `docs/retailer-ingest-runbook.md` or `LOOP_STATE.md` until PR #68 is merged or rebased, unless the recommendation materially changes current gates.
+- Checks: `git diff --check`; `python3 -m compileall -q backend/app scripts`; `PYTHONPATH=/Users/lukastoma/Documents/private/grocery-saver-worktrees/gro-48-t079/backend python -m pytest backend/tests/test_normalization.py backend/tests/test_mpreis_report_only_normalization.py`; Cursor diagnostics for touched files.
+- Next action: run the required agent review for PR #68, update `review_status: passed` if it passes, then report the PR as ready for user-directed merge. Do not merge PR #68 unless the user explicitly asks for that specific PR.
 
 2026-06-29 coordinator pass / T063 all-retailer readiness summary:
 
