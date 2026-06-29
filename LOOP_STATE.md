@@ -41,6 +41,18 @@ Last full-codebase security review boundary: 0 completed tasks.
 
 ## Last Run
 
+2026-06-29 coordinator pass / T047 Grocerlo minimalist detail disclosure:
+
+- Fetched latest remote state from `origin/main` and checked GitHub PRs. PR #59 is merged. PR #60 is the only open pull request; it is clean, has a passing Agent Review Gate, tracks GRO-43 / T073, and must remain waiting for user-directed review/merge.
+- Checked Linear team `GRO` after sourcing `credentials.txt`. GRO-43 remains `In Review`; GRO-8 is `Done`.
+- PM/scoping cleanup: canceled GRO-9 / T029 because GRO-23 / T048 already completed the frontend-to-BILLA backend data wiring that T029 described.
+- Claimed GRO-22 / T047 in Linear and implemented it from a clean `origin/main` worktree on `task/T047-grocerlo-minimalist-detail-disclosure`.
+- Updated the frontend metadata and hero to use Grocerlo branding, and changed comparison rows so product/category metadata plus offer unit price, country, source, promotion, and last-seen details live behind accessible disclosure controls while the visible table prioritizes product, package, retailer price, and savings.
+- Checks passed after installing locked frontend dependencies in the clean worktree: `npm run lint`, `npm run typecheck`, and `npm run build`. `npm ci` emitted an engine warning because `eslint-visitor-keys@5.0.1` prefers Node `^20.19.0 || ^22.13.0 || >=24` while the local Node is `v20.14.0`.
+- Opened PR #61: `https://github.com/fukac99/grocerlo/pull/61`.
+- PR #61 status: open and not merge-ready. The Agent Review Gate failed because `review_status: pending`; this is expected until a review is run and the PR body/metadata is updated to `review_status: passed`.
+- Updated GRO-22 to `In Review` with branch, PR, local check, review status, and no-autonomous-merge metadata.
+- Next action: run the required review for PR #61, update review metadata if it passes, then re-check the gate. Do not merge PR #60 or PR #61 unless the user explicitly asks for that specific PR.
 2026-06-29 coordinator pass / Linear blocker cleanup:
 
 - Fetched latest remote state from `origin/main` and checked open GitHub PRs.
