@@ -6,6 +6,22 @@ Tesco Slovakia remains discovery-only after the 2026-06-28 public discovery pass
 
 Dry-run scraper decision: **No-Go**. Tesco's public online shopping terms say current goods prices are listed after a registered customer logs in, and the public shopping guide says users register/sign in and book a slot before shopping for the most accurate availability and offers. Direct low-volume product-page checks returned a protection/privacy interstitial instead of product data, so a dry-run scraper would either need browser automation against a protected dynamic surface or account/location context that is outside this task.
 
+## 2026-06-29 Source-Policy Recommendation (GRO-50 / T081)
+
+Recommendation: keep Tesco Slovakia blocked for runtime scraping, raw storage, normalization, matching, comparison API use, and UI exposure. Tesco should not be modeled as a public no-location grocery price source because the documented shopping flow ties current prices to registered login and accurate availability/offers to a delivery slot and serving-store context. Search-indexed snippets may remain human discovery hints only; they are not an approved metadata-only data source because they are incomplete, stale-prone, Clubcard-heavy, and not reproducible through a safe public product payload.
+
+If Tesco Slovakia stays in scope, model any future approved work as account/location/session-specific online delivery offers, not national shelf prices. Every future row would need explicit context labels for language, country, account/test context, delivery address or approved store/slot surrogate, serving store if exposed, observation time, Clubcard/member status, and whether each price is regular, Clubcard, coupon, multibuy, app-only, or otherwise conditional.
+
+Minimum human decision needed before any dry-run implementation:
+
+- Decide whether Grocerlo should include Tesco Slovakia despite requiring login/address/slot/session context for current prices.
+- Approve or reject the use of a dedicated test account and a non-personal test address, postal code, store, or delivery-slot context. Without that approval, no Playwright or API inspection should be added.
+- Define whether Clubcard/member/app prices are in scope, and if so whether they are excluded, stored as non-comparable promotion metadata, or stored as a separate non-comparable price type.
+- Approve the exact access method and limits: start URL, no-storage scope, maximum one category or search result page, at most three products, at least two seconds plus jitter between scripted page loads, and no cart/order/payment actions.
+- Confirm legal/terms comfort for a low-volume authenticated or location-context dry run. If legal comfort is unclear, keep all Tesco implementation work blocked.
+
+Current follow-up: move this policy question to Human Review for explicit user approval if Tesco Slovakia remains a desired retailer. Do not unblock GRO-33 / T058 or GRO-37 / T062 from this recommendation alone.
+
 ## Required Discovery Before Implementation
 
 Start URL: `https://potravinydomov.itesco.sk/shop/en-SK/landing/groceries`
@@ -117,7 +133,7 @@ No-Go for implementation now.
 - Accurate availability/offers require delivery slot context according to the public shopping guide, and availability is serving-store/day dependent according to the terms.
 - Direct public product-page and sitemap checks were blocked or protected at low volume.
 - Search snippets are useful for human discovery only; they are not a stable, authorized, or complete product/price payload for scraper implementation.
-- Next step, if the project still wants Tesco Slovakia, is a policy/legal review and an explicitly approved manual test context before any Playwright or API inspection. Keep any future task dry-run-only with no storage until that context is approved.
+- Next step, if the project still wants Tesco Slovakia, is Human Review for a policy/legal decision and an explicitly approved manual test context before any Playwright or API inspection. Keep any future task dry-run-only with no storage until that context is approved.
 
 ## Stop Conditions
 
