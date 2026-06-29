@@ -93,8 +93,21 @@ Before any broader stored MPREIS task, another policy task must document:
 - Which additional source URLs and paths are allowed under updated robots and terms notes.
 - The exact expanded cap, cleanup plan, and sanity-report expectations.
 
+## 2026-06-29 Downstream-Use Policy Decision (GRO-45 / T075)
+
+Policy decision: the quarantined `scrape_run_id=4` rows may be normalized only for a report-only parser and data-quality validation. This approval is limited to the already stored three `no_market_selected` raw rows and must not create comparable product data for the app. The report may calculate normalized package quantities, unit-price parsing results, missing-field counts, app-label separation, and parser failures, but it must label all output as non-comparable MPREIS validation data.
+
+Approved market context: an explicit human-approved market, postal code, pickup branch, delivery area, or delivery slot is required before any MPREIS row can be matched to other retailers, shown in the comparison UI, used as a price baseline, or expanded beyond the existing capped validation page. `no_market_selected` rows are useful for parser validation only because availability and potentially price semantics remain market-dependent.
+
+App-only promotion handling: `NUR MIT APP`, app coupons, Rabattsticker, customer-card copy, and app-only numeric prices remain promotion metadata. They must not become regular comparable prices. If a future parser sees an app-only numeric price without a visible public regular price, the run must stop for policy review before normalization or storage beyond a quarantined raw sample.
+
+Expanded cap and cleanup plan: no expanded MPREIS cap is approved yet. The next safe implementation scope is a report-only normalization pass over `scrape_run_id=4`, with no scraping and no new raw rows. If the report finds missing source IDs, missing source URLs, missing names, missing prices, unclear app-only price separation, changed location-context values, suspicious prices, or parser failures that would produce misleading normalized values, keep the run quarantined and plan a cleanup or parser-fix task before any broader use.
+
+Unblock decision: keep GRO-34 / T059 blocked for broader controlled stored ingest, matching, comparison UI use, and any market-selected MPREIS scraping. Create or use a narrower follow-up task for report-only normalization of `scrape_run_id=4`; that follow-up should not unblock matching or UI comparison work.
+
 ## Planned Task Sequence
 
 1. Run a one-page, three-product stored validation through the narrowed CLI guard.
 2. Produce and review the stored-data sanity report, including location context, app-only promotion caveats, missing fields, duplicate source IDs, suspicious prices, and package-size parse results.
-3. Keep normalization, matching, comparison UI use, market-selected scraping, and broader volume blocked until another explicit approval task lands.
+3. Run report-only normalization for the quarantined `scrape_run_id=4` rows to validate parsing and data quality without treating MPREIS prices as comparable.
+4. Keep matching, comparison UI use, market-selected scraping, and broader volume blocked until a human approves exact market/location context and expanded scope.

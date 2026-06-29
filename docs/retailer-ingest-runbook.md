@@ -7,7 +7,7 @@ This runbook is for controlled raw-product ingest only. It does not approve broa
 | Retailer | Country | Status | Operator notes |
 | --- | --- | --- | --- |
 | BILLA | AT | Clean baseline complete | Post-dedupe stored baseline `scrape_run_id=3` produced 3 raw rows, 3 normalized rows, 3 distinct source IDs, and no duplicate-source-ID issues. Broader BILLA runs still require explicit human approval and token. |
-| MPREIS | AT | Capped raw validation complete; downstream blocked | `scrape_run_id=4` stored 3 `no_market_selected` raw rows with no sanity-report quality issues. Do not normalize, match, or show MPREIS rows until follow-up approval. |
+| MPREIS | AT | Report-only normalization approved; broader downstream blocked | `scrape_run_id=4` stored 3 `no_market_selected` raw rows with no sanity-report quality issues. A report-only normalization pass may validate parsing for these rows, but matching, comparison UI use, broader volume, and market-selected scraping remain blocked. |
 | REWE | DE | Discovery-only; storage blocked | No runtime scraper is ready. Complete public-price, market/location, robots/terms, and account-flow discovery before any dry-run scraper work. |
 | Kaufland Slovakia | SK | Discovery-only; storage blocked | No runtime scraper is ready. Complete discovery to distinguish public grocery prices from marketplace, leaflet, store, and Kaufland Card/app-only prices. |
 | Tesco Slovakia | SK | Discovery-only; storage blocked | No runtime scraper is ready. Complete discovery for public prices, location/session requirements, Clubcard labels, and dynamic page behavior before any dry-run scraper work. |
@@ -19,7 +19,7 @@ The raw-data priority is to make each retailer safe and repeatable before storin
 ### Global Order
 
 1. Keep the clean BILLA baseline as the reusable stored-data reference until another explicitly approved BILLA run is needed.
-2. Review the quarantined MPREIS capped raw validation before approving any normalization, matching, comparison UI use, market-selected scraping, or broader volume.
+2. Run report-only normalization for the quarantined MPREIS capped raw validation before considering any broader policy. Matching, comparison UI use, market-selected scraping, and broader volume remain blocked.
 3. Complete or refresh documentation-only discovery for REWE, Kaufland Slovakia, and Tesco Slovakia before any scraper/storage implementation.
 4. Implement low-volume dry-run scrapers only after discovery and policy notes are explicit. Dry runs should use one or two categories/pages, at most three products, no storage, and at least a two-second delay.
 5. Create retailer-specific controlled stored-ingest tasks only after dry-run outputs are reviewed. Each stored task must start with one category/page and no more than three products, produce a sanity report, and stop before broad volume.
@@ -30,7 +30,7 @@ The raw-data priority is to make each retailer safe and repeatable before storin
 | Order | Retailer | Next safe step | Storage gate |
 | --- | --- | --- | --- |
 | 1 | BILLA AT | Use `scrape_run_id=3` as the clean controlled baseline while planning the next approved BILLA run. | Already approved for controlled BILLA only; broader runs still require explicit human approval and token. |
-| 2 | MPREIS AT | Review `scrape_run_id=4` and decide whether any downstream raw normalization or market/location policy task is appropriate. | Only the capped raw validation is complete; no market context, app/account flow, normalization, matching, comparison use, or broader volume is approved. |
+| 2 | MPREIS AT | Normalize `scrape_run_id=4` for reporting only, then decide whether a human-approved market/location policy task is appropriate. | Only the capped raw validation and report-only normalization are approved; no market context, app/account flow, matching, comparison use, broader storage, or broader volume is approved. |
 | 3 | REWE DE | Document public price visibility and delivery/pickup market requirements. | Blocked if login, postal code, market, delivery area, pickup branch, or delivery slot is required without an approved default context. |
 | 4 | Kaufland SK | Document whether data is online grocery, marketplace, leaflet, or store-specific. | Blocked if prices are leaflet-only, region-specific, Kaufland Card/app-only, or not grocery product prices without policy approval. |
 | 5 | Tesco SK | Document dynamic page behavior, location/session requirements, and Clubcard labeling. | Blocked if prices need account, delivery slot, address, or postal-code context without an approved default context. |
@@ -53,7 +53,7 @@ Before any stored BILLA run, confirm and record:
 
 Additional approval is required before any BILLA run that uses more than one category, uses `--all-categories`, or sets `--max-products 0`. The operator must pass the exact token `--confirm-broad-run BILLA_FULL_INGEST`; the token is a guardrail, not approval by itself.
 
-MPREIS approval is limited to one raw stored validation using public `no_market_selected` rows from `https://www.mpreis.at/schneller-erster-einkauf`: one page, three products, no account flows, no store or market selection, no app/API flows, no manual workarounds, no normalization, no matching, and no comparison UI use. The current CLI may still reject `--store` until a follow-up implementation task narrows that guard.
+MPREIS approval is limited to one raw stored validation using public `no_market_selected` rows from `https://www.mpreis.at/schneller-erster-einkauf`: one page, three products, no account flows, no store or market selection, no app/API flows, no manual workarounds, no matching, and no comparison UI use. A follow-up may normalize only the existing `scrape_run_id=4` rows for a report-only parser and data-quality validation; the output must be labeled non-comparable and must not feed matching, API, or UI comparison surfaces.
 
 ## Rate Limits And Scope
 
@@ -62,7 +62,7 @@ Use these limits unless a narrower task says otherwise:
 - Default dry run: one category, up to 10 products, no storage.
 - Low-volume stored validation: one category and no more than 3 products when using `scripts/scrape_once.py --store`.
 - Capped BILLA validation: at most two categories, at most 50 total products, default `--max-products-per-category 30`, and at least `--delay-seconds 2`.
-- Capped MPREIS validation: exactly one public category-equivalent page, no more than 3 products, `raw_payload_json.location_context` of `no_market_selected`, and no downstream processing before sanity review.
+- Capped MPREIS validation: exactly one public category-equivalent page, no more than 3 products, `raw_payload_json.location_context` of `no_market_selected`, and no downstream processing except the approved report-only normalization of `scrape_run_id=4`.
 - Broad BILLA ingest: only after explicit approval; keep `--delay-seconds` at 2 or higher and avoid `--max-products 0` unless the approval explicitly names an uncapped run.
 - Discovery-only retailers: at most one or two categories/pages and three products, with at least 2 seconds between automated page loads.
 
@@ -196,7 +196,7 @@ For every stored BILLA run, keep the JSON run summary and the sanity report with
 
 If a stored run is questionable, do not normalize or use it for matching. Clean it up or leave it quarantined with a note.
 
-For MPREIS, a usable capped validation also requires `raw_payload_json.location_context` to remain `no_market_selected`, app-only labels to appear only as promotion metadata, and no evidence that the public price was app/account/market-only.
+For MPREIS, a usable capped validation also requires `raw_payload_json.location_context` to remain `no_market_selected`, app-only labels to appear only as promotion metadata, and no evidence that the public price was app/account/market-only. Report-only normalization must flag parser failures, suspicious values, or unclear app-only price separation instead of producing comparable rows.
 
 ## Rollback And Cleanup
 
@@ -217,7 +217,7 @@ docker compose exec postgres psql -U grocery_saver -d grocery_saver -c \
 
 If normalization has already created `retailer_products`, or matching has created `product_matches`, stop and plan a cleanup task before deleting anything. Those tables depend on the raw rows and need an ordered cleanup decision.
 
-MPREIS capped validation runs must not be normalized or matched before a separate downstream approval. If an MPREIS validation run is bad, delete the whole run and its raw rows before creating any downstream records.
+MPREIS capped validation rows may be normalized only for the approved report-only validation scope. They must not be matched or used by comparison APIs/UI before a separate human-approved market/location and downstream-use policy. If an MPREIS validation run is bad, delete the whole run and its raw rows before creating any reusable downstream records.
 
 After cleanup, rerun the sanity report without `--scrape-run-id` only if another valid BILLA run should remain as the latest run:
 
