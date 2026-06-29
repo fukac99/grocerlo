@@ -36,12 +36,22 @@ Last full-codebase security review boundary: 0 completed tasks.
 | BILLA | AT | Clean baseline complete | Controlled post-dedupe stored baseline `scrape_run_id=3` produced 3 raw rows, 3 normalized rows, 3 distinct source IDs, and no duplicate-source-ID issues. |
 | MPREIS | AT | Report-only normalization approved; broader downstream blocked | `scrape_run_id=4` stored 3 `no_market_selected` raw rows from one page. Sanity report found 0 quality issues and 0 missing key fields. Report-only normalization may validate parsing for these rows, but matching, comparison UI use, broader volume, and market-selected scraping remain blocked. |
 | REWE | DE | Discovery-only; storage blocked | Public no-location pages expose metadata/article numbers but not numeric prices. T074 documents that no location-priced dry-run context is approved yet; price scraping needs an exact human-approved location/market/service context first. |
-| Kaufland | SK | Discovery-only; storage blocked | Needs discovery to distinguish grocery, marketplace, leaflet, store, loyalty, and app-specific price surfaces. |
-| Tesco | SK | Discovery-only; storage blocked | Needs discovery for public price visibility, dynamic loading, address/slot/session requirements, and Clubcard labels. |
+| Kaufland | SK | Human Review; storage blocked | Discovery and policy recommendation are complete in PR #69. Runtime scraping, storage, matching, API use, and UI exposure remain blocked until a human decides whether a no-storage leaflet/store-offer dry run is useful and which default-store or approved-store context is allowed. |
+| Tesco | SK | Human Review; storage blocked | Discovery and policy recommendation are complete in PR #70. Runtime scraping, storage, normalization, matching, API use, and UI exposure remain blocked until a human decides whether account/location/session-specific delivery offers are in scope and approves exact test context, caps, and legal/terms comfort. |
 | Tegut on Amazon | DE | Discovery-only; storage blocked | Amazon-hosted grocery surface is postcode/account/platform scoped. T073 found no safe no-location price capture path; any next step needs explicit Amazon/Tegut policy approval. |
 
 ## Last Run
 
+2026-06-29 coordinator pass / T084 Linear state refresh:
+
+- Fetched latest remote state from `origin/main`. The primary checkout is dirty and on another task branch, so T084 used a clean worktree from `origin/main`.
+- Checked GitHub PRs. PR #68 (`task/T079-mpreis-report-only-normalization`), PR #69 (`task/T080-kaufland-sk-source-policy-recommendation`), and PR #70 (`task/T081-tesco-sk-source-policy-recommendation`) are open, clean, and green on their latest Agent Review Gate runs. They remain waiting for user-directed review/merge and must not be merged autonomously.
+- Loaded Linear credentials with `source credentials.txt` before Linear API calls. Confirmed `GRO-48`, `GRO-49`, and `GRO-50` are `In Review`; `GRO-51` and `GRO-52` are `Human Review`; and `GRO-53` / T084 was the only dependency-complete `Todo`.
+- PM/scoping result: no new Linear issue was needed before executor work because T084 already covered the useful coordinator/state refresh. Claimed `GRO-53` and kept the scope to `LOOP_STATE.md` only to avoid overlapping PR #68 implementation files or PR #69/#70 retailer notes.
+- Current blockers: Kaufland Slovakia and Tesco Slovakia implementation work requires explicit human policy decisions. Broader MPREIS downstream use remains blocked beyond the narrow report-only validation in PR #68. Non-BILLA stored ingest remains blocked until the relevant policy and dry-run gates are satisfied.
+- Created `GRO-54` / T085 as the next `Todo` PM/scoping issue so Linear does not sit at zero Todo while an agent can produce a user-facing Kaufland/Tesco decision packet. T085 is scoped away from PR #68 implementation files, PR #69/#70 retailer notes, and `LOOP_STATE.md`.
+- Checks: `git diff --check`.
+- Next action: PR #71 is ready for user-directed review/merge and must not be merged autonomously. The next loop should claim `GRO-54` / T085 to draft the Kaufland/Tesco human-review decision packet, unless the user first resolves the Human Review decisions directly.
 2026-06-29 coordinator pass / T079 MPREIS report-only normalization:
 
 - Fetched latest remote state from `origin/main`. The local primary checkout is dirty on `task/T042-billa-scale-scrape-dedupe`, so T079 used a clean worktree from `origin/main`.
@@ -215,7 +225,8 @@ Last full-codebase security review boundary: 0 completed tasks.
 
 ## Next Actions
 
-- Use Linear `Todo` issues for all new work.
-- Prioritize remaining UX issues one at a time when they touch the comparison table.
-- Prioritize retailer discovery/policy issues before any non-BILLA stored ingest.
+- Use Linear team `GRO` `Todo` issues for all new work; do not use deprecated Markdown task ledgers.
+- Keep green open PRs in `In Review` and report merge readiness without merging unless the user explicitly names that PR for merge.
+- Prioritize Human Review decisions for Kaufland Slovakia and Tesco Slovakia before any dry-run implementation for those retailers.
+- Prioritize retailer policy/dry-run gates before any non-BILLA stored ingest or downstream comparison use.
 - Migrate the review gate to direct Linear validation once a suitable CI secret and issue/PR linking convention are available.
