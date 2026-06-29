@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Grocery Saver Visual Inspection",
-  description: "Mock comparison table for grocery price inspection.",
+  title: "Grocerlo",
+  description: "Minimal grocery price comparison for supported retailer data.",
 };
 
 export default function RootLayout({

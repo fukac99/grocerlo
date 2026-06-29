@@ -41,6 +41,16 @@ Last full-codebase security review boundary: 0 completed tasks.
 
 ## Last Run
 
+2026-06-29 coordinator pass / T047 Grocerlo minimalist detail disclosure:
+
+- Fetched latest remote state from `origin/main` and checked GitHub PRs. PR #59 is merged. PR #60 is the only open pull request; it is clean, has a passing Agent Review Gate, tracks GRO-43 / T073, and must remain waiting for user-directed review/merge.
+- Checked Linear team `GRO` after sourcing `credentials.txt`. GRO-43 remains `In Review`; GRO-8 is `Done`.
+- PM/scoping cleanup: canceled GRO-9 / T029 because GRO-23 / T048 already completed the frontend-to-BILLA backend data wiring that T029 described.
+- Claimed GRO-22 / T047 in Linear and implemented it from a clean `origin/main` worktree on `task/T047-grocerlo-minimalist-detail-disclosure`.
+- Updated the frontend metadata and hero to use Grocerlo branding, and changed comparison rows so product/category metadata plus offer unit price, country, source, promotion, and last-seen details live behind accessible disclosure controls while the visible table prioritizes product, package, retailer price, and savings.
+- Checks passed after installing locked frontend dependencies in the clean worktree: `npm run lint`, `npm run typecheck`, and `npm run build`. `npm ci` emitted an engine warning because `eslint-visitor-keys@5.0.1` prefers Node `^20.19.0 || ^22.13.0 || >=24` while the local Node is `v20.14.0`.
+- Next action: push the T047 branch, open a detailed PR, update GRO-22 with PR/check metadata, and keep the PR in `In Review` for user-directed review/merge.
+
 2026-06-29 coordinator pass / T028 MPREIS capped raw validation:
 
 - Fetched latest remote state from `origin/main` and checked GitHub PRs. No pull requests are currently open; PR #56 (`task/T071-disable-self-merge`) is already merged on GitHub with the agent review gate passing.

@@ -281,7 +281,10 @@ export function ComparisonTable({
                 <tr key={row.key}>
                   <td>
                     <strong>{row.product}</strong>
-                    <span>{row.category}</span>
+                    <details className="product-details">
+                      <summary>Product details</summary>
+                      <span>Category: {row.category}</span>
+                    </details>
                     {countrySavingsSummary ? (
                       <span className="country-savings">
                         <strong>{countrySavingsSummary.label}</strong>
@@ -314,15 +317,19 @@ export function ComparisonTable({
                               {isCheapestOffer ? (
                                 <span className="cheapest-offer-label">Cheapest</span>
                               ) : null}
-                              <span>
-                                {currencyFormatter.format(offer.unitPrice)} / {offer.unit}
-                              </span>
-                              <span>Country {offer.country}</span>
-                              <a href={offer.sourceUrl} target="_blank" rel="noreferrer">
-                                Source
-                              </a>
-                              <span>{offer.promotion ?? "No promotion"}</span>
-                              <span>Seen {dateFormatter.format(new Date(offer.lastSeen))}</span>
+                              <details className="offer-details">
+                                <summary>Details</summary>
+                                <span>
+                                  Unit price: {currencyFormatter.format(offer.unitPrice)} /{" "}
+                                  {offer.unit}
+                                </span>
+                                <span>Country: {offer.country}</span>
+                                <span>Promotion: {offer.promotion ?? "No promotion"}</span>
+                                <span>Seen: {dateFormatter.format(new Date(offer.lastSeen))}</span>
+                                <a href={offer.sourceUrl} target="_blank" rel="noreferrer">
+                                  Source
+                                </a>
+                              </details>
                             </div>
                           ) : (
                             <span className="missing-offer">No offer</span>
