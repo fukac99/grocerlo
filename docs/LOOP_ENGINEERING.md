@@ -16,7 +16,8 @@ Use these Linear states:
 - `In Progress`: claimed work.
 - `In Review`: work has an open pull request waiting for review or merge.
 - `Done`: complete work.
-- `Backlog`: blocked or not-yet-actionable work; add a comment explaining the blocker.
+- `Blocked`: blocked work that needs a policy, legal, account, location, anti-bot, dependency, or product-definition decision before it can proceed; add a comment explaining the blocker.
+- `Backlog`: not-yet-actionable work that is not currently blocked by a concrete decision.
 
 Each Linear issue should include branch, pull request URL, dependencies, file/scope boundaries, acceptance criteria, review status, checks run, and relevant follow-up notes.
 
@@ -39,7 +40,7 @@ Each Linear issue should include branch, pull request URL, dependencies, file/sc
 - Keep matching explainable before adding embeddings.
 - Use checks before claiming a scraper, normalizer, matcher, API, or UI workflow works.
 - Update Linear and `LOOP_STATE.md` at the end of each loop run.
-- Stop implementation work when blocked by legal, account, location, anti-bot, or product-definition decisions. Put the blocked implementation issue in `Backlog`, but keep or create the policy/scoping issue that can resolve the blocker in `Todo`.
+- Stop implementation work when blocked by legal, account, location, anti-bot, or product-definition decisions. Put the blocked implementation issue in `Blocked`, but keep or create the policy/scoping issue that can resolve the blocker in `Todo`.
 
 ## Coordinator Protocol
 
@@ -52,7 +53,7 @@ Every automated loop tick should act as a coordinator before doing implementatio
 5. Update the Linear issue state/comment with PR status, review status, and last checked time.
 6. Run a PM/scoping pass before executor assignment.
 7. Compare the overall plan, Linear issues, and current project state; create or refine missing actionable Linear issues.
-8. If implementation work is blocked by legal, account, location, anti-bot, retailer policy, or product-definition decisions, ensure the implementation issue is in `Backlog` and there is a separate `Todo` policy/scoping issue with concrete acceptance criteria for resolving or documenting the blocker.
+8. If implementation work is blocked by legal, account, location, anti-bot, retailer policy, or product-definition decisions, ensure the implementation issue is in `Blocked` and there is a separate `Todo` policy/scoping issue with concrete acceptance criteria for resolving or documenting the blocker.
 9. Do not leave Linear with zero `Todo` issues unless every remaining blocker is truly waiting on an external user decision and no agent can produce a recommendation, decision record draft, readiness summary, or narrower safe follow-up.
 10. Ensure each PM-scoped issue has dependencies, file/scope boundaries, branch name, acceptance criteria, and parallelization notes.
 11. Count completed work from Linear `Done` issues. At each new 100-task boundary, schedule a full-codebase security review before launching additional implementation work.
@@ -68,7 +69,7 @@ Every automated loop tick should act as a coordinator before doing implementatio
 21. When implementation finishes, push the task branch and open a GitHub pull request using the PR Description Standard below.
 22. Record the pull request URL, PR status, review status, and checks in the Linear issue.
 23. If required checks pass and review status is passed or not required, report that the pull request is ready for user-directed merge and keep the Linear issue in `In Review`.
-24. If the PR is not ready for merge, move the Linear issue to `In Review` or `Backlog` with a blocker comment as appropriate.
+24. If the PR is not ready for merge, move the Linear issue to `In Review` or `Blocked` with a blocker comment as appropriate.
 25. Record checks, PR statuses, review statuses, merge readiness, PM decisions, failures, next actions, and any reason no ready issue was launched in `LOOP_STATE.md`.
 
 ## PR Description Standard
