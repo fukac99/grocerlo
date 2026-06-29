@@ -111,3 +111,37 @@ Unblock decision: keep GRO-34 / T059 blocked for broader controlled stored inges
 2. Produce and review the stored-data sanity report, including location context, app-only promotion caveats, missing fields, duplicate source IDs, suspicious prices, and package-size parse results.
 3. Run report-only normalization with `python scripts/normalize_once.py 4 --retailer mpreis --report-only` for the quarantined `scrape_run_id=4` rows to validate parsing and data quality without treating MPREIS prices as comparable.
 4. Keep matching, comparison UI use, market-selected scraping, and broader volume blocked until a human approves exact market/location context and expanded scope.
+
+## 2026-06-29 Real Market Context Probe (GRO-68 / T100)
+
+Goal: identify whether MPREIS can expose location-backed product availability without login or account-specific state.
+
+Public site findings:
+
+- The product/category page still renders public numeric EUR prices without a market, but no-market product cards continue to show `Noch kein Markt gewählt` and `Verfügbarkeit in deinem Markt prüfen`.
+- The frontend bundle uses a non-authenticated `marketId` cookie as the offline market selector. Logged-in users may also persist a preferred site, but login is not required for the cookie path observed in this probe.
+- Public market metadata is available from `https://cms-storefront.mpreis.at/c3_custom_data/location/index.json` and `https://cms-storefront.mpreis.at/c3_custom_data/location/mpreis/index.json`.
+- The MPREIS market index returned 275 MPREIS entries plus additional MITALIA entries in the all-location index. Each MPREIS entry includes a numeric `id`, `name`, `storeName`, `country`, `customerType`, `region`, address-like store name, coordinates, opening hours, and `hasAlgoliaIndex`-backed frontend filtering data.
+- The storefront code refreshes market-specific availability and prices through `/api/algolia/product-availability` and `/api/algolia/product-prices` using `marketId`.
+
+Technical proof:
+
+```bash
+python3 scripts/scrape_once.py --retailer mpreis --limit-categories 1 --max-products 3
+```
+
+This no-storage command still returned 3 products with `raw_payload.location_context` as `no_market_selected`.
+
+A separate no-storage Playwright probe set `marketId=8075` before loading `https://www.mpreis.at/schneller-erster-einkauf`. Store `8075` is `MPREIS Absam`, `Absam - Dörferstraße 4`, country `AT`, region `Tirol`, from the public MPREIS market index. With that cookie present, the same product cards rendered `Verfügbar in deinem Markt Dörferstraße 4, 6067 Absam` and no longer rendered `Noch kein Markt gewählt`.
+
+Decision boundary:
+
+- Store `8075` is only a technical proof that MPREIS accepts a public `marketId` cookie. It is not an approved Grocerlo comparison market.
+- Do not use Absam, or any other inferred MPREIS store, for stored comparable data, matching, API responses, or UI comparison until the user explicitly approves the market context.
+- The next implementation can add an explicit `--mpreis-market-id` / `--mpreis-market-label` dry-run path only after a Human Review decision names the approved Austrian market or confirms that Absam `8075` is acceptable for first-version MPREIS validation.
+
+Human decision needed before broader MPREIS work:
+
+- Approved MPREIS market ID, store name/address, and whether that market may represent the first-version Austrian MPREIS comparison context.
+- Whether the next run should be no-storage dry-run only or a controlled stored validation.
+- Caps for categories/products, delay/jitter, and cleanup behavior if product prices, availability, app-only labels, or missing fields differ from the no-market sample.
