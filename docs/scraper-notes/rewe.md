@@ -2,9 +2,43 @@
 
 ## Status
 
-REWE is discovery-only. Do not implement runtime scraping, store rows, select a market, authenticate, or use account/session-specific flows until the discovery checklist is completed and the location policy is explicit.
+REWE is discovery-only. Do not implement price-capturing runtime scraping, store rows, select a market, authenticate, or use account/session-specific flows until a human explicitly approves the exact location, market, and service context.
 
 T051 low-volume public discovery was completed on 2026-06-28 22:54-23:07 UTC+2 using read-only page/search fetches only. No REWE account was used, no postal code or market was selected, no cart/checkout/session-specific flow was entered, no storage was performed, and product examples were capped at three.
+
+T074 approved-location policy was completed on 2026-06-29. Decision: no approved location-priced REWE dry run exists yet. `GRO-31` / T056 stays blocked for price capture until a human names the exact postal code, market or service mode, and run purpose. A future metadata-only no-location probe may inspect public product pages for names, article numbers, labels, and package text, but it must not present REWE rows as comparable prices.
+
+## T074 Approved-Location Dry-Run Policy
+
+### Decision
+
+No approved REWE location, market, delivery service, pickup service, or postal-code context is available for automated use. Do not select a location or fetch location-priced pages in an agent-run task until the approving human records the exact context in Linear.
+
+This keeps `GRO-31` / T056 blocked for any price-capturing low-volume dry-run scraper. The only currently acceptable REWE follow-up is documentation or metadata-only no-location work that preserves the `Konkreter Preis abhängig vom Standort` price placeholder and clearly reports missing numeric prices.
+
+### Required Approval Before Location-Priced Dry Run
+
+Before any task may select a REWE location or fetch location-priced product/listing pages, Linear must record:
+
+- Approving human and timestamp.
+- Exact postal code, market, and service mode: delivery, pickup, or explicitly no-location.
+- Whether the selected context is intended only for dry-run observation or may later inform storage policy.
+- Allowed URL set, maximum page count, maximum product count, delay/jitter, and whether browser automation is allowed.
+- Expected output fields, including how location context, deposit, weighted-item caveats, service fees, loyalty labels, and missing fields will be represented.
+
+### Allowed No-Location Metadata Scope
+
+Without a location approval, REWE work may only:
+
+- Fetch public `/shop/p/...` product pages that are not disallowed by `robots.txt`.
+- Capture at most three sample products in a dry-run-only report.
+- Record product names, brands, article numbers, canonical URLs, package-size text, public labels such as `Tiefpreis`, and the exact no-location price placeholder.
+- Use at least a two-second delay plus jitter for scripted page loads.
+- Avoid storage, normalization, matching, comparison UI use, cart flows, checkout flows, account APIs, `/restservices/`, `/shop/mc/`, disallowed query parameters, session IDs, and any attempt to bypass location prompts.
+
+### Stop Conditions
+
+Stop immediately on login, registration, PAYBACK/account linking, coupon activation, cart or checkout prompts, current-location detection, postal-code selection, market selection, delivery-area checks, pickup-branch selection, delivery-slot selection, CAPTCHA, bot challenge, unexpected block page, disallowed robots path, or unclear separation between regular prices and loyalty/app/account-specific labels.
 
 ## T051 Public Price And Location Discovery
 
@@ -81,10 +115,10 @@ Observed without location. No numeric price, unit price, old price, or online av
 
 No-go for a price-capturing REWE dry-run scraper using no-location public pages: numeric prices and availability were not visible without location.
 
-Conditional go only for a future metadata-only or approved-location dry run if all of these are true:
+Conditional go only for a future metadata-only no-location probe or a separately approved location-priced dry run if all of these are true:
 
 - The task remains dry-run only with no storage.
-- A human explicitly approves the exact test location/market/service context before fetching location-priced pages.
+- A human explicitly approves the exact test location/market/service context before fetching any location-priced pages; otherwise the run stays metadata-only and preserves missing numeric prices.
 - The implementation avoids disallowed robots paths and query parameters, account/login/cart/checkout APIs, bot challenges, and invasive flows.
 - The run is capped at one product page or one small category/listing view with at most three products and at least a 2-second delay plus jitter for any scripted page loads.
 - Output clearly separates regular price, location context, weighted-item caveats, service fees, loyalty/app/account labels, and missing fields.
@@ -110,7 +144,7 @@ Use `docs/retailer-discovery-checklist.md` with these REWE-specific questions:
 
 ## Stop Conditions
 
-Stop before dry-run implementation or storage if REWE requires login, account-specific API calls, postal code, market selection, delivery area, pickup branch, delivery slot, CAPTCHA, bot challenge, legal review, or unclear separation between regular and loyalty/member/app prices.
+Stop before price-capturing dry-run implementation or any storage if REWE requires login, account-specific API calls, postal code, market selection, delivery area, pickup branch, delivery slot, CAPTCHA, bot challenge, legal review, or unclear separation between regular and loyalty/member/app prices. Metadata-only no-location work must stop before satisfying any location prompt.
 
 ## Planned Task Sequence
 

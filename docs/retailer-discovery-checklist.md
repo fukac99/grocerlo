@@ -81,6 +81,8 @@ Start URL: `https://www.rewe.de/shop/`
 - Compare one product before and after location selection and record changes to price, availability, deposit, unit price, and source URL.
 - Capture PAYBACK, coupon, member, or app-only labels separately from normal promotions.
 - Prefer product IDs from URLs or embedded payloads; record whether the same product has different offer IDs under different markets.
+- Current T074 policy: no approved REWE location, market, delivery, pickup, or postal-code context exists. Until a human records one in Linear, REWE dry runs may only inspect public no-location metadata and must preserve missing numeric prices instead of treating product rows as comparable offers.
+- Keep REWE price-capturing scraper work blocked when the task would need login, cart, checkout, `/restservices/`, `/shop/mc/`, disallowed query parameters, current-location detection, postal-code selection, market selection, delivery-area checks, pickup-branch selection, or delivery-slot selection.
 
 ### Kaufland Slovakia
 
