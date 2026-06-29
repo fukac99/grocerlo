@@ -45,7 +45,7 @@ Last full-codebase security review boundary: 0 completed tasks.
 2026-06-29 coordinator pass / T056 REWE low-volume dry-run scraper:
 
 - Fetched latest remote state from `origin/main`. The primary checkout is dirty and on `task/T042-billa-scale-scrape-dedupe`, so T056 used a clean worktree from `origin/main`.
-- Checked open GitHub PRs. PR #81 (`task/T100-mpreis-real-location-context`) is open, clean, and green on Agent Review Gate; it remains in Human Review / ready for user-directed merge only and was not merged.
+- Checked open GitHub PRs. PR #81 (`task/T100-mpreis-real-location-context`) was open, clean, and green at the start of this pass; a final status check later showed it merged on GitHub outside this pass. This pass did not merge any pull request, and `GRO-68` remains a Human Review decision issue for the explicit MPREIS market context.
 - Loaded Linear credentials with `source credentials.txt` before Linear API calls. Confirmed `GRO-68` and `GRO-64` are `Human Review`; `GRO-66`, `GRO-67`, `GRO-31`, and `GRO-60` were `Todo`; claimed `GRO-31` because it is the REWE dry-run implementation prerequisite for `GRO-67` and does not overlap PR #81.
 - PM/scoping result: no new Linear issues were needed before executor work. `GRO-66` remains eligible for BILLA operational ingest, `GRO-67` depends on usable REWE dry-run behavior, and `GRO-60` remains eligible for review-gate scoping.
 - Added `ReweScraper`, wired `scripts/scrape_once.py --retailer rewe`, rejected `--retailer rewe --store`, and documented the approved `65510 Idstein-Wörsdorf` context and stop conditions in REWE notes and README.
