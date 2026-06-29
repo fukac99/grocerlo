@@ -16,7 +16,9 @@ Use these Linear states:
 - `In Progress`: claimed work.
 - `In Review`: work has an open pull request waiting for review or merge.
 - `Done`: complete work.
-- `Backlog`: blocked or not-yet-actionable work; add a comment explaining the blocker.
+- `Human Review`: work that is waiting for explicit user input, approval, or a decision before an agent can safely continue. The user can add the input and move it to `Todo`.
+- `Blocked`: blocked work that needs a policy, legal, account, location, anti-bot, dependency, or product-definition decision before it can proceed; add a comment explaining the blocker.
+- `Backlog`: not-yet-actionable work that is not currently blocked by a concrete decision.
 
 Each Linear issue should include branch, pull request URL, dependencies, file/scope boundaries, acceptance criteria, review status, checks run, and relevant follow-up notes.
 
@@ -39,7 +41,7 @@ Each Linear issue should include branch, pull request URL, dependencies, file/sc
 - Keep matching explainable before adding embeddings.
 - Use checks before claiming a scraper, normalizer, matcher, API, or UI workflow works.
 - Update Linear and `LOOP_STATE.md` at the end of each loop run.
-- Stop when blocked by legal, account, location, anti-bot, or product-definition decisions. Put the Linear issue in `Backlog` in such cases.
+- Stop implementation work when blocked by legal, account, location, anti-bot, or product-definition decisions. Put blocked implementation issues in `Blocked`, but use `Human Review` when the next step is explicitly waiting for user input or approval. Keep or create policy/scoping issues in `Todo` when an agent can still produce a recommendation, decision-record draft, readiness summary, or narrower safe follow-up.
 
 ## Coordinator Protocol
 
@@ -52,22 +54,25 @@ Every automated loop tick should act as a coordinator before doing implementatio
 5. Update the Linear issue state/comment with PR status, review status, and last checked time.
 6. Run a PM/scoping pass before executor assignment.
 7. Compare the overall plan, Linear issues, and current project state; create or refine missing actionable Linear issues.
-8. Ensure each PM-scoped issue has dependencies, file/scope boundaries, branch name, acceptance criteria, and parallelization notes.
-9. Count completed work from Linear `Done` issues. At each new 100-task boundary, schedule a full-codebase security review before launching additional implementation work.
-10. For each implementation or non-Markdown PR with no review status, set review status to pending in Linear.
-11. Identify Linear `Todo` issues whose dependencies are complete.
-12. Treat a dependency as complete only when its Linear issue is `Done` and any linked PR is merged, unless the task was explicitly completed before the branch/PR rule.
-13. Group ready issues by file/scope.
-14. Select one or more independent issues.
-15. Move each selected issue to `In Progress` and add an owner/start comment.
-16. Create or switch to the task branch. If the main checkout is dirty or stale, create a clean worktree from `origin/main`.
-17. Launch multiple executor subagents at the same time when issues are independent.
-18. Keep one task local if it involves coordination, PM scoping, environment setup, GitHub setup, or state-file updates.
-19. When implementation finishes, push the task branch and open a GitHub pull request using the PR Description Standard below.
-20. Record the pull request URL, PR status, review status, and checks in the Linear issue.
-21. If required checks pass and review status is passed or not required, report that the pull request is ready for user-directed merge and keep the Linear issue in `In Review`.
-22. If the PR is not ready for merge, move the Linear issue to `In Review` or `Backlog` with a blocker comment as appropriate.
-23. Record checks, PR statuses, review statuses, merge readiness, PM decisions, failures, next actions, and any reason no ready issue was launched in `LOOP_STATE.md`.
+8. If implementation work is blocked by legal, account, location, anti-bot, retailer policy, or product-definition decisions, ensure the implementation issue is in `Blocked` and there is a separate `Todo` policy/scoping issue with concrete acceptance criteria for resolving or documenting the blocker.
+9. Use `Human Review` only when the next action is explicitly the user's input, approval, or decision. The issue comment should state the exact question, acceptable answer shape, and which issue can move to `Todo` after the user answers.
+10. Do not leave Linear with zero `Todo` issues unless every remaining blocker is truly waiting in `Human Review` and no agent can produce a recommendation, decision-record draft, readiness summary, or narrower safe follow-up.
+11. Ensure each PM-scoped issue has dependencies, file/scope boundaries, branch name, acceptance criteria, and parallelization notes.
+12. Count completed work from Linear `Done` issues. At each new 100-task boundary, schedule a full-codebase security review before launching additional implementation work.
+13. For each implementation or non-Markdown PR with no review status, set review status to pending in Linear.
+14. Identify Linear `Todo` issues whose dependencies are complete.
+15. Treat a dependency as complete only when its Linear issue is `Done` and any linked PR is merged, unless the task was explicitly completed before the branch/PR rule.
+16. Group ready issues by file/scope.
+17. Select one or more independent issues.
+18. Move each selected issue to `In Progress` and add an owner/start comment.
+19. Create or switch to the task branch. If the main checkout is dirty or stale, create a clean worktree from `origin/main`.
+20. Launch multiple executor subagents at the same time when issues are independent.
+21. Keep one task local if it involves coordination, PM scoping, environment setup, GitHub setup, or state-file updates.
+22. When implementation finishes, push the task branch and open a GitHub pull request using the PR Description Standard below.
+23. Record the pull request URL, PR status, review status, and checks in the Linear issue.
+24. If required checks pass and review status is passed or not required, report that the pull request is ready for user-directed merge and keep the Linear issue in `In Review`.
+25. If the PR is not ready for merge, move the Linear issue to `In Review`, `Blocked`, or `Human Review` with a blocker/comment as appropriate.
+26. Record checks, PR statuses, review statuses, merge readiness, PM decisions, failures, next actions, and any reason no ready issue was launched in `LOOP_STATE.md`.
 
 ## PR Description Standard
 
