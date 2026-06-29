@@ -42,6 +42,18 @@ Last full-codebase security review boundary: 0 completed tasks.
 
 ## Last Run
 
+2026-06-29 coordinator pass / T092 BILLA/MPREIS/REWE scope:
+
+- Fetched latest remote state from `origin/main`. The primary checkout is dirty and on another task branch, so T092 used a clean worktree from `origin/main`.
+- Checked GitHub PRs. `gh pr list` reported no open pull requests; PR #75, PR #76, and PR #77 are already merged on GitHub with successful Agent Review Gate checks. This coordinator pass did not merge any pull request.
+- Loaded Linear credentials with `source credentials.txt` before Linear API calls. Confirmed `GRO-51` and `GRO-52` are `Done`, `GRO-61` was still `In Review` even though PR #76 is merged, `GRO-62` was `Todo`, `GRO-63` was `Backlog`, and `GRO-64` was `Human Review`.
+- PM/scoping result: claimed `GRO-62` / T092 because it is the dependency-complete policy/scoping task for the first multi-retailer path and does not overlap existing dirty checkout scope. Marked `GRO-61` `Done` after verifying PR #76 is merged.
+- First-version retailer decision: use BILLA as the only reusable baseline today; keep MPREIS as a candidate second source only after human approval of market/location and downstream-use policy; keep REWE as a candidate third source only after human approval of exact postal code, market/service mode, URL surface, caps, and stop conditions.
+- Kaufland Slovakia and Tesco Slovakia remain excluded from first-version implementation by `GRO-51` and `GRO-52`. Their scraper, storage, normalization, matching, API, UI, account/session, and location work must stay blocked or canceled until a later revisit explicitly approves a new context.
+- No existing MPREIS or REWE implementation issue is dependency-complete. Created `GRO-65` / T096 as the next `Todo` policy/scoping issue to draft the MPREIS and REWE human approval packets together, rather than moving `GRO-31`, `GRO-34`, or `GRO-35` out of `Blocked`. `GRO-60` also remains `Todo`, so Linear has actionable follow-up work after this pass.
+- Checks: `git diff --check`.
+- Next action: open the T092 Markdown-only PR, mark `GRO-62` `In Review`, then claim either `GRO-65` for the MPREIS/REWE approval packet or `GRO-60` for review-gate dry-run scoping. Do not merge any PR unless the user explicitly asks for that specific PR.
+
 2026-06-29 coordinator pass / T090 Linear review metadata parser:
 
 - Fetched latest remote state from `origin/main`. The primary checkout is dirty and on another task branch, so T090 used a clean worktree from `origin/main`.
@@ -257,7 +269,8 @@ Last full-codebase security review boundary: 0 completed tasks.
 ## Next Actions
 
 - Use Linear team `GRO` `Todo` issues for all new work; do not use deprecated Markdown task ledgers.
-- Keep green open PRs in `In Review` and report merge readiness without merging unless the user explicitly names that PR for merge; as of the latest pass, PRs #68-#72 have already been merged and their Linear issues are `Done`.
-- Prioritize Human Review decisions for Kaufland Slovakia and Tesco Slovakia before any dry-run implementation for those retailers.
+- Keep green open PRs in `In Review` and report merge readiness without merging unless the user explicitly names that PR for merge; as of the latest pass, PRs #75-#77 have already been merged.
+- Keep Kaufland Slovakia and Tesco Slovakia excluded from first-version runtime/storage/API/UI work until a later revisit explicitly approves a new context.
+- Prioritize MPREIS and REWE human approval packets before moving their blocked implementation issues back to `Todo`.
 - Prioritize retailer policy/dry-run gates before any non-BILLA stored ingest or downstream comparison use.
 - Migrate the review gate to direct Linear validation once a suitable CI secret and issue/PR linking convention are available.
