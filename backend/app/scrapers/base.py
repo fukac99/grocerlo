@@ -38,3 +38,7 @@ class RetailerScraper(Protocol):
 
     async def scrape_products(self, category: Category) -> list[RawProductPayload]:
         """Extract raw product data for one category without interpreting it."""
+
+
+class ScraperStopCondition(RuntimeError):
+    """Raised when a retailer-specific stop condition prevents safe scraping."""

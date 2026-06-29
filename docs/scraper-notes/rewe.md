@@ -2,19 +2,52 @@
 
 ## Status
 
-REWE is discovery-only. Do not implement price-capturing runtime scraping, store rows, select a market, authenticate, or use account/session-specific flows until a human explicitly approves the exact location, market, and service context.
+REWE has an approved no-storage low-volume dry-run implementation path for Germany location context `65510 Idstein-Wörsdorf`. Do not store rows, authenticate, use account/session-specific flows, enter cart/checkout, or treat REWE output as comparable app data until a dry-run PR is reviewed and a separate storage/downstream-use approval is recorded.
 
 T051 low-volume public discovery was completed on 2026-06-28 22:54-23:07 UTC+2 using read-only page/search fetches only. No REWE account was used, no postal code or market was selected, no cart/checkout/session-specific flow was entered, no storage was performed, and product examples were capped at three.
 
-T074 approved-location policy was completed on 2026-06-29. Decision: no approved location-priced REWE dry run exists yet. `GRO-31` / T056 stays blocked for price capture until a human names the exact postal code, market or service mode, and run purpose. A future metadata-only no-location probe may inspect public product pages for names, article numbers, labels, and package text, but it must not present REWE rows as comparable prices.
+T074 approved-location policy was completed on 2026-06-29. Its original decision kept `GRO-31` / T056 blocked until a human named the exact postal code, market or service mode, and run purpose. A later Linear decision superseded the blocked status for dry-run implementation only by approving `65510 Idstein-Wörsdorf` as the Germany location context.
+
+User decision recorded in Linear on 2026-06-29: use `65510 Idstein-Wörsdorf` as the Germany supermarket location context; approve a no-storage REWE dry run using Idstein; if it works, proceed to a separately approved controlled stored run; target exploratory scope is 2-3 categories and up to 100 products only after the first low-volume behavior remains healthy. `GRO-31` / T056 implements the first capped scraper path with one category-equivalent sample and up to three products.
+
+## T056 Low-Volume Dry-Run Implementation
+
+### Approved Context
+
+- Location context: `65510 Idstein-Wörsdorf`.
+- Mode: no-storage dry run only.
+- First implementation cap: one category-equivalent product sample and at most three public `/shop/p/...` product pages.
+- Output: JSON only through `python scripts/scrape_once.py --retailer rewe --limit-categories 1 --max-products 3`.
+
+### Implementation Notes
+
+The first scraper path uses known public product URLs from T051 as a constrained category-equivalent sample. It records `raw_payload.location_context` as `65510 Idstein-Wörsdorf`, preserves the no-location placeholder when numeric prices remain unavailable, strips tracking/query parameters from source URLs, and keeps `location_selection_attempted` false unless a later reviewed task explicitly implements a location-selection flow.
+
+The shared `scripts/scrape_once.py` CLI rejects `--retailer rewe --store` so this task cannot accidentally create stored REWE rows before dry-run review and storage approval.
+
+### T056 Stop Conditions
+
+Stop before continuing the dry run if REWE presents login, registration, PAYBACK/account linking, coupon activation, cart or checkout prompts, current-location detection, market selection, delivery-area checks, pickup-branch selection, delivery-slot selection, CAPTCHA, bot challenge, unexpected block page, disallowed robots path, or unclear separation between regular prices and loyalty/app/account-specific labels.
+
+### 2026-06-29 Live Dry-Run Result
+
+Command:
+
+```bash
+python scripts/scrape_once.py --retailer rewe --limit-categories 1 --max-products 3
+```
+
+Result: stopped before returning product data because REWE served a verification/bot-protection page containing `Zeig uns, dass du ein Mensch bist`, `WAF Challenge`, and `Enable JavaScript and cookies to continue`. The scraper now raises a clear stop-condition error instead of emitting the challenge page as a product.
+
+Next safe action: keep REWE storage and comparable app use blocked. A future REWE follow-up should either propose a narrower manually reviewed dry-run approach that does not bypass the challenge, or ask the user whether REWE should remain excluded from near-term real-data work.
 
 ## T074 Approved-Location Dry-Run Policy
 
-### Decision
+### Superseded Decision
 
-No approved REWE location, market, delivery service, pickup service, or postal-code context is available for automated use. Do not select a location or fetch location-priced pages in an agent-run task until the approving human records the exact context in Linear.
+At the time of T074, no approved REWE location, market, delivery service, pickup service, or postal-code context was available for automated use. That is now superseded for the no-storage dry-run implementation by the later `65510 Idstein-Wörsdorf` Linear decision.
 
-This keeps `GRO-31` / T056 blocked for any price-capturing low-volume dry-run scraper. The only currently acceptable REWE follow-up is documentation or metadata-only no-location work that preserves the `Konkreter Preis abhängig vom Standort` price placeholder and clearly reports missing numeric prices.
+Storage, matching, comparison API/UI use, account flows, cart/checkout flows, and broader product volume remain blocked. Any run that still returns `Konkreter Preis abhängig vom Standort` must clearly preserve missing numeric prices.
 
 ### Required Approval Before Location-Priced Dry Run
 

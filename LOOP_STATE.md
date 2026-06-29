@@ -35,12 +35,23 @@ Last full-codebase security review boundary: 0 completed tasks.
 | --- | --- | --- | --- |
 | BILLA | AT | Clean baseline complete | Controlled post-dedupe stored baseline `scrape_run_id=3` produced 3 raw rows, 3 normalized rows, 3 distinct source IDs, and no duplicate-source-ID issues. |
 | MPREIS | AT | Report-only normalization approved; broader downstream blocked | `scrape_run_id=4` stored 3 `no_market_selected` raw rows from one page. Sanity report found 0 quality issues and 0 missing key fields. Report-only normalization may validate parsing for these rows, but matching, comparison UI use, broader volume, and market-selected scraping remain blocked. |
-| REWE | DE | Discovery-only; storage blocked | Public no-location pages expose metadata/article numbers but not numeric prices. T074 documents that no location-priced dry-run context is approved yet; price scraping needs an exact human-approved location/market/service context first. |
+| REWE | DE | Dry-run implementation; storage blocked | `GRO-31` / T056 adds a no-storage low-volume scraper path using approved `65510 Idstein-Wörsdorf` context, but the live run stopped on REWE bot protection before returning product data. Storage, matching, API/UI comparison use, and broader volume remain blocked. |
 | Kaufland | SK | Excluded from first version; storage blocked | `GRO-51` excludes Kaufland Slovakia from the first multi-retailer version. Runtime scraping, storage, matching, API use, and UI exposure remain blocked until a later revisit after BILLA, MPREIS, and REWE policy gates are settled. |
 | Tesco | SK | Excluded from first version; storage blocked | `GRO-52` excludes Tesco Slovakia from the first multi-retailer version. Runtime scraping, storage, normalization, matching, API use, UI exposure, account/session use, and location selection remain blocked until a later revisit after BILLA, MPREIS, and REWE policy gates are settled. |
 | Tegut on Amazon | DE | Discovery-only; storage blocked | Amazon-hosted grocery surface is postcode/account/platform scoped. T073 found no safe no-location price capture path; any next step needs explicit Amazon/Tegut policy approval. |
 
 ## Last Run
+
+2026-06-29 coordinator pass / T056 REWE low-volume dry-run scraper:
+
+- Fetched latest remote state from `origin/main`. The primary checkout is dirty and on `task/T042-billa-scale-scrape-dedupe`, so T056 used a clean worktree from `origin/main`.
+- Checked open GitHub PRs. PR #81 (`task/T100-mpreis-real-location-context`) is open, clean, and green on Agent Review Gate; it remains in Human Review / ready for user-directed merge only and was not merged.
+- Loaded Linear credentials with `source credentials.txt` before Linear API calls. Confirmed `GRO-68` and `GRO-64` are `Human Review`; `GRO-66`, `GRO-67`, `GRO-31`, and `GRO-60` were `Todo`; claimed `GRO-31` because it is the REWE dry-run implementation prerequisite for `GRO-67` and does not overlap PR #81.
+- PM/scoping result: no new Linear issues were needed before executor work. `GRO-66` remains eligible for BILLA operational ingest, `GRO-67` depends on usable REWE dry-run behavior, and `GRO-60` remains eligible for review-gate scoping.
+- Added `ReweScraper`, wired `scripts/scrape_once.py --retailer rewe`, rejected `--retailer rewe --store`, and documented the approved `65510 Idstein-Wörsdorf` context and stop conditions in REWE notes and README.
+- Live dry-run command `python scripts/scrape_once.py --retailer rewe --limit-categories 1 --max-products 3` stopped on REWE bot protection (`Zeig uns, dass du ein Mensch bist` / `WAF Challenge`). The scraper now raises a clear stop-condition error instead of returning challenge-page text as product data.
+- Checks: `PYTHONPATH="$PWD/backend" python -m pytest backend/tests/test_rewe_scraper.py backend/tests/test_scrape_once.py`; `PYTHONPATH="$PWD/backend" python -m compileall -q backend/app scripts`; capped REWE dry-run command verified the stop condition.
+- Next action: open the T056 PR, mark `GRO-31` `In Review`, and keep REWE storage/comparable app use blocked. A later loop can claim `GRO-66` for BILLA ingest or `GRO-60` for review-gate scoping; `GRO-67` should wait until the REWE bot-protection blocker is resolved or scoped into a user decision.
 
 2026-06-29 coordinator pass / T096 MPREIS/REWE approval packet:
 
