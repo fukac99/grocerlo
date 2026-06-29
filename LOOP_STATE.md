@@ -42,6 +42,16 @@ Last full-codebase security review boundary: 0 completed tasks.
 
 ## Last Run
 
+2026-06-29 coordinator pass / T090 Linear review metadata parser:
+
+- Fetched latest remote state from `origin/main`. The primary checkout is dirty and on another task branch, so T090 used a clean worktree from `origin/main`.
+- Checked GitHub PRs. `gh pr list` reported no open pull requests; PR #73 and PR #74 are already merged on GitHub with successful Agent Review Gate checks. This coordinator pass did not merge any pull request.
+- Loaded Linear credentials with `source credentials.txt` before Linear API calls. Moved `GRO-57` / T088 and `GRO-58` / T089 to `Done` after observing their merged PRs, then claimed `GRO-59` / T090.
+- PM/scoping result: `GRO-59` / T090 was the only dependency-complete `Todo` issue. It is a narrow local parser/test step for the direct Linear review-gate migration and does not change CI enforcement, branch protection, or required checks.
+- Added `scripts/linear_review_metadata.py` plus fixture-backed tests for extracting `GRO-*` PR markers, parsing Linear review metadata from issue descriptions/comments, preferring newer comment metadata, and validating PR URL, head SHA, state, and `review_status: passed`.
+- Checks: `python3 -m pytest backend/tests/test_linear_review_metadata.py backend/tests/test_check_pr_review_status.py`; Cursor diagnostics for touched Python files.
+- Next action: open the T090 PR, update Linear with PR/check metadata, and keep it `In Review` until user-directed merge. A following loop should scope the next non-enforcing dry-run step for Linear API validation only after T090 is reviewed/merged.
+
 2026-06-29 coordinator pass / T087-T088 post-merge readiness:
 
 - Fetched latest remote state from `origin/main`. The primary checkout is dirty and on another task branch, so T088 used a clean worktree from `origin/main`.

@@ -1,0 +1,18 @@
+{
+  "identifier": "GRO-59",
+  "title": "[T090] Add local Linear review-gate metadata parser tests",
+  "description": "Older draft metadata should not win.\n\nreview_status: pending\nreviewed_pr: https://github.com/fukac99/grocerlo/pull/75\nreviewed_head_sha: 0000000000000000000000000000000000000000",
+  "state": {
+    "name": "In Review"
+  },
+  "comments": {
+    "nodes": [
+      {
+        "body": "Coordinator note with no review metadata."
+      },
+      {
+        "body": "Agent review completed.\n\nreview_status: passed\nreviewed_pr: https://github.com/fukac99/grocerlo/pull/75\nreviewed_head_sha: 1111111111111111111111111111111111111111\nreviewed_at: 2026-06-29T10:30:00Z\nreviewer: bugbot\nchecks: pytest backend/tests/test_linear_review_metadata.py"
+      }
+    ]
+  }
+}
