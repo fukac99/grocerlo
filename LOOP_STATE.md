@@ -42,6 +42,17 @@ Last full-codebase security review boundary: 0 completed tasks.
 
 ## Last Run
 
+2026-06-29 coordinator pass / T096 MPREIS/REWE approval packet:
+
+- Fetched latest remote state from `origin/main`. The primary checkout is dirty and on another task branch, so T096 used a clean worktree from `origin/main`.
+- Checked GitHub PRs. `gh pr list` reported no open pull requests; PR #78 is already merged on GitHub with a successful Agent Review Gate check. This coordinator pass did not merge any pull request.
+- Loaded Linear credentials with `source credentials.txt` before Linear API calls. Confirmed `GRO-62` is `Done`, `GRO-64` remains `Human Review`, `GRO-65` was `Todo`, and `GRO-60` remains `Todo`.
+- PM/scoping result: claimed `GRO-65` / T096 because it is the dependency-complete policy/scoping task that can unblock MPREIS/REWE decisions without touching runtime scraper code. No new implementation task was moved out of `Blocked`.
+- Added the MPREIS/REWE first-version approval packet to `docs/retailer-ingest-runbook.md`. It gives separate MPREIS and REWE answer templates, conservative defaults, caps, delay/jitter, allowed URL/context fields, reporting/cleanup requirements, stop conditions, and dependent Linear issue mapping.
+- Linear mapping: keep `GRO-34` / T059 blocked unless MPREIS market/location and downstream use are explicitly approved; move `GRO-31` / T056 to `Todo` only after a REWE location-priced dry-run context is approved; move `GRO-35` / T060 to `Todo` only after a reviewed dry run and separate storage approval.
+- Checks: `git diff --check`.
+- Next action: open the T096 Markdown-only PR, mark `GRO-65` `In Review`, and leave `GRO-60` as the next eligible `Todo` policy/scoping task. Do not merge any PR unless the user explicitly asks for that specific PR.
+
 2026-06-29 coordinator pass / T092 BILLA/MPREIS/REWE scope:
 
 - Fetched latest remote state from `origin/main`. The primary checkout is dirty and on another task branch, so T092 used a clean worktree from `origin/main`.
