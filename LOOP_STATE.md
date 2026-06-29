@@ -41,6 +41,18 @@ Last full-codebase security review boundary: 0 completed tasks.
 
 ## Last Run
 
+2026-06-29 coordinator pass / Linear blocker cleanup:
+
+- Fetched latest remote state from `origin/main` and checked open GitHub PRs.
+- PR #60 (`task/T073-tegut-amazon-price-surface-discovery`) is open, clean, and green. It remains `In Review` / `review_status: not_required` in Linear and must not be merged without explicit user instruction.
+- PR #61 (`task/T047-grocerlo-minimalist-detail-disclosure`) is open, clean, and green on its latest Agent Review Gate run. It remains `In Review` / `review_status: passed` in Linear and must not be merged without explicit user instruction.
+- Confirmed Linear current state: `GRO-43` and `GRO-22` are `In Review`; `GRO-8` is `Done`.
+- PM/scoping pass found no dependency-complete `Todo` implementation issue after policy checks. REWE price scraping is blocked until an approved location/market/service context exists, and MPREIS downstream normalization/comparison use is blocked after the capped raw validation.
+- Moved miscategorized blocked issues `GRO-31`, `GRO-34`, and `GRO-35` from `Todo` to `Backlog` with blocker comments.
+- Created policy follow-ups `GRO-44` / T074 for REWE approved-location dry-run policy and `GRO-45` / T075 for MPREIS downstream-use policy after raw validation. Both are `Backlog` until the required user/policy decisions are available.
+- No implementation work was launched because Linear now has zero `Todo` issues and the remaining work is policy-blocked.
+- Next action: user or PM pass should resolve either `GRO-44` or `GRO-45`; after one is approved, move the dependent implementation issue back to `Todo` and launch it from a clean `origin/main` worktree.
+
 2026-06-29 coordinator pass / T028 MPREIS capped raw validation:
 
 - Fetched latest remote state from `origin/main` and checked GitHub PRs. No pull requests are currently open; PR #56 (`task/T071-disable-self-merge`) is already merged on GitHub with the agent review gate passing.
