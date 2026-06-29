@@ -51,8 +51,9 @@ Last full-codebase security review boundary: 0 completed tasks.
 - Added an all-retailer raw-ingest readiness summary to `docs/retailer-ingest-runbook.md`.
 - Readiness decision: BILLA `scrape_run_id=3` remains the only reusable stored/normalized baseline. MPREIS `scrape_run_id=4` remains quarantined and is approved only for report-only normalization via `GRO-48` / T079. REWE, Kaufland Slovakia, Tesco Slovakia, and Tegut on Amazon remain storage-blocked behind explicit location/account/platform or policy decisions.
 - Linear count after claiming T063: 32 `Done`, 8 `Blocked`, 1 `Canceled`, 1 `In Progress`, and 1 `Todo` (`GRO-48` / T079). The completed count remains below the 100-task full-codebase security review boundary.
-- Checks: `git diff --check` and `python3 -m compileall -q backend/app scripts`.
-- Next action: open the T063 PR, update Linear with PR/check metadata, and keep it `In Review` until user-directed merge. `GRO-48` / T079 remains Todo as the next independent implementation task for MPREIS report-only normalization.
+- Opened PR #67: `https://github.com/fukac99/grocerlo/pull/67`. PR #67 is open, clean, mergeable, and its Agent Review Gate passed with `review_status: not_required` because it is Markdown-only coordinator/readiness documentation.
+- Checks: `git diff --check`; `python3 -m compileall -q backend/app scripts`; Cursor diagnostics for touched Markdown files.
+- Next action: PR #67 is ready for user-directed review/merge and must not be merged autonomously. `GRO-48` / T079 remains Todo as the next independent implementation task for MPREIS report-only normalization.
 
 2026-06-29 coordinator pass / T075 MPREIS downstream policy:
 
