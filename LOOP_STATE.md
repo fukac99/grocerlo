@@ -4,7 +4,7 @@ This file is persistent project context for loop-style work on the grocery price
 
 ## Current Focus
 
-Prioritize safe all-retailer raw-data ingest after BILLA dedupe cleanup while continuing focused Grocerlo UX improvements.
+Prioritize safe BILLA, REWE, and MPREIS real-data ingest while keeping MPREIS comparable use blocked until a specific Austrian market is approved.
 
 ## Project Mode
 
@@ -34,7 +34,7 @@ Last full-codebase security review boundary: 0 completed tasks.
 | Retailer | Country | Status | Notes |
 | --- | --- | --- | --- |
 | BILLA | AT | Clean baseline complete | Controlled post-dedupe stored baseline `scrape_run_id=3` produced 3 raw rows, 3 normalized rows, 3 distinct source IDs, and no duplicate-source-ID issues. |
-| MPREIS | AT | Report-only normalization approved; broader downstream blocked | `scrape_run_id=4` stored 3 `no_market_selected` raw rows from one page. Sanity report found 0 quality issues and 0 missing key fields. Report-only normalization may validate parsing for these rows, but matching, comparison UI use, broader volume, and market-selected scraping remain blocked. |
+| MPREIS | AT | Market-context mechanism found; human market choice needed | `scrape_run_id=4` stored 3 `no_market_selected` raw rows from one page. A no-storage probe showed MPREIS accepts a public `marketId` cookie and renders location-backed availability for store `8075` / MPREIS Absam, but that store is only technical evidence. Matching, comparison UI use, broader volume, and market-selected scraping remain blocked until the user approves the exact Austrian market context. |
 | REWE | DE | Dry-run implementation; storage blocked | `GRO-31` / T056 adds a no-storage low-volume scraper path using approved `65510 Idstein-Wörsdorf` context, but the live run stopped on REWE bot protection before returning product data. Storage, matching, API/UI comparison use, and broader volume remain blocked. |
 | Kaufland | SK | Excluded from first version; storage blocked | `GRO-51` excludes Kaufland Slovakia from the first multi-retailer version. Runtime scraping, storage, matching, API use, and UI exposure remain blocked until a later revisit after BILLA, MPREIS, and REWE policy gates are settled. |
 | Tesco | SK | Excluded from first version; storage blocked | `GRO-52` excludes Tesco Slovakia from the first multi-retailer version. Runtime scraping, storage, normalization, matching, API use, UI exposure, account/session use, and location selection remain blocked until a later revisit after BILLA, MPREIS, and REWE policy gates are settled. |
@@ -52,6 +52,18 @@ Last full-codebase security review boundary: 0 completed tasks.
 - Live dry-run command `python scripts/scrape_once.py --retailer rewe --limit-categories 1 --max-products 3` stopped on REWE bot protection (`Zeig uns, dass du ein Mensch bist` / `WAF Challenge`). The scraper now raises a clear stop-condition error instead of returning challenge-page text as product data.
 - Checks: `PYTHONPATH="$PWD/backend" python -m pytest backend/tests/test_rewe_scraper.py backend/tests/test_scrape_once.py`; `PYTHONPATH="$PWD/backend" python -m compileall -q backend/app scripts`; capped REWE dry-run command verified the stop condition.
 - Next action: open the T056 PR, mark `GRO-31` `In Review`, and keep REWE storage/comparable app use blocked. A later loop can claim `GRO-66` for BILLA ingest or `GRO-60` for review-gate scoping; `GRO-67` should wait until the REWE bot-protection blocker is resolved or scoped into a user decision.
+
+2026-06-29 coordinator pass / T100 MPREIS real market context:
+
+- Fetched latest remote state from `origin/main`. The primary checkout is dirty and on another task branch, so T100 used a clean worktree from merged `origin/main`.
+- Checked GitHub PRs. `gh pr list` reported no open pull requests; PR #80 is already merged on GitHub with a successful Agent Review Gate check. This coordinator pass did not merge any pull request.
+- Loaded Linear credentials with `source credentials.txt` before Linear API calls. Confirmed `GRO-64` remains `Human Review`; `GRO-31`, `GRO-60`, `GRO-66`, `GRO-67`, and `GRO-68` were `Todo`; `GRO-34` and `GRO-35` remain `Blocked`.
+- PM/scoping result: claimed `GRO-68` / T100 because it directly unblocks MPREIS real-data policy and does not overlap BILLA full-ingest or REWE dry-run scopes. No new Linear issue was needed because existing Todo issues remain actionable.
+- MPREIS finding: public market metadata is available at `https://cms-storefront.mpreis.at/c3_custom_data/location/index.json` and `.../location/mpreis/index.json`; the storefront uses a `marketId` cookie plus market-specific Algolia price/availability endpoints.
+- Technical proof: no-storage Playwright probe with `marketId=8075` changed product-card availability from `Noch kein Markt gewählt` to `Verfügbar in deinem Markt Dörferstraße 4, 6067 Absam`. Store `8075` is `MPREIS Absam`, but it is not approved as Grocerlo's first-version MPREIS market.
+- Decision boundary: keep MPREIS matching, comparison UI use, broader volume, and market-selected storage blocked until the user approves the exact Austrian market ID/store context and run caps. `GRO-68` should move to `Human Review` with Recommendation, Context, Decision Needed, and After You Decide sections.
+- Checks: `python3 scripts/scrape_once.py --retailer mpreis --limit-categories 1 --max-products 3`; no-storage Playwright market-cookie probe; `git diff --check`.
+- Next action: user should choose the MPREIS market context or approve Absam `8075`; then the next loop can add an explicit market-backed MPREIS dry-run path and keep any green PR waiting for user-directed merge.
 
 2026-06-29 coordinator pass / T096 MPREIS/REWE approval packet:
 
