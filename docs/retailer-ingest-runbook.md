@@ -8,9 +8,9 @@ This runbook is for controlled raw-product ingest only. It does not approve broa
 | --- | --- | --- | --- |
 | BILLA | AT | Clean baseline complete | Post-dedupe stored baseline `scrape_run_id=3` produced 3 raw rows, 3 normalized rows, 3 distinct source IDs, and no duplicate-source-ID issues. Broader BILLA runs still require explicit human approval and token. |
 | MPREIS | AT | Report-only normalization approved; broader downstream blocked | `scrape_run_id=4` stored 3 `no_market_selected` raw rows with no sanity-report quality issues. A report-only normalization pass may validate parsing for these rows, but matching, comparison UI use, broader volume, and market-selected scraping remain blocked. |
-| REWE | DE | Discovery-only; storage blocked | No runtime scraper is ready. Complete public-price, market/location, robots/terms, and account-flow discovery before any dry-run scraper work. |
-| Kaufland Slovakia | SK | Discovery-only; storage blocked | No runtime scraper is ready. Complete discovery to distinguish public grocery prices from marketplace, leaflet, store, and Kaufland Card/app-only prices. |
-| Tesco Slovakia | SK | Discovery-only; storage blocked | No runtime scraper is ready. Complete discovery for public prices, location/session requirements, Clubcard labels, and dynamic page behavior before any dry-run scraper work. |
+| REWE | DE | Discovery-only; storage blocked | Public no-location pages expose metadata but not numeric prices. Any price-capturing dry run needs an exact human-approved postal code, market, service mode, run purpose, cap, and stop rule. |
+| Kaufland Slovakia | SK | Excluded from first version; storage blocked | `GRO-51` excludes Kaufland Slovakia from the first multi-retailer version. Do not reopen scraper, storage, matching, API, or UI work until a later revisit after BILLA/MPREIS/REWE gates are settled. |
+| Tesco Slovakia | SK | Excluded from first version; storage blocked | `GRO-52` excludes Tesco Slovakia from the first multi-retailer version. Do not reopen scraper, storage, normalization, matching, API, UI, account/session, or location work until a later revisit after BILLA/MPREIS/REWE gates are settled. |
 
 ## 2026-06-29 All-Retailer Readiness Summary
 
@@ -32,6 +32,20 @@ Cleanup and downstream-use decisions:
 - Do not create stored-ingest issues for REWE, Kaufland Slovakia, Tesco Slovakia, or Tegut on Amazon until the relevant policy blocker is explicitly resolved in Linear.
 - Do not use any non-BILLA retailer rows for matching or comparison UI until that retailer has a reviewed stored validation report and a downstream-use policy that allows comparable product data.
 
+## 2026-06-29 BILLA/MPREIS/REWE First-Version Scope
+
+`GRO-62` narrows the first multi-retailer path after the Kaufland Slovakia and Tesco Slovakia decisions. The first version should now be planned around BILLA plus only the still-allowed MPREIS and REWE paths. This is a scoping record, not approval for new scraping, storage, matching, API wiring, UI exposure, location selection, account flows, or broader volume.
+
+| Retailer | First-version role | Current blocker | Next safe Linear action |
+| --- | --- | --- | --- |
+| BILLA AT | Reusable baseline source | None for the existing `scrape_run_id=3` baseline; broader BILLA volume still needs explicit run approval and caps. | Keep the clean baseline available for local development and comparison-shape testing. Create a new BILLA run task only when a human approves the exact purpose, cap, delay, and cleanup plan. |
+| MPREIS AT | Candidate second source only after policy approval | Existing `scrape_run_id=4` rows are `no_market_selected` and approved only for report-only validation. Comparable downstream use, market-selected scraping, matching, API use, and UI use remain blocked. | Prepare a human decision packet for the exact market/location/downstream-use policy before moving `GRO-34` / T059 or any MPREIS comparison task out of `Blocked`. |
+| REWE DE | Candidate third source only after policy approval | No approved price-visible location or service context exists. Public no-location pages do not expose numeric prices. | Prepare a human decision packet for postal code, market/service mode, allowed URLs, caps, and stop conditions before moving `GRO-31` / T056 or `GRO-35` / T060 out of `Blocked`. |
+| Kaufland Slovakia | Excluded | First-version exclusion is recorded in `GRO-51`. | Keep `GRO-32` / T057 and `GRO-36` / T061 blocked/canceled unless a later revisit explicitly approves a new context. |
+| Tesco Slovakia | Excluded | First-version exclusion is recorded in `GRO-52`. | Keep `GRO-33` / T058 and `GRO-37` / T062 blocked/canceled unless a later revisit explicitly approves a new context. |
+
+No existing MPREIS or REWE implementation issue is dependency-complete today. The useful next retailer action is a policy/scoping issue that drafts the two human approval packets together, because the same first-version comparison decision has to define whether BILLA-only development continues while MPREIS/REWE wait for approved contexts.
+
 ## All-Retailer Raw Ingest Execution Plan
 
 The raw-data priority is to make each retailer safe and repeatable before storing any non-BILLA rows. BILLA remains the only approved stored source for reusable baselines today. MPREIS has a one-time capped raw validation approval; all other non-BILLA storage is blocked until retailer-specific discovery notes and policy prerequisites are explicit.
@@ -40,10 +54,11 @@ The raw-data priority is to make each retailer safe and repeatable before storin
 
 1. Keep the clean BILLA baseline as the reusable stored-data reference until another explicitly approved BILLA run is needed.
 2. Run report-only normalization for the quarantined MPREIS capped raw validation before considering any broader policy. Matching, comparison UI use, market-selected scraping, and broader volume remain blocked.
-3. Complete or refresh documentation-only discovery for REWE, Kaufland Slovakia, and Tesco Slovakia before any scraper/storage implementation.
-4. Implement low-volume dry-run scrapers only after discovery and policy notes are explicit. Dry runs should use one or two categories/pages, at most three products, no storage, and at least a two-second delay.
-5. Create retailer-specific controlled stored-ingest tasks only after dry-run outputs are reviewed. Each stored task must start with one category/page and no more than three products, produce a sanity report, and stop before broad volume.
-6. Normalize and report each approved stored run before adding matching or comparison work. MPREIS is excluded from this step until its capped stored validation is reviewed and downstream use is separately approved.
+3. Draft the MPREIS and REWE human approval packets needed for first-version use. MPREIS needs an exact market/location and downstream-use policy; REWE needs an exact postal code, market/service mode, allowed URL surface, cap, and stop rule.
+4. Keep Kaufland Slovakia and Tesco Slovakia excluded from first-version runtime work until a later revisit after the BILLA/MPREIS/REWE gates are settled.
+5. Implement low-volume dry-run scrapers only after discovery and policy notes are explicit. Dry runs should use one or two categories/pages, at most three products, no storage, and at least a two-second delay.
+6. Create retailer-specific controlled stored-ingest tasks only after dry-run outputs are reviewed. Each stored task must start with one category/page and no more than three products, produce a sanity report, and stop before broad volume.
+7. Normalize and report each approved stored run before adding matching or comparison work. MPREIS is excluded from this step until its capped stored validation is reviewed and downstream use is separately approved.
 
 ### Retailer Sequence
 
@@ -51,9 +66,9 @@ The raw-data priority is to make each retailer safe and repeatable before storin
 | --- | --- | --- | --- |
 | 1 | BILLA AT | Use `scrape_run_id=3` as the clean controlled baseline while planning the next approved BILLA run. | Already approved for controlled BILLA only; broader runs still require explicit human approval and token. |
 | 2 | MPREIS AT | Normalize `scrape_run_id=4` for reporting only, then decide whether a human-approved market/location policy task is appropriate. | Only the capped raw validation and report-only normalization are approved; no market context, app/account flow, matching, comparison use, broader storage, or broader volume is approved. |
-| 3 | REWE DE | Document public price visibility and delivery/pickup market requirements. | Blocked if login, postal code, market, delivery area, pickup branch, or delivery slot is required without an approved default context. |
-| 4 | Kaufland SK | Document whether data is online grocery, marketplace, leaflet, or store-specific. | Blocked if prices are leaflet-only, region-specific, Kaufland Card/app-only, or not grocery product prices without policy approval. |
-| 5 | Tesco SK | Document dynamic page behavior, location/session requirements, and Clubcard labeling. | Blocked if prices need account, delivery slot, address, or postal-code context without an approved default context. |
+| 3 | REWE DE | Draft the exact human approval packet for a location/service-scoped no-storage dry run before implementation. | Blocked until the user approves postal code, market/service mode, allowed URLs, caps, delay/jitter, and stop conditions. |
+| 4 | Kaufland SK | Excluded from first-version implementation. | Blocked until a later revisit explicitly approves a new scope after BILLA/MPREIS/REWE gates are settled. |
+| 5 | Tesco SK | Excluded from first-version implementation. | Blocked until a later revisit explicitly approves a new scope after BILLA/MPREIS/REWE gates are settled. |
 
 ### Non-BILLA Stop Conditions
 
