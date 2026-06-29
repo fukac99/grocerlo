@@ -46,6 +46,78 @@ Cleanup and downstream-use decisions:
 
 No existing MPREIS or REWE implementation issue is dependency-complete today. The useful next retailer action is a policy/scoping issue that drafts the two human approval packets together, because the same first-version comparison decision has to define whether BILLA-only development continues while MPREIS/REWE wait for approved contexts.
 
+## 2026-06-29 MPREIS/REWE First-Version Approval Packet
+
+`GRO-65` / T096 records the exact decisions needed before MPREIS or REWE can move from first-version candidates into runtime implementation. This packet is not approval by itself. Keep `GRO-34` / T059, `GRO-31` / T056, and `GRO-35` / T060 blocked until a human records the relevant approvals in Linear.
+
+### MPREIS AT Approval Request
+
+Current usable data: `scrape_run_id=4` contains three public `no_market_selected` raw rows from `https://www.mpreis.at/schneller-erster-einkauf`. It is quarantined and approved only for report-only parser/data-quality validation. It must not feed matching, comparison APIs, frontend comparison UI, reusable baselines, broader volume, app/account flows, or market-selected scraping.
+
+Recommended conservative decision:
+
+```text
+Decision: approve MPREIS for first-version follow-up / reject MPREIS for first-version follow-up.
+Approved context: no-market report-only data / named market or location context.
+Approved market or location, if any:
+Approved source URLs:
+  - https://www.mpreis.at/schneller-erster-einkauf
+  - public https://www.mpreis.at/shop/p/... product URLs discovered from that page
+Maximum scope: one category-equivalent page, at most 3 products, no concurrent MPREIS scraper.
+Delay/jitter: at least 2 seconds between automated page loads, plus jitter for any new scripted dry run.
+Allowed outputs: raw validation report only / controlled stored validation / downstream comparison use.
+Promotion policy: app-only labels remain promotion metadata and never regular comparable price fields unless separately approved.
+Cleanup/reporting: record command, scrape_run_id, row count, distinct source IDs, missing fields, duplicate source IDs, suspicious values, parser failures, location_context, and cleanup decision.
+```
+
+Recommended default: approve only the existing report-only validation path unless the user names a real market/location and explicitly allows comparable downstream use. If the user approves broader MPREIS use, move `GRO-34` / T059 from `Blocked` to `Todo` only after the approval names market/location context, allowed URLs, caps, delay/jitter, downstream-use policy, and cleanup criteria.
+
+MPREIS stop conditions:
+
+- Stop before login, registration, app/API-only flows, market selection, cart, checkout, CAPTCHA, blocked responses, disallowed robots paths, search/filter/index URLs, or unclear app-only price separation.
+- Stop if public regular price, app-only price, promotion metadata, and availability cannot be separated cleanly.
+- Keep `no_market_selected` rows out of matching and comparison UI unless a later human decision explicitly accepts that semantics.
+
+### REWE DE Approval Request
+
+Current usable data: public no-location product pages expose product metadata and article numbers but not numeric prices. Observed pages showed `Konkreter Preis abhängig vom Standort`, so price capture requires a human-approved postal code, market or service mode, allowed URL set, caps, and stop rules before any implementation.
+
+Recommended conservative decision:
+
+```text
+Decision: approve REWE location-priced dry run / approve metadata-only no-location probe / reject REWE first-version follow-up.
+Approved postal code:
+Approved market:
+Approved service mode: pickup / delivery / metadata-only no-location.
+Approved URL surface:
+  - public /shop/p/... product pages only, unless another exact URL pattern is named.
+Maximum scope: one product page or one small category/listing view, at most 3 products, no storage for first dry run.
+Delay/jitter: at least 2 seconds between automated page loads, plus jitter.
+Browser automation: allowed / not allowed.
+Allowed outputs: dry-run report only; no storage until dry-run output is reviewed and a separate storage policy is approved.
+Required fields: source_product_id, canonical source_url, raw_name, brand, price or explicit missing-price placeholder, unit price, package size, deposit/weighted-item caveats, loyalty labels, location_context, observed_at, raw_payload notes.
+Cleanup/reporting: record command, URL/context, sample count, missing fields, stop conditions, robots/terms notes, and whether any follow-up storage task is safe.
+```
+
+Recommended default: keep REWE to metadata-only no-location documentation unless the user provides an exact postal code, market, service mode, and allowed URL surface. If the user approves a location-priced dry run, move `GRO-31` / T056 from `Blocked` to `Todo` first. Move `GRO-35` / T060 to `Todo` only after a dry-run PR is reviewed and storage approval is separately recorded.
+
+REWE stop conditions:
+
+- Stop before login, registration, PAYBACK/account linking, coupon activation, cart, checkout, postal-code lookup, current-location detection, market selection, delivery-area checks, pickup-branch selection, delivery-slot selection, CAPTCHA, bot challenges, disallowed robots paths, `/restservices/`, `/shop/mc/`, or session-specific URLs unless explicitly approved.
+- Stop if regular prices, loyalty labels, deposit, weighted-item caveats, service fees, and location context cannot be separated in the output.
+- Do not infer REWE prices from snippets, flyers, third-party surfaces, or account/app labels.
+
+### Dependent Linear Issue Mapping
+
+| Approval outcome | Linear action |
+| --- | --- |
+| MPREIS report-only remains the only approved use | Keep `GRO-34` / T059 `Blocked`; continue BILLA-only app development or policy scoping. |
+| MPREIS market/location plus downstream use is approved | Move `GRO-34` / T059 to `Todo` with the approved context copied into the issue before implementation. |
+| REWE metadata-only no-location probe is approved | Create or move only a metadata/reporting task to `Todo`; keep price capture and storage blocked. |
+| REWE location-priced dry run is approved | Move `GRO-31` / T056 to `Todo` with postal code, market/service mode, allowed URLs, caps, delay/jitter, and stop conditions copied into the issue. |
+| REWE dry run is reviewed and storage is separately approved | Move `GRO-35` / T060 to `Todo` with dry-run PR, storage cap, sanity-report expectations, and cleanup plan. |
+| Either retailer is rejected for first version | Keep the relevant implementation/storage issues `Blocked` or move them to `Canceled`, and continue with BILLA-only or another approved source path. |
+
 ## All-Retailer Raw Ingest Execution Plan
 
 The raw-data priority is to make each retailer safe and repeatable before storing any non-BILLA rows. BILLA remains the only approved stored source for reusable baselines today. MPREIS has a one-time capped raw validation approval; all other non-BILLA storage is blocked until retailer-specific discovery notes and policy prerequisites are explicit.
