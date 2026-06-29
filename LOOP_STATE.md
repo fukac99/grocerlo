@@ -36,8 +36,8 @@ Last full-codebase security review boundary: 0 completed tasks.
 | BILLA | AT | Clean baseline complete | Controlled post-dedupe stored baseline `scrape_run_id=3` produced 3 raw rows, 3 normalized rows, 3 distinct source IDs, and no duplicate-source-ID issues. |
 | MPREIS | AT | Report-only normalization approved; broader downstream blocked | `scrape_run_id=4` stored 3 `no_market_selected` raw rows from one page. Sanity report found 0 quality issues and 0 missing key fields. Report-only normalization may validate parsing for these rows, but matching, comparison UI use, broader volume, and market-selected scraping remain blocked. |
 | REWE | DE | Discovery-only; storage blocked | Public no-location pages expose metadata/article numbers but not numeric prices. T074 documents that no location-priced dry-run context is approved yet; price scraping needs an exact human-approved location/market/service context first. |
-| Kaufland | SK | Human Review; storage blocked | Discovery and policy recommendation are merged from PR #69. Runtime scraping, storage, matching, API use, and UI exposure remain blocked until a human decides whether a no-storage leaflet/store-offer dry run is useful and which default-store or approved-store context is allowed. |
-| Tesco | SK | Human Review; storage blocked | Discovery and policy recommendation are merged from PR #70. Runtime scraping, storage, normalization, matching, API use, and UI exposure remain blocked until a human decides whether account/location/session-specific delivery offers are in scope and approves exact test context, caps, and legal/terms comfort. |
+| Kaufland | SK | Excluded from first version; storage blocked | `GRO-51` excludes Kaufland Slovakia from the first multi-retailer version. Runtime scraping, storage, matching, API use, and UI exposure remain blocked until a later revisit after BILLA, MPREIS, and REWE policy gates are settled. |
+| Tesco | SK | Excluded from first version; storage blocked | `GRO-52` excludes Tesco Slovakia from the first multi-retailer version. Runtime scraping, storage, normalization, matching, API use, UI exposure, account/session use, and location selection remain blocked until a later revisit after BILLA, MPREIS, and REWE policy gates are settled. |
 | Tegut on Amazon | DE | Discovery-only; storage blocked | Amazon-hosted grocery surface is postcode/account/platform scoped. T073 found no safe no-location price capture path; any next step needs explicit Amazon/Tegut policy approval. |
 
 ## Last Run
@@ -52,6 +52,15 @@ Last full-codebase security review boundary: 0 completed tasks.
 - Corrected `GRO-51` and `GRO-52` back to `Human Review` because both are waiting explicitly for user policy decisions. Created `GRO-60` / T091 as the next `Todo` scoping issue for a non-enforcing Linear review-gate dry-run plan, keeping Linear from sitting at zero actionable Todo work.
 - Checks: `python3 -m pytest backend/tests/test_linear_review_metadata.py backend/tests/test_check_pr_review_status.py`; Cursor diagnostics for touched Python files.
 - Next action: review PR #75 and update `GRO-59` to `review_status: passed` only if the review passes. A following loop can claim `GRO-60` / T091 for docs-only dry-run scoping without touching PR #75 parser files.
+2026-06-29 coordinator pass / T091 Kaufland/Tesco exclusions:
+
+- Fetched latest remote state from `origin/main` and checked open GitHub PRs; no pull requests were open when checked. This coordinator pass did not merge any pull request.
+- Loaded Linear credentials with `source credentials.txt` before Linear API calls. Read `GRO-51` and `GRO-52` as newly completed Human Review decisions moved to `Todo`.
+- Applied the decisions: Kaufland Slovakia and Tesco Slovakia are approved only for exclusion from the first multi-retailer version. They should be revisited after BILLA, MPREIS, and REWE policy gates are settled.
+- Kept dependent implementation/storage issues blocked: `GRO-32` / T057, `GRO-36` / T061, `GRO-33` / T058, and `GRO-37` / T062. The decisions do not approve dry-run scraping, storage, normalization, matching, API use, UI exposure, account/session use, or location selection.
+- Created and claimed `GRO-61` / T091 for this Markdown-only coordinator update, and created `GRO-62` / T092 as the next `Todo` to scope the BILLA/MPREIS/REWE-focused first multi-retailer path.
+- Checks: `git diff --check`.
+- Next action: claim `GRO-62` to identify whether any BILLA/MPREIS/REWE follow-up can become implementation-ready without new human approval. Do not merge any PR unless the user explicitly asks for that specific PR.
 
 2026-06-29 coordinator pass / T087-T088 post-merge readiness:
 
