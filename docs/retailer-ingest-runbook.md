@@ -12,6 +12,26 @@ This runbook is for controlled raw-product ingest only. It does not approve broa
 | Kaufland Slovakia | SK | Discovery-only; storage blocked | No runtime scraper is ready. Complete discovery to distinguish public grocery prices from marketplace, leaflet, store, and Kaufland Card/app-only prices. |
 | Tesco Slovakia | SK | Discovery-only; storage blocked | No runtime scraper is ready. Complete discovery for public prices, location/session requirements, Clubcard labels, and dynamic page behavior before any dry-run scraper work. |
 
+## 2026-06-29 All-Retailer Readiness Summary
+
+This summary closes `GRO-38` / T063 by recording the current raw-ingest gates across every known retailer. It is a planning report only; it does not approve a new scrape, storage run, location context, account flow, matching path, comparison UI path, or volume increase.
+
+| Retailer | Raw rows | Normalized rows | Current safe next step | Stop conditions and blockers | Capped multi-category readiness |
+| --- | ---: | ---: | --- | --- | --- |
+| BILLA AT | 3 in clean baseline `scrape_run_id=3` | 3 | Use the clean baseline as the reusable local reference; plan another BILLA run only with explicit approval and caps. | Stop on duplicate-heavy category overlap, unexpected missing key fields, suspicious prices, or missing approval scope. Broader BILLA runs still require a human-approved purpose, cap, delay, and broad-run token. | Conditionally ready for a capped BILLA-only validation, not an automatic all-category run. |
+| MPREIS AT | 3 quarantined `no_market_selected` rows in `scrape_run_id=4` | 0 reusable app rows; report-only normalization pending | Run `GRO-48` / T079 to validate parsing and data quality for report-only output from the existing raw rows. | Matching, comparison API/UI use, market-selected scraping, broader volume, app/account flows, and any reusable baseline remain blocked until a human approves exact market/location context and downstream policy. | Not ready. |
+| REWE DE | 0 stored | 0 | Keep price capture blocked; only metadata-only no-location documentation can proceed without a human-approved postal code, market, service mode, and run purpose. | Numeric prices are not visible without location. Stop before location selection, account, cart, checkout, PAYBACK/coupon flows, `/restservices/`, disallowed paths, CAPTCHA, or bot challenges. | Not ready. |
+| Kaufland SK | 0 stored | 0 | If prioritized, scope a no-storage leaflet/offer dry-run or policy decision that explicitly names default-store versus approved-store semantics. | `www.kaufland.sk` hit verification/bot protection, public store offers are leaflet/store-contextual, stable product IDs were not visible, and Kaufland Card/app/account prices must stay separate. | Not ready. |
+| Tesco SK | 0 stored | 0 | Keep implementation blocked unless a policy/legal review approves an account/location/session test context. | Tesco terms say current prices appear after registered login; accurate availability/offers depend on delivery slot/store context; product pages and sitemaps returned protection or `403`. | Not ready. |
+| Tegut on Amazon DE | 0 stored | 0 | Keep as discovery-only unless a policy issue approves Amazon-hosted grocery source semantics plus postcode/account context. | Grocery availability is postcode-dependent, ordering requires Amazon account context, source category returned `404`, and Amazon robots disallow account/cart/availability/offer/promotion paths. | Not ready. |
+
+Cleanup and downstream-use decisions:
+
+- Keep BILLA `scrape_run_id=3` as the clean controlled baseline because its raw and normalized counts match the approved cap and it has no duplicate-source-ID issues.
+- Keep MPREIS `scrape_run_id=4` quarantined. Report-only normalization may inspect parser behavior, but any misleading parser result, changed `location_context`, app-only price ambiguity, missing key field, or suspicious value should keep the run out of app surfaces and trigger cleanup or parser-fix planning.
+- Do not create stored-ingest issues for REWE, Kaufland Slovakia, Tesco Slovakia, or Tegut on Amazon until the relevant policy blocker is explicitly resolved in Linear.
+- Do not use any non-BILLA retailer rows for matching or comparison UI until that retailer has a reviewed stored validation report and a downstream-use policy that allows comparable product data.
+
 ## All-Retailer Raw Ingest Execution Plan
 
 The raw-data priority is to make each retailer safe and repeatable before storing any non-BILLA rows. BILLA remains the only approved stored source for reusable baselines today. MPREIS has a one-time capped raw validation approval; all other non-BILLA storage is blocked until retailer-specific discovery notes and policy prerequisites are explicit.

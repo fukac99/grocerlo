@@ -42,6 +42,19 @@ Last full-codebase security review boundary: 0 completed tasks.
 
 ## Last Run
 
+2026-06-29 coordinator pass / T063 all-retailer readiness summary:
+
+- Fetched latest remote state from `origin/main`. The local primary checkout is dirty on `task/T042-billa-scale-scrape-dedupe`, so T063 used a clean worktree from `origin/main`.
+- Checked GitHub PRs. `gh pr list` reported no open pull requests. PR #64, PR #65, and PR #66 are merged on GitHub; this coordinator pass did not merge any pull request.
+- Loaded Linear credentials with `source credentials.txt` before Linear API calls. Confirmed Linear states include `Blocked` and `Human Review`, moved `GRO-44` / T074 and `GRO-45` / T075 to `Done` after observing their PRs merged, and claimed `GRO-38` / T063.
+- PM/scoping result: `GRO-38` / T063 and `GRO-48` / T079 were the active Todo issues. Claimed T063 because it is an independent readiness-summary task that can document next gates without overlapping the MPREIS report-only normalization implementation scope.
+- Added an all-retailer raw-ingest readiness summary to `docs/retailer-ingest-runbook.md`.
+- Readiness decision: BILLA `scrape_run_id=3` remains the only reusable stored/normalized baseline. MPREIS `scrape_run_id=4` remains quarantined and is approved only for report-only normalization via `GRO-48` / T079. REWE, Kaufland Slovakia, Tesco Slovakia, and Tegut on Amazon remain storage-blocked behind explicit location/account/platform or policy decisions.
+- Linear count after claiming T063: 32 `Done`, 8 `Blocked`, 1 `Canceled`, 1 `In Progress`, and 1 `Todo` (`GRO-48` / T079). The completed count remains below the 100-task full-codebase security review boundary.
+- Opened PR #67: `https://github.com/fukac99/grocerlo/pull/67`. PR #67 is open, clean, mergeable, and its Agent Review Gate passed with `review_status: not_required` because it is Markdown-only coordinator/readiness documentation.
+- Checks: `git diff --check`; `python3 -m compileall -q backend/app scripts`; Cursor diagnostics for touched Markdown files.
+- Next action: PR #67 is ready for user-directed review/merge and must not be merged autonomously. `GRO-48` / T079 remains Todo as the next independent implementation task for MPREIS report-only normalization.
+
 2026-06-29 coordinator pass / T075 MPREIS downstream policy:
 
 - Fetched latest remote state from `origin/main`. The local primary checkout is dirty on `task/T042-billa-scale-scrape-dedupe`, so T075 used a clean worktree from `origin/main`.
