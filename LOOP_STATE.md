@@ -35,12 +35,25 @@ Last full-codebase security review boundary: 0 completed tasks.
 | --- | --- | --- | --- |
 | BILLA | AT | Clean baseline complete | Controlled post-dedupe stored baseline `scrape_run_id=3` produced 3 raw rows, 3 normalized rows, 3 distinct source IDs, and no duplicate-source-ID issues. |
 | MPREIS | AT | Capped raw validation complete; downstream blocked | `scrape_run_id=4` stored 3 `no_market_selected` raw rows from one page. Sanity report found 0 quality issues and 0 missing key fields. Do not normalize, match, or show MPREIS rows until a follow-up approval task reviews downstream use. |
-| REWE | DE | Discovery-only; storage blocked | Public no-location pages expose metadata/article numbers but not numeric prices. Price scraping needs an approved location/market/service context first. |
+| REWE | DE | Discovery-only; storage blocked | Public no-location pages expose metadata/article numbers but not numeric prices. T074 documents that no location-priced dry-run context is approved yet; price scraping needs an exact human-approved location/market/service context first. |
 | Kaufland | SK | Discovery-only; storage blocked | Needs discovery to distinguish grocery, marketplace, leaflet, store, loyalty, and app-specific price surfaces. |
 | Tesco | SK | Discovery-only; storage blocked | Needs discovery for public price visibility, dynamic loading, address/slot/session requirements, and Clubcard labels. |
 | Tegut on Amazon | DE | Discovery-only; storage blocked | Amazon-hosted grocery surface is postcode/account/platform scoped. T073 found no safe no-location price capture path; any next step needs explicit Amazon/Tegut policy approval. |
 
 ## Last Run
+
+2026-06-29 coordinator pass / T074 REWE location policy:
+
+- Fetched latest remote state from `origin/main`. The local primary checkout is dirty on `task/T042-billa-scale-scrape-dedupe`, so T074 used a clean worktree from `origin/main`.
+- Checked GitHub PRs. PR #64 (`task/T078-keep-pm-policy-todo`) is open, clean, and green; it remains waiting for user-directed review/merge and was not merged.
+- Loaded Linear credentials with `source credentials.txt` before Linear API calls, queried team `GRO`, and found Todo policy/scoping issues including `GRO-44` / T074, `GRO-45` / T075, and `GRO-38` / T063.
+- Claimed `GRO-44` / T074 because its dependencies are Done, it does not overlap open PR #64, and it can document or resolve a blocker without approving implementation prematurely.
+- T074 decision: no approved location-priced REWE dry-run context exists yet. REWE price capture and storage remain blocked until a human records the exact postal code, market/service context, run purpose, allowed URLs, caps, delay/jitter, and output expectations.
+- Added a safe no-location metadata-only boundary for future REWE scoping: at most three public product pages, no storage, no normalization, no matching, no comparison UI use, preserve missing numeric prices, and stop before satisfying location/account/cart/checkout prompts.
+- Opened PR #65: `https://github.com/fukac99/grocerlo/pull/65`. PR #65 Agent Review Gate passed with `review_status: not_required` because it is Markdown-only policy documentation.
+- Updated Linear `GRO-44` to `In Review` with branch, PR, checks, review status, and no-autonomous-merge metadata. Added a blocker comment to `GRO-31` / T056 explaining that price-capturing REWE scraper work remains blocked.
+- Checks: `python3 -m compileall -q backend/app scripts`; Cursor diagnostics for touched Markdown files.
+- Next action: either user-directed review/merge of PR #64 and PR #65, or claim `GRO-45` / T075 to decide MPREIS downstream-use policy. Do not merge any PR unless explicitly instructed for that PR.
 
 2026-06-29 coordinator pass / PR 60-62 merge sync:
 
