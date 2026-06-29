@@ -42,6 +42,16 @@ Last full-codebase security review boundary: 0 completed tasks.
 
 ## Last Run
 
+2026-06-29 coordinator pass / PR 60-62 merge sync:
+
+- Fetched latest remote state from `origin/main`. The local primary checkout is dirty on `task/T042-billa-scale-scrape-dedupe`, so any repo update used a clean worktree from `origin/main`.
+- Checked GitHub PRs. PR #60 (`task/T073-tegut-amazon-price-surface-discovery`), PR #61 (`task/T047-grocerlo-minimalist-detail-disclosure`), and PR #62 (`task/GRO-coordinator-20260629-blocker-sync`) are already merged on GitHub. This coordinator pass did not merge any pull request.
+- Loaded Linear credentials with `source credentials.txt` before Linear API calls, queried team `GRO`, and moved `GRO-43`, `GRO-22`, and `GRO-46` from `In Review` to `Done` with merge-status comments.
+- Linear count after the sync: 29 `Done`, 11 `Backlog`, 1 `Canceled`, and 0 `Todo`. The completed count remains below the 100-task full-codebase security review boundary.
+- PM/scoping pass found no dependency-complete `Todo` issue to claim. The remaining non-Done work is policy-blocked: REWE needs an approved location/market/service policy, MPREIS needs an explicit downstream-use policy, and later non-BILLA storage tasks depend on those gates or dry-run review.
+- No executor implementation work was launched because Linear has zero `Todo` issues and the remaining backlog has concrete policy blockers.
+- Next action: resolve either `GRO-44` / T074 or `GRO-45` / T075 with explicit policy direction, then move any unblocked dependent implementation issue to `Todo` for the next loop.
+
 2026-06-29 coordinator pass / T073 Tegut Amazon discovery:
 
 - Fetched latest remote state from `origin/main`. PR #59 (`task/T072-linear-credentials-instructions`) is already merged on GitHub with the Agent Review Gate passing; no pull requests are currently open, and no merge action was taken.
