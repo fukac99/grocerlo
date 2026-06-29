@@ -109,5 +109,5 @@ Unblock decision: keep GRO-34 / T059 blocked for broader controlled stored inges
 
 1. Run a one-page, three-product stored validation through the narrowed CLI guard.
 2. Produce and review the stored-data sanity report, including location context, app-only promotion caveats, missing fields, duplicate source IDs, suspicious prices, and package-size parse results.
-3. Run report-only normalization for the quarantined `scrape_run_id=4` rows to validate parsing and data quality without treating MPREIS prices as comparable.
+3. Run report-only normalization with `python scripts/normalize_once.py 4 --retailer mpreis --report-only` for the quarantined `scrape_run_id=4` rows to validate parsing and data quality without treating MPREIS prices as comparable.
 4. Keep matching, comparison UI use, market-selected scraping, and broader volume blocked until a human approves exact market/location context and expanded scope.
