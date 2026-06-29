@@ -49,8 +49,9 @@ Last full-codebase security review boundary: 0 completed tasks.
 - Loaded Linear credentials with `source credentials.txt` before Linear API calls. Confirmed `GRO-48`, `GRO-49`, and `GRO-50` are `In Review`; `GRO-51` and `GRO-52` are `Human Review`; and `GRO-53` / T084 was the only dependency-complete `Todo`.
 - PM/scoping result: no new Linear issue was needed before executor work because T084 already covered the useful coordinator/state refresh. Claimed `GRO-53` and kept the scope to `LOOP_STATE.md` only to avoid overlapping PR #68 implementation files or PR #69/#70 retailer notes.
 - Current blockers: Kaufland Slovakia and Tesco Slovakia implementation work requires explicit human policy decisions. Broader MPREIS downstream use remains blocked beyond the narrow report-only validation in PR #68. Non-BILLA stored ingest remains blocked until the relevant policy and dry-run gates are satisfied.
+- Created `GRO-54` / T085 as the next `Todo` PM/scoping issue so Linear does not sit at zero Todo while an agent can produce a user-facing Kaufland/Tesco decision packet. T085 is scoped away from PR #68 implementation files, PR #69/#70 retailer notes, and `LOOP_STATE.md`.
 - Checks: `git diff --check`.
-- Next action: open the T084 PR, update Linear with PR/check metadata, and keep it `In Review` until user-directed merge. After PR #68-#70 and T084 are reviewed by the user, the next loop should either act on the Kaufland/Tesco Human Review decisions or create another narrow `Todo` recommendation issue if a blocker can be documented without implementation.
+- Next action: PR #71 is ready for user-directed review/merge and must not be merged autonomously. The next loop should claim `GRO-54` / T085 to draft the Kaufland/Tesco human-review decision packet, unless the user first resolves the Human Review decisions directly.
 
 2026-06-29 coordinator pass / T063 all-retailer readiness summary:
 
