@@ -59,6 +59,13 @@ Dry runs print JSON and do not write to the database:
 python scripts/scrape_once.py --retailer billa --limit-categories 1 --max-products 3
 ```
 
+REWE is approved only for a no-storage low-volume dry run using the recorded
+`65510 Idstein-Wörsdorf` context:
+
+```bash
+python scripts/scrape_once.py --retailer rewe --limit-categories 1 --max-products 3
+```
+
 Store raw products in Postgres:
 
 ```bash

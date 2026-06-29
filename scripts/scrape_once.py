@@ -11,7 +11,14 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 BACKEND_ROOT = REPO_ROOT / "backend"
 sys.path.insert(0, str(BACKEND_ROOT))
 
-from app.scrapers import BillaScraper, MpreisScraper, RawProductPayload, RetailerScraper  # noqa: E402
+from app.scrapers import (  # noqa: E402
+    BillaScraper,
+    MpreisScraper,
+    RawProductPayload,
+    RetailerScraper,
+    ReweScraper,
+    ScraperStopCondition,
+)
 
 
 async def main() -> None:
@@ -27,7 +34,10 @@ async def main() -> None:
 
     products: list[RawProductPayload] = []
     for category in categories:
-        category_products = await scraper.scrape_products(category)
+        try:
+            category_products = await scraper.scrape_products(category)
+        except ScraperStopCondition as exc:
+            raise SystemExit(str(exc)) from exc
         remaining = args.max_products - len(products)
         products.extend(category_products[:remaining])
         if len(products) >= args.max_products:
@@ -61,7 +71,7 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run one low-volume grocery scraper.")
     parser.add_argument(
         "--retailer",
-        choices=["billa", "mpreis"],
+        choices=["billa", "mpreis", "rewe"],
         default="billa",
         help="Retailer scraper to run.",
     )
@@ -91,6 +101,9 @@ def validate_positive_limit(name: str, value: int) -> None:
 
 
 def validate_storage_policy(args: argparse.Namespace) -> None:
+    if args.store and args.retailer == "rewe":
+        raise SystemExit("REWE is approved for no-storage dry runs only.")
+
     if not args.store or args.retailer != "mpreis":
         return
 
@@ -105,6 +118,8 @@ def build_scraper(args: argparse.Namespace) -> RetailerScraper:
         return BillaScraper(max_products_per_category=args.max_products)
     if args.retailer == "mpreis":
         return MpreisScraper(max_products_per_category=min(args.max_products, 3))
+    if args.retailer == "rewe":
+        return ReweScraper(max_products_per_category=min(args.max_products, 3))
     raise ValueError(f"Unsupported retailer: {args.retailer}")
 
 

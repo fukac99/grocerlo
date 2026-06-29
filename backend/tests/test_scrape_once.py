@@ -40,3 +40,14 @@ def test_validate_storage_policy_ignores_billa_store() -> None:
     args = Namespace(retailer="billa", store=True, limit_categories=2, max_products=50)
 
     validate_storage_policy(args)
+
+
+def test_validate_storage_policy_rejects_rewe_store() -> None:
+    args = Namespace(retailer="rewe", store=True, limit_categories=1, max_products=3)
+
+    try:
+        validate_storage_policy(args)
+    except SystemExit as exc:
+        assert str(exc) == "REWE is approved for no-storage dry runs only."
+    else:
+        raise AssertionError("Expected REWE storage attempt to exit")
