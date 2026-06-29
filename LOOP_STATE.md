@@ -34,13 +34,26 @@ Last full-codebase security review boundary: 0 completed tasks.
 | Retailer | Country | Status | Notes |
 | --- | --- | --- | --- |
 | BILLA | AT | Clean baseline complete | Controlled post-dedupe stored baseline `scrape_run_id=3` produced 3 raw rows, 3 normalized rows, 3 distinct source IDs, and no duplicate-source-ID issues. |
-| MPREIS | AT | Capped raw validation complete; downstream blocked | `scrape_run_id=4` stored 3 `no_market_selected` raw rows from one page. Sanity report found 0 quality issues and 0 missing key fields. Do not normalize, match, or show MPREIS rows until a follow-up approval task reviews downstream use. |
+| MPREIS | AT | Report-only normalization approved; broader downstream blocked | `scrape_run_id=4` stored 3 `no_market_selected` raw rows from one page. Sanity report found 0 quality issues and 0 missing key fields. Report-only normalization may validate parsing for these rows, but matching, comparison UI use, broader volume, and market-selected scraping remain blocked. |
 | REWE | DE | Discovery-only; storage blocked | Public no-location pages expose metadata/article numbers but not numeric prices. T074 documents that no location-priced dry-run context is approved yet; price scraping needs an exact human-approved location/market/service context first. |
 | Kaufland | SK | Discovery-only; storage blocked | Needs discovery to distinguish grocery, marketplace, leaflet, store, loyalty, and app-specific price surfaces. |
 | Tesco | SK | Discovery-only; storage blocked | Needs discovery for public price visibility, dynamic loading, address/slot/session requirements, and Clubcard labels. |
 | Tegut on Amazon | DE | Discovery-only; storage blocked | Amazon-hosted grocery surface is postcode/account/platform scoped. T073 found no safe no-location price capture path; any next step needs explicit Amazon/Tegut policy approval. |
 
 ## Last Run
+
+2026-06-29 coordinator pass / T075 MPREIS downstream policy:
+
+- Fetched latest remote state from `origin/main`. The local primary checkout is dirty on `task/T042-billa-scale-scrape-dedupe`, so T075 used a clean worktree from `origin/main`.
+- Checked GitHub PRs. PR #64 and PR #65 are merged on GitHub; this coordinator pass did not merge either PR. No pull requests were open when checked with `gh pr list`.
+- Loaded Linear credentials with `source credentials.txt` before Linear API calls, queried team `GRO`, and confirmed `Blocked` and `Human Review` states exist.
+- PM/scoping result: `GRO-45` / T075 and `GRO-38` / T063 were the active Todo issues. Claimed T075 because it is an independent policy/scoping task that can unblock a narrower safe MPREIS follow-up without overlapping the dirty checkout.
+- T075 decision: the quarantined MPREIS `scrape_run_id=4` rows may be normalized only for report-only parser and data-quality validation. The output must remain labeled non-comparable and must not feed matching, comparison APIs, or UI surfaces.
+- Broader MPREIS downstream use remains blocked. A human-approved market, postal code, pickup branch, delivery area, or delivery slot is required before MPREIS rows can be matched, shown in comparison UI, used as a price baseline, or expanded beyond the existing capped validation page.
+- App-only labels and app-only numeric prices remain promotion metadata and must not become regular comparable price fields.
+- Created `GRO-48` / T079 as a Todo follow-up for narrow report-only normalization of `scrape_run_id=4`, with no scraping and no new raw rows. Added a blocker comment to `GRO-34` / T059 so broader controlled stored ingest and reusable normalization/reporting remain blocked.
+- Checks: `git diff --check` and `python3 -m compileall -q backend/app scripts`.
+- Next action: open the T075 PR, update Linear with PR/check metadata, and keep it `In Review` until user-directed merge. `GRO-38` / T063 remains Todo for the next readiness-summary pass.
 
 2026-06-29 coordinator pass / T074 REWE location policy:
 
